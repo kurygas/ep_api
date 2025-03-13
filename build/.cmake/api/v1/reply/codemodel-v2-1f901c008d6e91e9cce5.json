@@ -1,0 +1,179 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"jsonFile" : "directory-src-Debug-b6cf2213fc5053b67c22.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/database",
+					"jsonFile" : "directory-src.database-Debug-bc47545b602a2b73f466.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/database",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "src/resources",
+					"jsonFile" : "directory-src.resources-Debug-a4e17b4e30c018d24ece.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/resources",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "src/server",
+					"jsonFile" : "directory-src.server-Debug-ed01e06ea8a73e000890.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/server",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "src/utility",
+					"jsonFile" : "directory-src.utility-Debug-77569dd1d53133694646.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "src/utility",
+					"targetIndexes" : 
+					[
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "ep_api",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "Database::@f1aa34bc7b1afc1810b8",
+					"jsonFile" : "target-Database-Debug-bc05703dcdb794362394.json",
+					"name" : "Database",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "Resources::@c9b58906581544afb432",
+					"jsonFile" : "target-Resources-Debug-e7ad1be28694198eb148.json",
+					"name" : "Resources",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "Server::@2804e40980a64c7d7ad1",
+					"jsonFile" : "target-Server-Debug-b3727c670a807ca0553f.json",
+					"name" : "Server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "Utility::@d11917d783b4c5ebb356",
+					"jsonFile" : "target-Utility-Debug-f11b4475f2ae1705d7ed.json",
+					"name" : "Utility",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ep_api::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ep_api-Debug-1f602659d04bbeb2d7bb.json",
+					"name" : "ep_api",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/kuryga/projects/ep_api/build",
+		"source" : "/home/kuryga/projects/ep_api"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

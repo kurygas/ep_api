@@ -1,0 +1,4 @@
+add_subdirectory(database)
+add_subdirectory(resources)
+add_subdirectory(server)
+add_subdirectory(utility)
