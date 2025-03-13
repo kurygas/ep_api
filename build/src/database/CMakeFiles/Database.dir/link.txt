@@ -1,2 +1,0 @@
-/usr/bin/ar qc libDatabase.a CMakeFiles/Database.dir/group.cpp.o CMakeFiles/Database.dir/session.cpp.o CMakeFiles/Database.dir/test_result.cpp.o CMakeFiles/Database.dir/test_variant.cpp.o CMakeFiles/Database.dir/test.cpp.o CMakeFiles/Database.dir/user.cpp.o
-/usr/bin/ranlib libDatabase.a
