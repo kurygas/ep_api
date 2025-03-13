@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+/build
+*.db
+test.py
+run.sh
+methods.txt
