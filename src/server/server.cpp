@@ -9,7 +9,6 @@ Server::Server(const int argc, char** const argv)
     
     addResource<RegistrationResource>("user/registration");
     addResource<AuthResource>("/user/auth");
-    addResource<UpdateProfileResource>("/user/update_profile");
     addResource<MakeTeacherResource>("/user/make_teacher");
     addResource<GetUserResource>("/user/get_user");
     addResource<DeleteUserResource>("/user/delete_user");

@@ -32,33 +32,19 @@ std::string Session::generateRandomString(const int length) {
     return randomString;
 }
 
+std::string Session::generateToken() {
+    std::string token;
+
+    do {
+        token = generateRandomString(16);
+    }
+    while (tokenExists(token));
+
+    return token;
+}
+
 Wt::Dbo::ptr<User> Session::getUserByTgId(const std::string& tgId) {
-    return find<User>().where("tg_id = ?").bind(tgId);
-}
-
-Wt::Dbo::ptr<Group> Session::getGroupByName(const std::string& groupName) {
-    return find<Group>().where("group_name = ?").bind(groupName);
-}
-
-void Session::addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 
-    const std::string& secondName, const std::string& email) {
-    if (getUserByTgId(tgId)) {
-        throw std::runtime_error("User already exists");
-    }
-
-    add(User::create(tgId, tgUsername, password, firstName, secondName, email));
-}
-
-void Session::addGroup(const std::string& groupName) {
-    if (getGroupByName(groupName)) {
-        throw std::runtime_error("Group already exists");
-    }
-
-    add(Group::create(groupName));
-}
-
-Wt::Dbo::ptr<User> Session::getUser(const JsonObject& requestContent) {
-    auto user = getUserByTgId(requestContent.getString("tg_id"));
+    Wt::Dbo::ptr<User> user = find<User>().where("tg_id = ?").bind(tgId);
 
     if (!user) {
         throw std::runtime_error("User does not exist");
@@ -67,12 +53,51 @@ Wt::Dbo::ptr<User> Session::getUser(const JsonObject& requestContent) {
     return user;
 }
 
-Wt::Dbo::ptr<User> Session::getTarget(const JsonObject& requestContent) {
-    auto target = getUserByTgId(requestContent.getString("target"));
-    
-    if (!target) {
-        throw std::runtime_error("Target does not exist");
+Wt::Dbo::ptr<User> Session::getUserByToken(const std::string& token) {
+    Wt::Dbo::ptr<User> user = find<User>().where("token = ?").bind(token);
+
+    if (!user) {
+        throw std::runtime_error("User does not exist");
     }
 
-    return target;
+    return user;
+}
+
+Wt::Dbo::ptr<Group> Session::getGroupByGroupName(const std::string& groupName) {
+    Wt::Dbo::ptr<Group> group = find<Group>().where("group_name = ?").bind(groupName);
+
+    if (!group) {
+        throw std::runtime_error("Group does not exist");
+    }
+
+    return group;
+}
+
+bool Session::tgIdExists(const std::string& tgId) {
+    return exist(&Session::getUserByTgId, tgId);
+}
+
+bool Session::tokenExists(const std::string& token) {
+    return exist(&Session::getUserByToken, token);
+}
+
+bool Session::groupNameExists(const std::string& groupName) {
+    return exist(&Session::getGroupByGroupName, groupName);
+}
+
+void Session::addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 
+    const std::string& secondName, const std::string& email) {
+    if (tgIdExists(tgId)) {
+        throw std::runtime_error("User already exists");
+    }
+
+    add(User::create(tgId, tgUsername, password, firstName, secondName, email));
+}
+
+void Session::addGroup(const std::string& groupName) {
+    if (groupNameExists(groupName)) {
+        throw std::runtime_error("Group already exists");
+    }
+
+    add(Group::create(groupName));
 }

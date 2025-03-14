@@ -11,9 +11,10 @@
 class JsonObject : public Wt::Json::Object {
 public:
     std::string getString(const std::string& key) const;
+    int getInt(const std::string& key) const;
 
     template<typename T>
-    void put(const std::string& key, const T& value) {
+    void putString(const std::string& key, const T& value) {
         if constexpr (std::is_constructible_v<Wt::Json::Value, const T&>) {
             operator[](key) = Wt::Json::Value(value);
         }
@@ -23,4 +24,5 @@ public:
     }
 
     const Wt::Json::Value& at(const std::string& key) const;
+    Wt::Json::Value& at(const std::string& key);
 };

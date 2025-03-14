@@ -4,5 +4,5 @@
 
 class CreateGroupResource : public AdminResource {
 protected:
-    void processPost(const JsonObject& requestContent, JsonObject& responseContent, Session& session) const override;
+    void processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const override;
 };

@@ -12,13 +12,30 @@ public:
     void configureDatabase();
 
     static std::string generateRandomString(int length);
+    std::string generateToken();
 
     void addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 
         const std::string& secondName, const std::string& email);
     void addGroup(const std::string& groupName);
 
     Wt::Dbo::ptr<User> getUserByTgId(const std::string& tgId);
-    Wt::Dbo::ptr<User> getUser(const JsonObject& requestContent);
-    Wt::Dbo::ptr<User> getTarget(const JsonObject& requestContent);
-    Wt::Dbo::ptr<Group> getGroupByName(const std::string& groupName);
+    Wt::Dbo::ptr<User> getUserByToken(const std::string& token);
+    Wt::Dbo::ptr<Group> getGroupByGroupName(const std::string& groupName);
+    
+    bool tgIdExists(const std::string& tgId);
+    bool tokenExists(const std::string& token);
+    bool groupNameExists(const std::string& groupName);
+
+private:
+    template<typename F, typename... Args>
+    bool exist(const F method, Args&&... args) {
+        try {
+            (this->*method)(std::forward<Args>(args)...);
+        }
+        catch (...) {
+            return false;
+        }
+
+        return true;
+    }
 };
