@@ -18,7 +18,6 @@ public:
     static std::unique_ptr<User> create(const std::string& tgId, const std::string& tgUsername, const std::string& password, 
         const std::string& firstName, const std::string& secondName, const std::string& email);
     static bool isRussianString(const Wt::WString& str);
-    static std::string userTypeToString(UserType userType);
     
     template<typename Action>
     void persist(Action& a) {

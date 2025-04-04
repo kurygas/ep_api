@@ -23,7 +23,7 @@ std::string Resource::getToken(const Wt::Http::Request& request) {
         throw std::runtime_error("Invalid token");
     }
 
-    return token;
+    return token.substr(7);
 }
 
 const std::string& Resource::getParameter(const Wt::Http::Request& request, const std::string& key) {

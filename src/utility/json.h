@@ -23,6 +23,11 @@ public:
         }
     }
 
+    template<typename T>
+    void putInt(const std::string& key, T value) {
+        operator[](key) = static_cast<int>(value);
+    }
+    
     const Wt::Json::Value& at(const std::string& key) const;
     Wt::Json::Value& at(const std::string& key);
 };

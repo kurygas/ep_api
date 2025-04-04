@@ -26,21 +26,6 @@ bool User::isRussianString(const Wt::WString& str) {
 	return true;
 }
 
-std::string User::userTypeToString(const UserType userType) {
-    if (userType == UserType::Student) {
-        return "student";
-    }
-    else if (userType == UserType::Teacher) {
-        return "teacher";
-    }
-    else if (userType == UserType::Admin) {
-        return "admin";
-    }
-    else {
-        throw std::runtime_error("Invalid user type");
-    }
-}
-
 bool User::passwordIsValid(const std::string& password) const {
     return Wt::Auth::BCryptHashFunction().compute(password, salt_) == passwordHash_;
 }

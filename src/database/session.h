@@ -26,6 +26,8 @@ public:
     bool tokenExists(const std::string& token);
     bool groupNameExists(const std::string& groupName);
 
+    Wt::Dbo::collection<Wt::Dbo::ptr<User>> getAllUsers();
+
 private:
     template<typename F, typename... Args>
     bool exist(const F method, Args&&... args) {

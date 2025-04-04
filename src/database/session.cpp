@@ -85,6 +85,10 @@ bool Session::groupNameExists(const std::string& groupName) {
     return exist(&Session::getGroupByGroupName, groupName);
 }
 
+Wt::Dbo::collection<Wt::Dbo::ptr<User>> Session::getAllUsers() {
+    return find<User>().resultList();
+}
+
 void Session::addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 
     const std::string& secondName, const std::string& email) {
     if (tgIdExists(tgId)) {

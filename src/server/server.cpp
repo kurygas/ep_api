@@ -10,8 +10,13 @@ Server::Server(const int argc, char** const argv)
     addResource<RegistrationResource>("user/registration");
     addResource<AuthResource>("/user/auth");
     addResource<MakeTeacherResource>("/user/make_teacher");
-    addResource<GetUserResource>("/user/get_user");
-    addResource<DeleteUserResource>("/user/delete_user");
+    addResource<GetUserInfoResource>("/user/get_info");
+    addResource<DeleteUserResource>("/user/delete");
+    addResource<UpdateTgUsernameResource>("/user/update/tg_username");
+    addResource<UpdateFirstNameResource>("/user/update/first_name");
+    addResource<UpdateSecondNameResource>("/user/update/second_name");
+    addResource<UpdateEmailResource>("/user/update/email");
+    addResource<GetAllUsersResource>("/user/get_all");
 
     addResource<CreateGroupResource>("/group/create");
 }

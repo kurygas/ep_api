@@ -7,6 +7,7 @@
 
 class JsonObject;
 class Session;
+class User;
 
 class Resource : public Wt::WResource {
 public:
