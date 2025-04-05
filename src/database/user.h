@@ -17,7 +17,10 @@ public:
 
     static std::unique_ptr<User> create(const std::string& tgId, const std::string& tgUsername, const std::string& password, 
         const std::string& firstName, const std::string& secondName, const std::string& email);
+    static std::unique_ptr<User> createAdmin();
     static bool isRussianString(const Wt::WString& str);
+
+    User();
     
     template<typename Action>
     void persist(Action& a) {
@@ -43,6 +46,7 @@ public:
     void setTgUsername(const std::string& tgUsername);
     void setEmail(const std::string& email);
     void setUserType(UserType userType);
+    void setGroup(const Wt::Dbo::ptr<Group>& group);
 
     const std::string& getToken();
     UserType getUserType() const;
@@ -50,6 +54,7 @@ public:
     const Wt::WString& getSecondName() const;
     const std::string& getTgUsername() const;
     const std::string& getTgId() const;
+    const Wt::Dbo::ptr<Group>& getGroup() const;
 
 private:
     void updateToken();

@@ -17,6 +17,12 @@ void Session::configureDatabase() {
         createTables();
     }
     catch (...) {}
+
+    const Wt::Dbo::Transaction transaction(*this);
+    
+    if (!tgIdExists("admin")) {
+        add(User::createAdmin());
+    }
 }
 
 std::string Session::generateRandomString(const int length) {
@@ -45,31 +51,25 @@ std::string Session::generateToken() {
 
 Wt::Dbo::ptr<User> Session::getUserByTgId(const std::string& tgId) {
     Wt::Dbo::ptr<User> user = find<User>().where("tg_id = ?").bind(tgId);
-
-    if (!user) {
-        throw std::runtime_error("User does not exist");
-    }
-
+    checkUser(user);
     return user;
 }
 
 Wt::Dbo::ptr<User> Session::getUserByToken(const std::string& token) {
     Wt::Dbo::ptr<User> user = find<User>().where("token = ?").bind(token);
-
-    if (!user) {
-        throw std::runtime_error("User does not exist");
-    }
-
+    checkUser(user);
     return user;
 }
 
 Wt::Dbo::ptr<Group> Session::getGroupByGroupName(const std::string& groupName) {
     Wt::Dbo::ptr<Group> group = find<Group>().where("group_name = ?").bind(groupName);
+    checkGroup(group);
+    return group;
+}
 
-    if (!group) {
-        throw std::runtime_error("Group does not exist");
-    }
-
+Wt::Dbo::ptr<Group> Session::getGroupByGroupId(const int groupId) {
+    Wt::Dbo::ptr<Group> group = find<Group>().where("id = ?").bind(groupId);
+    checkGroup(group);
     return group;
 }
 
@@ -87,6 +87,18 @@ bool Session::groupNameExists(const std::string& groupName) {
 
 Wt::Dbo::collection<Wt::Dbo::ptr<User>> Session::getAllUsers() {
     return find<User>().resultList();
+}
+
+void Session::checkUser(const Wt::Dbo::ptr<User>& user) const {
+    if (!user) {
+        throw std::runtime_error("User does not exist");
+    }
+}
+
+void Session::checkGroup(const Wt::Dbo::ptr<Group>& group) const {
+    if (!group) {
+        throw std::runtime_error("Group does not exist");
+    }
 }
 
 void Session::addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 

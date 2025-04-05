@@ -6,13 +6,21 @@
 std::unique_ptr<User> User::create(const std::string& tgId, const std::string& tgUsername, const std::string& password, 
     const std::string& firstName, const std::string& secondName, const std::string& email) {
     auto user = std::make_unique<User>();
-    user->salt_ = Session::generateRandomString(16);
     user->setTgId(tgId);
     user->setTgUsername(tgUsername);
     user->setFirstName(firstName);
     user->setSecondName(secondName);
     user->setPassword(password);
     user->setEmail(email);
+    return std::move(user);
+}
+
+std::unique_ptr<User> User::createAdmin() {
+    auto user = std::make_unique<User>();
+    user->tgId_ = "admin";
+    user->tgUsername_ = "admin";
+    user->setPassword("adminadmin");
+    user->userType_ = UserType::Admin;
     return std::move(user);
 }
 
@@ -25,6 +33,10 @@ bool User::isRussianString(const Wt::WString& str) {
 
 	return true;
 }
+
+User::User()
+: tokenTimeLimit_(Wt::WDateTime::currentDateTime())
+, salt_(Session::generateRandomString(16)) {}
 
 bool User::passwordIsValid(const std::string& password) const {
     return Wt::Auth::BCryptHashFunction().compute(password, salt_) == passwordHash_;
@@ -82,6 +94,10 @@ void User::setUserType(const UserType userType) {
     userType_ = userType;
 }
 
+void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
+    group_ = group;
+}
+
 const std::string& User::getToken() {
     if (Wt::WDateTime::currentDateTime() > tokenTimeLimit_) {
         updateToken();
@@ -108,6 +124,10 @@ const std::string& User::getTgUsername() const {
 
 const std::string& User::getTgId() const {
     return tgId_;
+}
+
+const Wt::Dbo::ptr<Group>& User::getGroup() const {
+    return group_;
 }
 
 void User::updateToken() {

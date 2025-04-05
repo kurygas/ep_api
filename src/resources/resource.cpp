@@ -18,6 +18,8 @@ JsonObject Resource::getBodyContent(const Wt::Http::Request& request) {
 
 std::string Resource::getToken(const Wt::Http::Request& request) {
     const auto token = request.headerValue("Authorization");
+    std::cerr << token << std::endl;
+    std::cerr << token.substr(0, 7) << std::endl;
 
     if (token.substr(0, 7) != "Bearer ") {
         throw std::runtime_error("Invalid token");
@@ -49,7 +51,6 @@ void Resource::handleRequest(const Wt::Http::Request& request, Wt::Http::Respons
         response.setStatus(400);
         responseContent.clear();
         responseContent.putString("error", e.what());
-        std::cerr << "here" << std::endl;
     }
 
     response.out() << Wt::Json::serialize(responseContent);

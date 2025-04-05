@@ -5,6 +5,8 @@
 
 #include <unordered_set>
 
+using namespace UserResources;
+
 void RegistrationResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
     const auto requestContent = getBodyContent(request);
     session.addUser(requestContent.getString("tg_id"), requestContent.getString("tg_username"), requestContent.getString("password"), 

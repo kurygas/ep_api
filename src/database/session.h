@@ -21,6 +21,7 @@ public:
     Wt::Dbo::ptr<User> getUserByTgId(const std::string& tgId);
     Wt::Dbo::ptr<User> getUserByToken(const std::string& token);
     Wt::Dbo::ptr<Group> getGroupByGroupName(const std::string& groupName);
+    Wt::Dbo::ptr<Group> getGroupByGroupId(int groupId);
     
     bool tgIdExists(const std::string& tgId);
     bool tokenExists(const std::string& token);
@@ -40,4 +41,7 @@ private:
 
         return true;
     }
+
+    void checkUser(const Wt::Dbo::ptr<User>& user) const;
+    void checkGroup(const Wt::Dbo::ptr<Group>& group) const;
 };
