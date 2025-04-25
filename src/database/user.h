@@ -6,6 +6,7 @@
 #include <Wt/WDateTime.h>
 
 class Group;
+class WorkResult;
 
 class User {
 public:
@@ -17,6 +18,7 @@ public:
 
     static std::unique_ptr<User> createAdmin();
 
+    User() = default;
     User(const std::string& tgId, const std::string& tgUsername, const std::string& password, const Wt::WString& firstName, 
         const Wt::WString& secondName, const std::string& email);
     
@@ -33,6 +35,7 @@ public:
         Wt::Dbo::field(a, tokenTimeLimit_, "token_time_limit");
         Wt::Dbo::field(a, email_, "email");
         Wt::Dbo::belongsTo(a, group_, "group");
+        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
     }
 
     bool passwordIsValid(const std::string& password) const;
@@ -52,8 +55,9 @@ public:
     const Wt::WString& getSecondName() const;
     const std::string& getTgUsername() const;
     const std::string& getTgId() const;
-    const Wt::Dbo::ptr<Group>& getGroup() const;
     const std::string& getEmail() const;
+    const Wt::Dbo::ptr<Group>& getGroup() const;
+    const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
 
 private:
     void updateToken();
@@ -70,4 +74,5 @@ private:
     Wt::WDateTime tokenTimeLimit_;
 
     Wt::Dbo::ptr<Group> group_;
+    Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
 };

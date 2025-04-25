@@ -4,7 +4,6 @@
 
 class User;
 class Group;
-class JsonObject;
 
 class Session : public Wt::Dbo::Session {
 public:

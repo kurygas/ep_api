@@ -1,7 +1,11 @@
 #include "checker.h"
 
-bool isSemesterValid(const unsigned semester) {
-    return semester <= 8;
+bool isSemesterValid(const int semester) {
+    return semester >= 1 && semester <= 8;
+}
+
+bool isWorkNumberValid(const int workNumber) {
+    return workNumber >= 1;
 }
 
 bool isRussianString(const Wt::WString& str) {

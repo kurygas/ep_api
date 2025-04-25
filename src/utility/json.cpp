@@ -6,7 +6,7 @@ const Wt::Json::Value& JsonObject::at(const std::string& key) const {
 
 Wt::Json::Value& JsonObject::at(const std::string& key) {
     if (!contains(key)) {
-        throw std::runtime_error("Does not contain key " + key);
+        throw std::runtime_error("JsonObject does not contain key " + key);
     }
 
     return Wt::Json::Object::at(key);

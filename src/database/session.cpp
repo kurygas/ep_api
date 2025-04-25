@@ -1,7 +1,9 @@
 #include "session.h"
 #include "user.h"
 #include "group.h"
-#include "json.h"
+#include "problem.h"
+#include "work_result.h"
+#include "work.h"
 
 #include <Wt/Dbo/backend/Sqlite3.h>
 #include <random>
@@ -10,6 +12,9 @@ Session::Session() {
     setConnection(std::make_unique<Wt::Dbo::backend::Sqlite3>("database.db"));
     mapClass<User>("users");
     mapClass<Group>("groups");
+    mapClass<Problem>("problems");
+    mapClass<WorkResult>("work_results");
+    mapClass<Work>("works");
 }
 
 void Session::configureDatabase() {

@@ -1,6 +1,8 @@
 #include "user.h"
 #include "session.h"
-#include <checker.h>
+#include "checker.h"
+#include "group.h"
+#include "work_result.h"
 
 #include <Wt/Auth/HashFunction.h>
 
@@ -32,7 +34,7 @@ bool User::passwordIsValid(const std::string& password) const {
 
 void User::setPassword(const std::string& password) {
     if (password.size() < 8) {
-        throw std::runtime_error("Invalid password length");
+        throw std::runtime_error("Invalid password for User");
     }
 
     passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password, salt_);
@@ -40,7 +42,7 @@ void User::setPassword(const std::string& password) {
 
 void User::setFirstName(const Wt::WString& firstName) {
     if (firstName.empty() || !isRussianString(firstName)) {
-        throw std::runtime_error("Invalid person name");
+        throw std::runtime_error("Invalid first name for User");
     }
 
     firstName_ = firstName;
@@ -48,7 +50,7 @@ void User::setFirstName(const Wt::WString& firstName) {
 
 void User::setSecondName(const Wt::WString& secondName) {
     if (secondName.empty() || !isRussianString(secondName)) {
-        throw std::runtime_error("Invalid person name");
+        throw std::runtime_error("Invalid second name for User");
     }
 
     secondName_ = secondName;
@@ -56,7 +58,7 @@ void User::setSecondName(const Wt::WString& secondName) {
 
 void User::setTgId(const std::string& tgId) {
     if (tgId.empty()) {
-        throw std::runtime_error("Invalid tg id");
+        throw std::runtime_error("Invalid tg id for User");
     }
 
     tgId_ = tgId;
@@ -64,7 +66,7 @@ void User::setTgId(const std::string& tgId) {
 
 void User::setTgUsername(const std::string& tgUsername) {
     if (tgUsername.empty() || tgUsername.front() != '@') {
-        throw std::runtime_error("Invalid tg username");
+        throw std::runtime_error("Invalid tgUsername for User");
     }
 
     tgUsername_ = tgUsername;
@@ -72,7 +74,7 @@ void User::setTgUsername(const std::string& tgUsername) {
 
 void User::setEmail(const std::string& email) {
     if (email.empty()) {
-        throw std::runtime_error("Invalid email");
+        throw std::runtime_error("Invalid email for User");
     }
 
     email_ = email;
@@ -116,6 +118,10 @@ const std::string& User::getTgId() const {
 
 const Wt::Dbo::ptr<Group>& User::getGroup() const {
     return group_;
+}
+
+const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& User::getWorkResults() const {
+    return workResults_;
 }
 
 const std::string& User::getEmail() const {
