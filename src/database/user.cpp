@@ -1,19 +1,8 @@
 #include "user.h"
 #include "session.h"
+#include <checker.h>
 
 #include <Wt/Auth/HashFunction.h>
-
-std::unique_ptr<User> User::create(const std::string& tgId, const std::string& tgUsername, const std::string& password, 
-    const std::string& firstName, const std::string& secondName, const std::string& email) {
-    auto user = std::make_unique<User>();
-    user->setTgId(tgId);
-    user->setTgUsername(tgUsername);
-    user->setFirstName(firstName);
-    user->setSecondName(secondName);
-    user->setPassword(password);
-    user->setEmail(email);
-    return std::move(user);
-}
 
 std::unique_ptr<User> User::createAdmin() {
     auto user = std::make_unique<User>();
@@ -24,19 +13,18 @@ std::unique_ptr<User> User::createAdmin() {
     return std::move(user);
 }
 
-bool User::isRussianString(const Wt::WString& str) {
-    for (const auto& letter : str.toUTF16()) {
-		if (!(0x0410 <= letter && letter <= 0x044F || letter == 0x0401 || letter == 0x0451)) {
-			return false;
-		}
-	}
-
-	return true;
+User::User(const std::string& tgId, const std::string& tgUsername, const std::string& password, const Wt::WString& firstName, 
+    const Wt::WString& secondName, const std::string& email)
+: userType_(UserType::Student)
+, tokenTimeLimit_(Wt::WDateTime::currentDateTime())
+, salt_(Session::generateRandomString(16)) {
+    setTgId(tgId);
+    setTgUsername(tgUsername);
+    setPassword(password);
+    setFirstName(firstName);
+    setSecondName(secondName);
+    setEmail(email);
 }
-
-User::User()
-: tokenTimeLimit_(Wt::WDateTime::currentDateTime())
-, salt_(Session::generateRandomString(16)) {}
 
 bool User::passwordIsValid(const std::string& password) const {
     return Wt::Auth::BCryptHashFunction().compute(password, salt_) == passwordHash_;
@@ -75,7 +63,7 @@ void User::setTgId(const std::string& tgId) {
 }
 
 void User::setTgUsername(const std::string& tgUsername) {
-    if (tgUsername.empty()) {
+    if (tgUsername.empty() || tgUsername.front() != '@') {
         throw std::runtime_error("Invalid tg username");
     }
 
@@ -128,6 +116,10 @@ const std::string& User::getTgId() const {
 
 const Wt::Dbo::ptr<Group>& User::getGroup() const {
     return group_;
+}
+
+const std::string& User::getEmail() const {
+    return email_;
 }
 
 void User::updateToken() {

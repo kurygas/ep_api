@@ -15,12 +15,10 @@ public:
         Admin
     };
 
-    static std::unique_ptr<User> create(const std::string& tgId, const std::string& tgUsername, const std::string& password, 
-        const std::string& firstName, const std::string& secondName, const std::string& email);
     static std::unique_ptr<User> createAdmin();
-    static bool isRussianString(const Wt::WString& str);
 
-    User();
+    User(const std::string& tgId, const std::string& tgUsername, const std::string& password, const Wt::WString& firstName, 
+        const Wt::WString& secondName, const std::string& email);
     
     template<typename Action>
     void persist(Action& a) {
@@ -55,11 +53,12 @@ public:
     const std::string& getTgUsername() const;
     const std::string& getTgId() const;
     const Wt::Dbo::ptr<Group>& getGroup() const;
+    const std::string& getEmail() const;
 
 private:
     void updateToken();
 
-    UserType userType_ = UserType::Student;
+    UserType userType_;
     std::string passwordHash_;
     std::string salt_;
     Wt::WString firstName_;

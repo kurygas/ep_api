@@ -107,7 +107,7 @@ void Session::addUser(const std::string& tgId, const std::string& tgUsername, co
         throw std::runtime_error("User already exists");
     }
 
-    add(User::create(tgId, tgUsername, password, firstName, secondName, email));
+    add(std::make_unique<User>(tgId, tgUsername, password, firstName, secondName, email));
 }
 
 void Session::addGroup(const std::string& groupName) {
@@ -115,5 +115,5 @@ void Session::addGroup(const std::string& groupName) {
         throw std::runtime_error("Group already exists");
     }
 
-    add(Group::create(groupName));
+    add(std::make_unique<Group>(groupName));
 }

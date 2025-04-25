@@ -9,16 +9,16 @@ using namespace UserResources;
 
 void RegistrationResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
     const auto requestContent = getBodyContent(request);
-    session.addUser(requestContent.getString("tg_id"), requestContent.getString("tg_username"), requestContent.getString("password"), 
-        requestContent.getString("first_name"), requestContent.getString("second_name"), requestContent.getString("email"));
+    session.addUser(requestContent.at("tg_id"), requestContent.at("tg_username"), requestContent.at("password"), 
+        requestContent.at("first_name"), requestContent.at("second_name"), requestContent.at("email"));
 }
 
 void AuthResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
     const auto requestContent = getBodyContent(request);
-    const auto user = session.getUserByTgId(requestContent.getString("tg_id"));
-    user.modify()->setTgUsername(requestContent.getString("tg_username"));
+    const auto user = session.getUserByTgId(requestContent.at("tg_id"));
+    user.modify()->setTgUsername(requestContent.at("tg_username"));
     
-    if (!user->passwordIsValid(requestContent.getString("password"))) {
+    if (!user->passwordIsValid(requestContent.at("password"))) {
         throw std::runtime_error("Invalid password");
     }
 
@@ -26,7 +26,7 @@ void AuthResource::processPost(const Wt::Http::Request& request, JsonObject& res
 }
 
 void MakeTeacherResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByTgId(getBodyContent(request).getString("tg_id")).modify()->setUserType(User::UserType::Teacher);
+    session.getUserByTgId(getBodyContent(request).at("tg_id")).modify()->setUserType(User::UserType::Teacher);
 }
 
 void GetUserInfoResource::processGet(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
@@ -39,23 +39,23 @@ void GetUserInfoResource::processGet(const Wt::Http::Request& request, JsonObjec
 }
 
 void DeleteUserResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByTgId(getBodyContent(request).getString("tg_id")).remove();
+    session.getUserByTgId(getBodyContent(request).at("tg_id")).remove();
 }
 
 void UpdateTgUsernameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setTgUsername(getBodyContent(request).getString("tg_username"));
+    session.getUserByToken(getToken(request)).modify()->setTgUsername(getBodyContent(request).at("tg_username"));
 }
 
 void UpdateFirstNameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setFirstName(getBodyContent(request).getString("first_name"));
+    session.getUserByToken(getToken(request)).modify()->setFirstName(getBodyContent(request).at("first_name"));
 }
 
 void UpdateSecondNameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setSecondName(getBodyContent(request).getString("second_name"));
+    session.getUserByToken(getToken(request)).modify()->setSecondName(getBodyContent(request).at("second_name"));
 }
 
 void UpdateEmailResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setEmail(getBodyContent(request).getString("email"));
+    session.getUserByToken(getToken(request)).modify()->setEmail(getBodyContent(request).at("email"));
 }
 
 void GetAllUsersResource::processGet(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {

@@ -1,9 +1,8 @@
 add_library(Database STATIC 
+    checker.cpp
     group.cpp
+    problem.cpp
     session.cpp
-    test_result.cpp
-    test_variant.cpp
-    test.cpp
-    user.cpp)
+    user.cpp
+    work.cpp)
 target_include_directories(Database PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(Database PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)

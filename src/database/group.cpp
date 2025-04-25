@@ -1,20 +1,21 @@
 #include "group.h"
 
-std::unique_ptr<Group> Group::create(const std::string& groupName) {
-    auto group = std::make_unique<Group>();
-    group->setName(groupName);
-    return std::move(group);
+Group::Group(const Wt::WString& groupName) {
+    setName(groupName);
 }
 
-void Group::setName(const std::string& groupName)
-{
+void Group::setName(const Wt::WString& groupName) {
     if (groupName.empty()) {
-        std::runtime_error("Invalid group name");
+        throw std::runtime_error("Invalid group name");
     }
 
     groupName_ = groupName;
 }
 
-const std::string& Group::getGroupName() const {
+const Wt::WString& Group::getGroupName() const {
     return groupName_;
+}
+
+const Wt::Dbo::collection<Wt::Dbo::ptr<User>>& Group::getUsers() const {
+    return users_;
 }

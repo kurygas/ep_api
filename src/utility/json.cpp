@@ -1,13 +1,5 @@
 #include "json.h"
 
-std::string JsonObject::getString(const std::string& key) const {
-    return at(key);
-}
-
-int JsonObject::getInt(const std::string &key) const {
-    return at(key);
-}
-
 const Wt::Json::Value& JsonObject::at(const std::string& key) const {
     return const_cast<JsonObject*>(this)->at(key);
 }
