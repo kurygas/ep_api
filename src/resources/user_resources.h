@@ -18,32 +18,32 @@ namespace UserResources {
         void processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class GetUserInfoResource : public Resource {
+    class Get : public TokenResource {
     protected:
         void processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class DeleteUserResource : public AdminResource {
+    class Delete : public AdminResource {
     protected:
         void processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class UpdateTgUsernameResource : public TokenResource {
+    class SetTgUsername : public TokenResource {
     protected:
         void processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class UpdateFirstNameResource : public TokenResource {
+    class SetFirstName : public TokenResource {
     protected:
         void processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class UpdateSecondNameResource : public TokenResource {
+    class SetSecondName : public TokenResource {
     protected:
         void processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };
 
-    class GetAllUsersResource : public Resource {
+    class GetAllId : public TokenResource {
     protected:
         void processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const override;
     };

@@ -3,6 +3,7 @@
 #include "checker.h"
 #include "group.h"
 #include "work_result.h"
+#include "random_functions.h"
 
 #include <Wt/Auth/HashFunction.h>
 
@@ -16,10 +17,10 @@ std::unique_ptr<User> User::createAdmin() {
 }
 
 User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
-    const Wt::WString& secondName, const Wt::WString& email)
+    const Wt::WString& secondName, const Wt::WString& email, const Wt::WString& token)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime())
-, salt_(generateRandomString(16)) {
+, salt_(Random::generateRandomString(16)) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setPassword(password);
@@ -29,7 +30,7 @@ User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WSt
 }
 
 bool User::passwordIsValid(const Wt::WString& password) const {
-    return Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_) == passwordHash_;
+    return Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_.toUTF8()) == passwordHash_;
 }
 
 void User::setPassword(const Wt::WString& password) {
@@ -37,7 +38,7 @@ void User::setPassword(const Wt::WString& password) {
         throw std::runtime_error("Invalid password for User");
     }
 
-    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
+    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_.toUTF8());
 }
 
 void User::setFirstName(const Wt::WString& firstName) {
@@ -88,11 +89,16 @@ void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
     group_ = group;
 }
 
-const Wt::WString& User::getToken() {
-    if (Wt::WDateTime::currentDateTime() > tokenTimeLimit_) {
-        updateToken();
+void User::setToken(const Wt::WString& token) {
+    if (token.toUTF8().size() != 16) {
+        throw std::runtime_error("Invalid token");
     }
+    
+    tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
+    token_ = token;
+}
 
+const Wt::WString& User::getToken() {
     return token_;
 }
 
@@ -124,11 +130,10 @@ const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& User::getWorkResults() cons
     return workResults_;
 }
 
-const Wt::WString& User::getEmail() const {
-    return email_;
+const Wt::WDateTime& User::getTokenTimeLimit() const {
+    return tokenTimeLimit_;
 }
 
-void User::updateToken() {
-    token_ = generateRandomString(16);
-    tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
+const Wt::WString& User::getEmail() const {
+    return email_;
 }

@@ -27,7 +27,7 @@ void MakeAdmin::processPost(const HttpRequest& request, Wt::Json::Object& respon
     session.getUserByTgId(request.getBody().at("tg_id")).modify()->setUserType(User::UserType::Teacher);
 }
 
-void GetUserInfoResource::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void Get::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     const auto user = session.getUserByTgId(request.getParam("tg_id"));
     response["tg_id"] = user->getTgId();
     response["tg_username"] = user->getTgUsername();
@@ -36,26 +36,26 @@ void GetUserInfoResource::processGet(const HttpRequest& request, Wt::Json::Objec
     response["user_type"] = static_cast<int>(user->getUserType());
 }
 
-void DeleteUserResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void Delete::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     session.getUserByTgId(request.getBody().at("tg_id")).remove();
 }
 
-void UpdateTgUsernameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void SetTgUsername::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     session.getUserByToken(request.getToken()).modify()->setTgUsername(request.getBody().at("tg_username"));
 }
 
-void UpdateFirstNameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void SetFirstName::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     session.getUserByToken(request.getToken()).modify()->setFirstName(request.getBody().at("first_name"));
 }
 
-void UpdateSecondNameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void SetSecondName::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     session.getUserByToken(request.getToken()).modify()->setSecondName(request.getBody().at("second_name"));
 }
 
-void GetAllUsersResource::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void GetAllId::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     Wt::Json::Array array;
 
-    for (const auto& user : session.getAllUsers()) {
+    for (const auto& user : session.getAll<User>()) {
         array.emplace_back(user->getTgId());
     }
 

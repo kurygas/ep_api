@@ -1,8 +1,5 @@
 #include "checker.h"
-
-#include <random>
-
-static const std::string alphanumCharacters("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+#include "random_functions.h"
 
 bool isSemesterValid(const int semester) {
     return semester >= 1 && semester <= 8;
@@ -34,16 +31,4 @@ bool isPasswordValid(const Wt::WString& password) {
 	}
 
 	return true;
-}
-
-std::string generateRandomString(const int length) {
-    std::mt19937 generator((std::random_device())());
-    std::uniform_int_distribution<int> distribution(0, alphanumCharacters.size());
-    std::string randomString(16, '\0');
-
-    for (auto& ch : randomString) {
-        ch = alphanumCharacters[distribution(generator)];
-    }
-
-    return randomString;
 }

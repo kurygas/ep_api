@@ -44,7 +44,7 @@ void Resource::processPost(const HttpRequest& request, Wt::Json::Object& respons
 }
 
 void TokenResource::processRequest(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
-    if (!session.tokenExists(request.getToken())) {
+    if (!session.exist(&Session::getUserByToken, request.getToken())) {
         throw std::runtime_error("Token does not exist");
     }
 

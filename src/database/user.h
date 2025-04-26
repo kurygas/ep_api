@@ -16,12 +16,6 @@ public:
         Admin
     };
 
-    static std::unique_ptr<User> createAdmin();
-
-    User() = default;
-    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
-        const Wt::WString& secondName, const Wt::WString& email);
-    
     template<typename Action>
     void persist(Action& a) {
         Wt::Dbo::field(a, userType_, "user_type");
@@ -38,15 +32,21 @@ public:
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
     }
 
+    static std::unique_ptr<User> createAdmin();
+
+    User() = default;
+    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
+        const Wt::WString& secondName, const Wt::WString& email, const Wt::WString& token);
+
     bool passwordIsValid(const Wt::WString& password) const;
 
     void setPassword(const Wt::WString& password);
     void setFirstName(const Wt::WString& firstName);
     void setSecondName(const Wt::WString& secondName);
     void setTgUsername(const Wt::WString& tgUsername);
-    void setEmail(const Wt::WString& email);
     void setUserType(UserType userType);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
+    void setToken(const Wt::WString& token);
 
     const Wt::WString& getToken();
     UserType getUserType() const;
@@ -57,14 +57,15 @@ public:
     const Wt::WString& getEmail() const;
     const Wt::Dbo::ptr<Group>& getGroup() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
+    const Wt::WDateTime& getTokenTimeLimit() const;
 
 private:
-    void updateToken();
     void setTgId(const Wt::WString& tgId);
+    void setEmail(const Wt::WString& email);
 
     UserType userType_;
     Wt::WString passwordHash_;
-    std::string salt_;
+    Wt::WString salt_;
     Wt::WString firstName_;
     Wt::WString secondName_;
     Wt::WString tgId_;

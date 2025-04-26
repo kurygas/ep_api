@@ -6,5 +6,3 @@ bool isSemesterValid(int semester);
 bool isWorkNumberValid(int workNumber);
 bool isRussianString(const Wt::WString& str);
 bool isPasswordValid(const Wt::WString& password);
-
-std::string generateRandomString(int length);

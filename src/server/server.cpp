@@ -7,17 +7,15 @@ Server::Server(const int argc, char** const argv)
 : Wt::WServer(argc, argv, WTHTTP_CONFIGURATION) {
     Session().configureDatabase();
     
-    addResource<UserResources::RegistrationResource>("/user/registration");
-    addResource<UserResources::AuthResource>("/user/auth");
-    addResource<UserResources::MakeTeacherResource>("/user/make_teacher");
-    addResource<UserResources::GetUserInfoResource>("/user/get_info");
-    addResource<UserResources::DeleteUserResource>("/user/delete");
-    addResource<UserResources::UpdateTgUsernameResource>("/user/update/tg_username");
-    addResource<UserResources::UpdateFirstNameResource>("/user/update/first_name");
-    addResource<UserResources::UpdateSecondNameResource>("/user/update/second_name");
-    addResource<UserResources::UpdateEmailResource>("/user/update/email");
-    addResource<UserResources::GetAllUsersResource>("/user/get_all");
+    addResource<UserResources::Create>("/user/create");
+    addResource<UserResources::Auth>("/user/auth");
+    addResource<UserResources::MakeAdmin>("/user/make_admin");
+    addResource<UserResources::Get>("/user");
+    addResource<UserResources::Delete>("/user/delete");
+    addResource<UserResources::SetTgUsername>("/user/set/tg_username");
+    addResource<UserResources::SetFirstName>("/user/set/first_name");
+    addResource<UserResources::SetSecondName>("/user/set/second_name");
+    addResource<UserResources::GetAllId>("/user/all_id");
 
-    addResource<GroupResources::CreateGroupResource>("/group/create");
-    addResource<GroupResources::AddUserResource>("/group/add_user");
+    addResource<GroupResources::Create>("/group/create");
 }
