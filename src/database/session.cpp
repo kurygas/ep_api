@@ -4,9 +4,9 @@
 #include "problem.h"
 #include "work_result.h"
 #include "work.h"
+#include "checker.h"
 
 #include <Wt/Dbo/backend/Sqlite3.h>
-#include <random>
 
 Session::Session() {
     setConnection(std::make_unique<Wt::Dbo::backend::Sqlite3>("database.db"));
@@ -30,21 +30,8 @@ void Session::configureDatabase() {
     }
 }
 
-std::string Session::generateRandomString(const int length) {
-    static const std::string alphanumCharacters("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-    std::mt19937 generator((std::random_device())());
-    std::uniform_int_distribution<int> distribution(0, alphanumCharacters.size());
-    std::string randomString(16, '\0');
-
-    for (auto& ch : randomString) {
-        ch = alphanumCharacters[distribution(generator)];
-    }
-
-    return randomString;
-}
-
-std::string Session::generateToken() {
-    std::string token;
+Wt::WString Session::generateToken() {
+    Wt::WString token;
 
     do {
         token = generateRandomString(16);
@@ -54,19 +41,19 @@ std::string Session::generateToken() {
     return token;
 }
 
-Wt::Dbo::ptr<User> Session::getUserByTgId(const std::string& tgId) {
+Wt::Dbo::ptr<User> Session::getUserByTgId(const Wt::WString& tgId) {
     Wt::Dbo::ptr<User> user = find<User>().where("tg_id = ?").bind(tgId);
     checkUser(user);
     return user;
 }
 
-Wt::Dbo::ptr<User> Session::getUserByToken(const std::string& token) {
+Wt::Dbo::ptr<User> Session::getUserByToken(const Wt::WString& token) {
     Wt::Dbo::ptr<User> user = find<User>().where("token = ?").bind(token);
     checkUser(user);
     return user;
 }
 
-Wt::Dbo::ptr<Group> Session::getGroupByGroupName(const std::string& groupName) {
+Wt::Dbo::ptr<Group> Session::getGroupByGroupName(const Wt::WString& groupName) {
     Wt::Dbo::ptr<Group> group = find<Group>().where("group_name = ?").bind(groupName);
     checkGroup(group);
     return group;
@@ -78,15 +65,15 @@ Wt::Dbo::ptr<Group> Session::getGroupByGroupId(const int groupId) {
     return group;
 }
 
-bool Session::tgIdExists(const std::string& tgId) {
+bool Session::tgIdExists(const Wt::WString& tgId) {
     return exist(&Session::getUserByTgId, tgId);
 }
 
-bool Session::tokenExists(const std::string& token) {
+bool Session::tokenExists(const Wt::WString& token) {
     return exist(&Session::getUserByToken, token);
 }
 
-bool Session::groupNameExists(const std::string& groupName) {
+bool Session::groupNameExists(const Wt::WString& groupName) {
     return exist(&Session::getGroupByGroupName, groupName);
 }
 
@@ -106,8 +93,8 @@ void Session::checkGroup(const Wt::Dbo::ptr<Group>& group) const {
     }
 }
 
-void Session::addUser(const std::string& tgId, const std::string& tgUsername, const std::string& password, const std::string& firstName, 
-    const std::string& secondName, const std::string& email) {
+void Session::addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
+    const Wt::WString& secondName, const Wt::WString& email) {
     if (tgIdExists(tgId)) {
         throw std::runtime_error("User already exists");
     }
@@ -115,7 +102,7 @@ void Session::addUser(const std::string& tgId, const std::string& tgUsername, co
     add(std::make_unique<User>(tgId, tgUsername, password, firstName, secondName, email));
 }
 
-void Session::addGroup(const std::string& groupName) {
+void Session::addGroup(const Wt::WString& groupName) {
     if (groupNameExists(groupName)) {
         throw std::runtime_error("Group already exists");
     }

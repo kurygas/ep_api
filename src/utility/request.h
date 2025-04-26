@@ -1,24 +1,26 @@
 #pragma once
 
-#include <optional>
+#include <Wt/Json/Array.h>
+#include <Wt/Json/Object.h>
+#include <Wt/Json/Value.h>
+#include <Wt/Json/Serializer.h>
+#include <Wt/Json/Parser.h>
 #include <Wt/Http/Request.h>
-
-#include "json.h"
 
 class HttpRequest {
 public:
     explicit HttpRequest(const Wt::Http::Request& request);
 
     std::string getToken() const;
-    const JsonObject& getBody() const;
-    const std::string& getParam(const std::string& key) const;
-    const std::string& getMethod() const;
+    const Wt::Json::Object& getBody() const;
+    const Wt::WString& getParam(const std::string& key) const;
+    const Wt::WString& getMethod() const;
 
 private:
     void setBody(const Wt::Http::Request& request);
 
-    const std::string method_;
+    const Wt::WString method_;
     const Wt::Http::ParameterMap& parameterMap_;
     const std::string tokenHeader_;
-    JsonObject body_;
+    Wt::Json::Object body_;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 enum class SubjectType {
-    Algo,
+    Algo = 0,
     Prog,
     Acos
 };

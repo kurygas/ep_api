@@ -13,6 +13,7 @@ public:
     template<typename Action>
     void persist(Action& a) {
         Wt::Dbo::field(a, name_, "name");
+        Wt::Dbo::field(a, statement_, "statement");
         Wt::Dbo::field(a, subject_, "subject");
         Wt::Dbo::field(a, semester_, "semester");
         Wt::Dbo::field(a, workNumber_, "work_number");
@@ -21,14 +22,16 @@ public:
     }
 
     Problem() = default;
-    Problem(const Wt::WString& name, SubjectType subject, int semester, int workNumber);
+    Problem(const Wt::WString& name, const Wt::WString& statement, SubjectType subject, int semester, int workNumber);
 
     void setName(const Wt::WString& name);
+    void setStatement(const Wt::WString& statement);
     void setSubject(SubjectType subject);
     void setSemester(int semester);
     void setWorkNumber(int workNumber);
 
     const Wt::WString& getName() const;
+    const Wt::WString& getStatement() const;
     SubjectType getSubject() const;
     int getSemester() const;
     int getWorkNumber() const;
@@ -37,6 +40,7 @@ public:
 
 private:
     Wt::WString name_;
+    Wt::WString statement_;
     SubjectType subject_;
     int semester_;
     int workNumber_;

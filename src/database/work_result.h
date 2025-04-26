@@ -37,7 +37,6 @@ private:
     void setProblem(const Wt::Dbo::ptr<Problem>& problem);
     void setUser(const Wt::Dbo::ptr<User>& user);
     
-
     Wt::WString filename_;
     int mark_;
     bool queued_;

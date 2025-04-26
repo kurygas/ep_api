@@ -1,69 +1,63 @@
 #include "user_resources.h"
 #include "session.h"
 #include "user.h"
-#include "json.h"
-
-#include <unordered_set>
+#include "request.h"
 
 using namespace UserResources;
 
-void RegistrationResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    const auto requestContent = getBodyContent(request);
-    session.addUser(requestContent.at("tg_id"), requestContent.at("tg_username"), requestContent.at("password"), 
-        requestContent.at("first_name"), requestContent.at("second_name"), requestContent.at("email"));
+void Create::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    const auto& body = request.getBody();
+    session.addUser(body.at("tg_id"), body.at("tg_username"), body.at("password"), body.at("first_name"), body.at("second_name"), 
+        body.at("email"));
 }
 
-void AuthResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    const auto requestContent = getBodyContent(request);
-    const auto user = session.getUserByTgId(requestContent.at("tg_id"));
-    user.modify()->setTgUsername(requestContent.at("tg_username"));
+void Auth::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    const auto& body = request.getBody();
+    const auto user = session.getUserByTgId(body.at("tg_id"));
+    user.modify()->setTgUsername(body.at("tg_username"));
     
-    if (!user->passwordIsValid(requestContent.at("password"))) {
+    if (!user->passwordIsValid(body.at("password"))) {
         throw std::runtime_error("Invalid password");
     }
 
-    responseContent.putString("token", user.modify()->getToken());
+    response["token"] = user.modify()->getToken();
 }
 
-void MakeTeacherResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByTgId(getBodyContent(request).at("tg_id")).modify()->setUserType(User::UserType::Teacher);
+void MakeAdmin::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    session.getUserByTgId(request.getBody().at("tg_id")).modify()->setUserType(User::UserType::Teacher);
 }
 
-void GetUserInfoResource::processGet(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    const auto user = session.getUserByTgId(getParameter(request, "tg_id"));
-    responseContent.putString("tg_id", user->getTgId());
-    responseContent.putString("tg_username", user->getTgUsername());
-    responseContent.putString("first_name", user->getFirstName());
-    responseContent.putString("second_name", user->getSecondName());
-    responseContent.putInt("user_type", user->getUserType());
+void GetUserInfoResource::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    const auto user = session.getUserByTgId(request.getParam("tg_id"));
+    response["tg_id"] = user->getTgId();
+    response["tg_username"] = user->getTgUsername();
+    response["first_name"] = user->getFirstName();
+    response["second_name"] = user->getSecondName();
+    response["user_type"] = static_cast<int>(user->getUserType());
 }
 
-void DeleteUserResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByTgId(getBodyContent(request).at("tg_id")).remove();
+void DeleteUserResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    session.getUserByTgId(request.getBody().at("tg_id")).remove();
 }
 
-void UpdateTgUsernameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setTgUsername(getBodyContent(request).at("tg_username"));
+void UpdateTgUsernameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    session.getUserByToken(request.getToken()).modify()->setTgUsername(request.getBody().at("tg_username"));
 }
 
-void UpdateFirstNameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setFirstName(getBodyContent(request).at("first_name"));
+void UpdateFirstNameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    session.getUserByToken(request.getToken()).modify()->setFirstName(request.getBody().at("first_name"));
 }
 
-void UpdateSecondNameResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setSecondName(getBodyContent(request).at("second_name"));
+void UpdateSecondNameResource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+    session.getUserByToken(request.getToken()).modify()->setSecondName(request.getBody().at("second_name"));
 }
 
-void UpdateEmailResource::processPost(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
-    session.getUserByToken(getToken(request)).modify()->setEmail(getBodyContent(request).at("email"));
-}
-
-void GetAllUsersResource::processGet(const Wt::Http::Request& request, JsonObject& responseContent, Session& session) const {
+void GetAllUsersResource::processGet(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
     Wt::Json::Array array;
 
     for (const auto& user : session.getAllUsers()) {
         array.emplace_back(user->getTgId());
     }
 
-    responseContent["all_users"] = array;
+    response["all_users"] = array;
 }

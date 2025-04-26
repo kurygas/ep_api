@@ -15,11 +15,11 @@ std::unique_ptr<User> User::createAdmin() {
     return std::move(user);
 }
 
-User::User(const std::string& tgId, const std::string& tgUsername, const std::string& password, const Wt::WString& firstName, 
-    const Wt::WString& secondName, const std::string& email)
+User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
+    const Wt::WString& secondName, const Wt::WString& email)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime())
-, salt_(Session::generateRandomString(16)) {
+, salt_(generateRandomString(16)) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setPassword(password);
@@ -28,16 +28,16 @@ User::User(const std::string& tgId, const std::string& tgUsername, const std::st
     setEmail(email);
 }
 
-bool User::passwordIsValid(const std::string& password) const {
-    return Wt::Auth::BCryptHashFunction().compute(password, salt_) == passwordHash_;
+bool User::passwordIsValid(const Wt::WString& password) const {
+    return Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_) == passwordHash_;
 }
 
-void User::setPassword(const std::string& password) {
-    if (password.size() < 8) {
+void User::setPassword(const Wt::WString& password) {
+    if (password.toUTF8().size() < 8) {
         throw std::runtime_error("Invalid password for User");
     }
 
-    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password, salt_);
+    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
 }
 
 void User::setFirstName(const Wt::WString& firstName) {
@@ -56,7 +56,7 @@ void User::setSecondName(const Wt::WString& secondName) {
     secondName_ = secondName;
 }
 
-void User::setTgId(const std::string& tgId) {
+void User::setTgId(const Wt::WString& tgId) {
     if (tgId.empty()) {
         throw std::runtime_error("Invalid tg id for User");
     }
@@ -64,15 +64,15 @@ void User::setTgId(const std::string& tgId) {
     tgId_ = tgId;
 }
 
-void User::setTgUsername(const std::string& tgUsername) {
-    if (tgUsername.empty() || tgUsername.front() != '@') {
+void User::setTgUsername(const Wt::WString& tgUsername) {
+    if (tgUsername.empty() || tgUsername.toUTF32().front() != '@') {
         throw std::runtime_error("Invalid tgUsername for User");
     }
 
     tgUsername_ = tgUsername;
 }
 
-void User::setEmail(const std::string& email) {
+void User::setEmail(const Wt::WString& email) {
     if (email.empty()) {
         throw std::runtime_error("Invalid email for User");
     }
@@ -88,7 +88,7 @@ void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
     group_ = group;
 }
 
-const std::string& User::getToken() {
+const Wt::WString& User::getToken() {
     if (Wt::WDateTime::currentDateTime() > tokenTimeLimit_) {
         updateToken();
     }
@@ -108,11 +108,11 @@ const Wt::WString& User::getSecondName() const {
     return secondName_;
 }
 
-const std::string& User::getTgUsername() const {
+const Wt::WString& User::getTgUsername() const {
     return tgUsername_;
 }
 
-const std::string& User::getTgId() const {
+const Wt::WString& User::getTgId() const {
     return tgId_;
 }
 
@@ -124,11 +124,11 @@ const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& User::getWorkResults() cons
     return workResults_;
 }
 
-const std::string& User::getEmail() const {
+const Wt::WString& User::getEmail() const {
     return email_;
 }
 
 void User::updateToken() {
-    token_ = Session::generateRandomString(16);
+    token_ = generateRandomString(16);
     tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
 }

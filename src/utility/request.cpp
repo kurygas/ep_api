@@ -15,11 +15,11 @@ std::string HttpRequest::getToken() const {
     return tokenHeader_.substr(7);
 }
 
-const JsonObject& HttpRequest::getBody() const {
+const Wt::Json::Object& HttpRequest::getBody() const {
     return body_;
 }
 
-const std::string& HttpRequest::getParam(const std::string& key) const {
+const Wt::WString& HttpRequest::getParam(const std::string& key) const {
     const auto& values = parameterMap_.at(key);
 
     if (values.empty()) {
@@ -29,7 +29,7 @@ const std::string& HttpRequest::getParam(const std::string& key) const {
     return values[0];
 }
 
-const std::string& HttpRequest::getMethod() const {
+const Wt::WString& HttpRequest::getMethod() const {
     return method_;
 }
 

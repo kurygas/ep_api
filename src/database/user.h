@@ -11,7 +11,7 @@ class WorkResult;
 class User {
 public:
     enum class UserType {
-        Student,
+        Student = 0,
         Teacher,
         Admin
     };
@@ -19,8 +19,8 @@ public:
     static std::unique_ptr<User> createAdmin();
 
     User() = default;
-    User(const std::string& tgId, const std::string& tgUsername, const std::string& password, const Wt::WString& firstName, 
-        const Wt::WString& secondName, const std::string& email);
+    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
+        const Wt::WString& secondName, const Wt::WString& email);
     
     template<typename Action>
     void persist(Action& a) {
@@ -38,39 +38,39 @@ public:
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
     }
 
-    bool passwordIsValid(const std::string& password) const;
+    bool passwordIsValid(const Wt::WString& password) const;
 
-    void setPassword(const std::string& password);
+    void setPassword(const Wt::WString& password);
     void setFirstName(const Wt::WString& firstName);
     void setSecondName(const Wt::WString& secondName);
-    void setTgId(const std::string& tgId);
-    void setTgUsername(const std::string& tgUsername);
-    void setEmail(const std::string& email);
+    void setTgUsername(const Wt::WString& tgUsername);
+    void setEmail(const Wt::WString& email);
     void setUserType(UserType userType);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
 
-    const std::string& getToken();
+    const Wt::WString& getToken();
     UserType getUserType() const;
     const Wt::WString& getFirstName() const;
     const Wt::WString& getSecondName() const;
-    const std::string& getTgUsername() const;
-    const std::string& getTgId() const;
-    const std::string& getEmail() const;
+    const Wt::WString& getTgUsername() const;
+    const Wt::WString& getTgId() const;
+    const Wt::WString& getEmail() const;
     const Wt::Dbo::ptr<Group>& getGroup() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
 
 private:
     void updateToken();
+    void setTgId(const Wt::WString& tgId);
 
     UserType userType_;
-    std::string passwordHash_;
+    Wt::WString passwordHash_;
     std::string salt_;
     Wt::WString firstName_;
     Wt::WString secondName_;
-    std::string tgId_;
-    std::string tgUsername_;
-    std::string email_;
-    std::string token_;
+    Wt::WString tgId_;
+    Wt::WString tgUsername_;
+    Wt::WString email_;
+    Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;
 
     Wt::Dbo::ptr<Group> group_;

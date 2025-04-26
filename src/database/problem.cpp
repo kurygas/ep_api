@@ -3,8 +3,9 @@
 #include "work.h"
 #include "work_result.h"
 
-Problem::Problem(const Wt::WString& name, const SubjectType subject, const int semester, const int workNumber) {
+Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const SubjectType subject, const int semester, const int workNumber) {
     setName(name);
+    setStatement(statement);
     setSubject(subject);
     setSemester(semester);
     setWorkNumber(workNumber);
@@ -16,6 +17,14 @@ void Problem::setName(const Wt::WString &name) {
     }
 
     name_ = name;
+}
+
+void Problem::setStatement(const Wt::WString& statement) {
+    if (statement.empty()) {
+        throw std::runtime_error("Invalid statement for Problem");
+    }
+
+    statement_ = statement;
 }
 
 void Problem::setSubject(const SubjectType subject) {
@@ -40,6 +49,10 @@ void Problem::setWorkNumber(const int workNumber) {
 
 const Wt::WString& Problem::getName() const {
     return name_;
+}
+
+const Wt::WString& Problem::getStatement() const {
+    return statement_;
 }
 
 SubjectType Problem::getSubject() const {

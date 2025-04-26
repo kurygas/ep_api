@@ -1,8 +1,6 @@
 add_library(Resources STATIC
-    admin_resource.cpp
     group_resources.cpp
     resource.cpp
-    token_resource.cpp
     user_resources.cpp)
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)
