@@ -1,21 +1,22 @@
 #include "group.h"
 #include "user.h"
 #include "work.h"
+#include "http_exceptions.h"
 
-Group::Group(const Wt::WString& groupName) {
-    setName(groupName);
+Group::Group(const Wt::WString& name) {
+    setName(name);
 }
 
-void Group::setName(const Wt::WString& groupName) {
-    if (groupName.empty()) {
-        throw std::runtime_error("Invalid name for Group");
+void Group::setName(const Wt::WString& name) {
+    if (name.empty()) {
+        throw BadRequestException("Invalid name for Group");
     }
 
-    groupName_ = groupName;
+    name_ = name;
 }
 
-const Wt::WString& Group::getGroupName() const {
-    return groupName_;
+const Wt::WString& Group::getName() const {
+    return name_;
 }
 
 const Wt::Dbo::collection<Wt::Dbo::ptr<User>>& Group::getUsers() const {

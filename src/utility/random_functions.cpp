@@ -4,7 +4,7 @@ std::mt19937 Random::createGenerator() {
     return std::mt19937((std::random_device())());
 }
 
-Wt::WString Random::generateRandomString(const int length) {
+std::string Random::generateRandomString(const int length) {
     auto generator = Random::createGenerator();
     std::uniform_int_distribution<int> distribution(0, alphanumCharacters.size() - 1);
     std::string randomString(16, '\0');

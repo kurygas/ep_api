@@ -10,22 +10,22 @@ class Group {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::field(a, groupName_, "group_name");
+        Wt::Dbo::field(a, name_, "name");
         Wt::Dbo::hasMany(a, users_, Wt::Dbo::ManyToOne, "group");
         Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToOne, "group");
     }
 
     Group() = default;
-    Group(const Wt::WString& groupName);
+    Group(const Wt::WString& name);
 
-    void setName(const Wt::WString& groupName);
+    void setName(const Wt::WString& name);
 
-    const Wt::WString& getGroupName() const;
+    const Wt::WString& getName() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<User>>& getUsers() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& getWorks() const;
 
 private:
-    Wt::WString groupName_;
+    Wt::WString name_;
 
     Wt::Dbo::collection<Wt::Dbo::ptr<User>> users_;
     Wt::Dbo::collection<Wt::Dbo::ptr<Work>> works_;

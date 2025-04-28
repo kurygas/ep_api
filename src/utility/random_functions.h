@@ -1,14 +1,14 @@
 #pragma once
 
 #include <random>
-#include <Wt/WString.h>
+#include <string>
 #include <Wt/Dbo/collection.h>
 
-static const std::string alphanumCharacters("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+const std::string alphanumCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 namespace Random {
     std::mt19937 createGenerator();
-    Wt::WString generateRandomString(int length);
+    std::string generateRandomString(int length);
     int randInt(int from, int to);
     
     template<typename T>

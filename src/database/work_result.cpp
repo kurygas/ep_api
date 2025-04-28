@@ -2,6 +2,7 @@
 #include "user.h"
 #include "problem.h"
 #include "work.h"
+#include "http_exceptions.h"
 
 WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<Problem>& problem, const Wt::Dbo::ptr<User>& user)
 : queued_(true) {
@@ -10,10 +11,9 @@ WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<Proble
     setUser(user);
 }
 
-void WorkResult::setFilename(const Wt::WString &filename)
-{
-    if (filename_.empty()) {
-        throw std::runtime_error("Invalid filename for WorkResult");
+void WorkResult::setFilename(const Wt::WString& filename) {
+    if (filename.empty() || !filename_.empty()) {
+        throw BadRequestException("Invalid filename for WorkResult");
     }
 
     filename_ = filename;
@@ -21,7 +21,7 @@ void WorkResult::setFilename(const Wt::WString &filename)
 
 void WorkResult::setMark(int mark) {
     if (mark < 0) {
-        throw std::runtime_error("Invalid mark for WorkResult");
+        throw BadRequestException("Invalid mark for WorkResult");
     }
 
     queued_ = false;
@@ -50,7 +50,7 @@ const Wt::Dbo::ptr<User>& WorkResult::getUser() const {
 
 void WorkResult::setWork(const Wt::Dbo::ptr<Work>& work) {
     if (!work) {
-        throw std::runtime_error("Invalid work for WorkResult");
+        throw BadRequestException("Invalid work for WorkResult");
     }
 
     work_ = work;
@@ -58,7 +58,7 @@ void WorkResult::setWork(const Wt::Dbo::ptr<Work>& work) {
 
 void WorkResult::setProblem(const Wt::Dbo::ptr<Problem>& problem) {
     if (!problem || problem->getWorks().count(work_) == 0) {
-        throw std::runtime_error("Invalid problem for WorkResult");
+        throw BadRequestException("Invalid problem for WorkResult");
     }
 
     problem_ = problem;
@@ -68,7 +68,7 @@ void WorkResult::setUser(const Wt::Dbo::ptr<User>& user) {
     // can we compare pointers here?
 
     if (!user || user->getGroup() != work_->getGroup()) {
-        throw std::runtime_error("Invalid user for WorkResult");
+        throw BadRequestException("Invalid user for WorkResult");
     }
 
     user_ = user;

@@ -1,7 +1,14 @@
 #pragma once
 
-enum class SubjectType {
-    Algo = 0,
-    Prog,
-    Acos
-};
+#include "json.h"
+
+namespace Subject {
+    enum class Type {
+        Algo = 0,
+        Prog,
+        Acos
+    };
+ 
+
+    Type parse(const Wt::Json::Value& value);
+}

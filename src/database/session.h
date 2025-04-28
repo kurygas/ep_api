@@ -1,10 +1,11 @@
 #pragma once
 
-#include "subject_type.h"
-
 #include <Wt/Dbo/Session.h>
 #include <Wt/WString.h>
 #include <Wt/WDateTime.h>
+
+#include "subject_type.h"
+#include "http_exceptions.h"
 
 class User;
 class Group;
@@ -21,23 +22,37 @@ public:
 
     Wt::Dbo::ptr<User> addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, 
         const Wt::WString& firstName, const Wt::WString& secondName, const Wt::WString& email);
-    Wt::Dbo::ptr<Group> addGroup(const Wt::WString& groupName);
-    Wt::Dbo::ptr<Work> addWork(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, SubjectType subject, int semester, 
-        int workNumber);
-    Wt::Dbo::ptr<WorkResult> addWorkResult(const Wt::WString& token);
-    Wt::Dbo::ptr<Problem> addProblem(const Wt::WString& name, const Wt::WString& statement, SubjectType subject, int semester, int workNumber);
+    Wt::Dbo::ptr<Group> addGroup(const Wt::WString& name);
+    Wt::Dbo::ptr<Work> addWork(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, 
+        int semester, int workNumber);
+    Wt::Dbo::ptr<WorkResult> addWorkResult(int userId, int workId);
+    Wt::Dbo::ptr<Problem> addProblem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
 
     Wt::Dbo::ptr<User> getUserByTgId(const Wt::WString& tgId);
     Wt::Dbo::ptr<User> getUserByToken(const Wt::WString& token);
-    Wt::Dbo::ptr<Group> getGroupByName(const Wt::WString& groupName);
-    Wt::Dbo::ptr<Group> getGroupById(int groupId);
-    Wt::Dbo::ptr<Problem> getProblemByName(const Wt::WString& problemName);
-    Wt::Dbo::ptr<Work> getWorkByName(const Wt::WString& workName);
-    Wt::Dbo::ptr<Work> getWorkByTimeSegment(const Wt::WDateTime& start, const Wt::WDateTime& end);
-    Wt::Dbo::ptr<Work> getCurrentWork(const Wt::Dbo::ptr<Group>& group);
+
+    template<typename T>
+    Wt::Dbo::ptr<T> getByTgId(const Wt::WString& tgId) {
+        return getPtr(find<T>().where("tg_id = ?").bind(tgId));
+    }
+
+    template<typename T>
+    Wt::Dbo::ptr<T> getByToken(const Wt::WString& token) {
+        return getPtr(find<T>().where("token = ?").bind(token));
+    }
+
+    template<typename T>
+    Wt::Dbo::ptr<T> getById(const int id) {
+        return getPtr(find<T>().where("id = ?").bind(id));
+    }
+
+    template<typename T>
+    Wt::Dbo::ptr<T> getByName(const Wt::WString& name) {
+        return getPtr(find<T>().where("name = ?").bind(name));
+    }
 
     template<typename F, typename... Args>
-    bool exist(const F method, Args&&... args) {
+    bool exist(F method, Args&&... args) {
         try {
             (this->*method)(std::forward<Args>(args)...);
         }
@@ -59,7 +74,7 @@ private:
         auto ptr = static_cast<Ptr>(collection);
         
         if (!ptr) {
-            throw std::runtime_error("Does not exist");
+            throw NotFoundException();
         }
 
         if constexpr (std::is_same_v<Ptr, Wt::Dbo::ptr<User>>) {
@@ -69,5 +84,12 @@ private:
         }
 
         return ptr;
+    }
+
+    template<typename T>
+    void checkName(const Wt::WString& name) {
+        if (exist(&Session::getByName<T>, name)) {
+            throw UnprocessableEntityException("This name already exists");
+        }
     }
 };

@@ -5,6 +5,8 @@
 #include <Wt/WString.h>
 #include <Wt/WDateTime.h>
 
+#include "json.h"
+
 class Group;
 class WorkResult;
 
@@ -21,8 +23,8 @@ public:
         Wt::Dbo::field(a, userType_, "user_type");
         Wt::Dbo::field(a, passwordHash_, "password_hash");
         Wt::Dbo::field(a, salt_, "salt");
-        Wt::Dbo::field(a, firstName_, "first_name");
-        Wt::Dbo::field(a, secondName_, "second_name");
+        Wt::Dbo::field(a, name_, "name");
+        Wt::Dbo::field(a, surname_, "surname");
         Wt::Dbo::field(a, tgId_, "tg_id");
         Wt::Dbo::field(a, tgUsername_, "tg_username");
         Wt::Dbo::field(a, token_, "token");
@@ -35,14 +37,13 @@ public:
     static std::unique_ptr<User> createAdmin();
 
     User() = default;
-    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& firstName, 
-        const Wt::WString& secondName, const Wt::WString& email, const Wt::WString& token);
+    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, const Wt::WString& name, 
+        const Wt::WString& surname, const Wt::WString& email, const Wt::WString& token);
 
-    bool passwordIsValid(const Wt::WString& password) const;
+    bool isCorrect(const Wt::WString& password) const;
 
-    void setPassword(const Wt::WString& password);
-    void setFirstName(const Wt::WString& firstName);
-    void setSecondName(const Wt::WString& secondName);
+    void setName(const Wt::WString& name);
+    void setSurname(const Wt::WString& surname);
     void setTgUsername(const Wt::WString& tgUsername);
     void setUserType(UserType userType);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
@@ -50,8 +51,8 @@ public:
 
     const Wt::WString& getToken();
     UserType getUserType() const;
-    const Wt::WString& getFirstName() const;
-    const Wt::WString& getSecondName() const;
+    const Wt::WString& getName() const;
+    const Wt::WString& getSurname() const;
     const Wt::WString& getTgUsername() const;
     const Wt::WString& getTgId() const;
     const Wt::WString& getEmail() const;
@@ -62,12 +63,13 @@ public:
 private:
     void setTgId(const Wt::WString& tgId);
     void setEmail(const Wt::WString& email);
+    void setPassword(const Wt::WString& password);
 
     UserType userType_;
     Wt::WString passwordHash_;
-    Wt::WString salt_;
-    Wt::WString firstName_;
-    Wt::WString secondName_;
+    std::string salt_;
+    Wt::WString name_;
+    Wt::WString surname_;
     Wt::WString tgId_;
     Wt::WString tgUsername_;
     Wt::WString email_;

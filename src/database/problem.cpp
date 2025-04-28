@@ -2,8 +2,9 @@
 #include "checker.h"
 #include "work.h"
 #include "work_result.h"
+#include "http_exceptions.h"
 
-Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const SubjectType subject, const int semester, const int workNumber) {
+Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, const int semester, const int workNumber) {
     setName(name);
     setStatement(statement);
     setSubject(subject);
@@ -11,9 +12,9 @@ Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const Su
     setWorkNumber(workNumber);
 }
 
-void Problem::setName(const Wt::WString &name) {
+void Problem::setName(const Wt::WString& name) {
     if (name.empty()) {
-        throw std::runtime_error("Invalid name for Problem");
+        throw BadRequestException("Invalid name for Problem");
     }
 
     name_ = name;
@@ -21,19 +22,19 @@ void Problem::setName(const Wt::WString &name) {
 
 void Problem::setStatement(const Wt::WString& statement) {
     if (statement.empty()) {
-        throw std::runtime_error("Invalid statement for Problem");
+        throw BadRequestException("Invalid statement for Problem");
     }
 
     statement_ = statement;
 }
 
-void Problem::setSubject(const SubjectType subject) {
+void Problem::setSubject(const Subject::Type subject) {
     subject_ = subject;
 }
 
 void Problem::setSemester(const int semester) {
     if (!isSemesterValid(semester)) {
-        throw std::runtime_error("Invalid semester for Problem");
+        throw BadRequestException("Invalid semester for Problem");
     }
 
     semester_ = semester;
@@ -41,7 +42,7 @@ void Problem::setSemester(const int semester) {
 
 void Problem::setWorkNumber(const int workNumber) {
     if (!isWorkNumberValid(workNumber)) {
-        throw std::runtime_error("Invalid work_number for Problem");
+        throw BadRequestException("Invalid work_number for Problem");
     }
 
     workNumber_ = workNumber;
@@ -55,7 +56,7 @@ const Wt::WString& Problem::getStatement() const {
     return statement_;
 }
 
-SubjectType Problem::getSubject() const {
+Subject::Type Problem::getSubject() const {
     return subject_;
 }
 

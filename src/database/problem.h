@@ -4,6 +4,7 @@
 #include <Wt/Dbo/WtSqlTraits.h>
 
 #include "subject_type.h"
+#include "json.h"
 
 class Work;
 class WorkResult;
@@ -22,17 +23,17 @@ public:
     }
 
     Problem() = default;
-    Problem(const Wt::WString& name, const Wt::WString& statement, SubjectType subject, int semester, int workNumber);
+    Problem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
 
     void setName(const Wt::WString& name);
     void setStatement(const Wt::WString& statement);
-    void setSubject(SubjectType subject);
+    void setSubject(Subject::Type subject);
     void setSemester(int semester);
     void setWorkNumber(int workNumber);
 
     const Wt::WString& getName() const;
     const Wt::WString& getStatement() const;
-    SubjectType getSubject() const;
+    Subject::Type getSubject() const;
     int getSemester() const;
     int getWorkNumber() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& getWorks() const;
@@ -41,7 +42,7 @@ public:
 private:
     Wt::WString name_;
     Wt::WString statement_;
-    SubjectType subject_;
+    Subject::Type subject_;
     int semester_;
     int workNumber_;
 

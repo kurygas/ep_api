@@ -4,6 +4,7 @@
 #include "group.h"
 #include "work_result.h"
 #include "random_functions.h"
+#include "str.h"
 
 #include <Wt/Auth/HashFunction.h>
 
@@ -24,42 +25,42 @@ User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WSt
     setTgId(tgId);
     setTgUsername(tgUsername);
     setPassword(password);
-    setFirstName(firstName);
-    setSecondName(secondName);
+    setName(firstName);
+    setSurname(secondName);
     setEmail(email);
 }
 
-bool User::passwordIsValid(const Wt::WString& password) const {
-    return Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_.toUTF8()) == passwordHash_;
+bool User::isCorrect(const Wt::WString& password) const {
+    return Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_) == passwordHash_;
 }
 
 void User::setPassword(const Wt::WString& password) {
-    if (password.toUTF8().size() < 8) {
-        throw std::runtime_error("Invalid password for User");
+    if (!isPasswordValid(password)) {
+        throw BadRequestException("Invalid password for User");
     }
 
-    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_.toUTF8());
+    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
 }
 
-void User::setFirstName(const Wt::WString& firstName) {
+void User::setName(const Wt::WString& firstName) {
     if (firstName.empty() || !isRussianString(firstName)) {
-        throw std::runtime_error("Invalid first name for User");
+        throw BadRequestException("Invalid name for User");
     }
 
-    firstName_ = firstName;
+    name_ = firstName;
 }
 
-void User::setSecondName(const Wt::WString& secondName) {
+void User::setSurname(const Wt::WString& secondName) {
     if (secondName.empty() || !isRussianString(secondName)) {
-        throw std::runtime_error("Invalid second name for User");
+        throw BadRequestException("Invalid surname for User");
     }
 
-    secondName_ = secondName;
+    surname_ = secondName;
 }
 
 void User::setTgId(const Wt::WString& tgId) {
     if (tgId.empty()) {
-        throw std::runtime_error("Invalid tg id for User");
+        throw BadRequestException("Invalid tg id for User");
     }
 
     tgId_ = tgId;
@@ -67,22 +68,22 @@ void User::setTgId(const Wt::WString& tgId) {
 
 void User::setTgUsername(const Wt::WString& tgUsername) {
     if (tgUsername.empty() || tgUsername.toUTF32().front() != '@') {
-        throw std::runtime_error("Invalid tgUsername for User");
+        throw BadRequestException("Invalid tgUsername for User");
     }
 
     tgUsername_ = tgUsername;
 }
 
+void User::setUserType(const UserType userType) {
+    userType_ = userType;
+}
+
 void User::setEmail(const Wt::WString& email) {
     if (email.empty()) {
-        throw std::runtime_error("Invalid email for User");
+        throw BadRequestException("Invalid email for User");
     }
 
     email_ = email;
-}
-
-void User::setUserType(const UserType userType) {
-    userType_ = userType;
 }
 
 void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
@@ -91,7 +92,7 @@ void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
 
 void User::setToken(const Wt::WString& token) {
     if (token.toUTF8().size() != 16) {
-        throw std::runtime_error("Invalid token");
+        throw ServerException("Invalid token");
     }
     
     tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
@@ -106,12 +107,12 @@ User::UserType User::getUserType() const {
     return userType_;
 }
 
-const Wt::WString& User::getFirstName() const {
-    return firstName_;
+const Wt::WString& User::getName() const {
+    return name_;
 }
 
-const Wt::WString& User::getSecondName() const {
-    return secondName_;
+const Wt::WString& User::getSurname() const {
+    return surname_;
 }
 
 const Wt::WString& User::getTgUsername() const {

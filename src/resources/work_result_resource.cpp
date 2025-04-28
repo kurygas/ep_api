@@ -1,0 +1,8 @@
+#include "work_result_resource.h"
+#include "session.h"
+#include "request.h"
+#include "user.h"
+#include "group.h"
+#include "problem.h"
+#include "work.h"
+#include "work_result.h"
