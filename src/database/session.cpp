@@ -26,7 +26,7 @@ void Session::configureDatabase() {
 
     const Wt::Dbo::Transaction transaction(*this);
     
-    if (!exist(&Session::getUserByTgId, "admin")) {
+    if (!exist(&Session::getByTgId<User>, "admin")) {
         add(User::createAdmin());
     }
 }
@@ -37,24 +37,24 @@ Wt::WString Session::generateToken() {
     do {
         token = Random::generateRandomString(16);
     }
-    while (exist(&Session::getUserByToken, token));
+    while (exist(&Session::getByToken<User>, token));
 
     return token;
 }
 
-Wt::Dbo::ptr<Problem> Session::addProblem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, const int semester, 
-    const int workNumber) {
+Wt::Dbo::ptr<Problem> Session::addProblem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, 
+    const int semester, const int workNumber) {
     checkName<Problem>(name);
     return add(std::make_unique<Problem>(name, statement, subject, semester, workNumber));
 }
 
-Wt::Dbo::ptr<User> Session::addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, 
-    const Wt::WString& name, const Wt::WString& surname, const Wt::WString& email) {
-    if (exist(&Session::getUserByTgId, tgId)) {
+Wt::Dbo::ptr<User> Session::addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, 
+    const Wt::WString& surname) {
+    if (exist(&Session::getByTgId<User>, tgId)) {
         throw UnprocessableEntityException("User already exists");
     }
 
-    return add(std::make_unique<User>(tgId, tgUsername, password, name, surname, email, generateToken()));
+    return add(std::make_unique<User>(tgId, tgUsername, name, surname, generateToken()));
 }
 
 Wt::Dbo::ptr<Group> Session::addGroup(const Wt::WString& name) {

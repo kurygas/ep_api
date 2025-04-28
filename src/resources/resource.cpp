@@ -10,12 +10,11 @@ void Resource::handleRequest(const Wt::Http::Request& request, Wt::Http::Respons
 
     try {
         Session session;
-        const Wt::Dbo::Transaction transaction(session);
+        Wt::Dbo::Transaction tr(session);
         response.setMimeType("application/json");
         const auto method = request.method();
-        const auto id = (request.pathInfo().empty() ? -1 : std::stoi(request.pathInfo().substr(1)));
         HttpRequest requestContent(request);
-        const auto path = split(request.pathInfo());
+        const auto path = split(request.pathInfo().substr(1));
         response.setStatus(200);
 
         if (path.empty()) {
@@ -23,7 +22,7 @@ void Resource::handleRequest(const Wt::Http::Request& request, Wt::Http::Respons
                 processGet(requestContent, responseContent, session);
             }
             else if (method == "POST") {
-                processPost(requestContent, responseContent, session);
+                processPost(requestContent, responseContent, session, tr);
                 response.setStatus(201);
             }
             else {
@@ -74,7 +73,7 @@ void Resource::processGet(const HttpRequest& request, Wt::Json::Object& response
     throw InvalidMethodException("");
 }
 
-void Resource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session) const {
+void Resource::processPost(const HttpRequest& request, Wt::Json::Object& response, Session& session, Wt::Dbo::Transaction& tr) const {
     throw InvalidMethodException("");
 }
 
@@ -84,6 +83,44 @@ void Resource::processPatch(const HttpRequest& request, Wt::Json::Object& respon
 
 void Resource::processDelete(const HttpRequest& request, Wt::Json::Object& response, Session& session, const int id) const {
     throw InvalidMethodException("");
+}
+
+Wt::Dbo::ptr<User> Resource::checkAuth(const HttpRequest& request, Session& session) {
+    if (!session.exist(&Session::getByToken<User>, request.token())) {
+        throw AuthException("");
+    }
+
+    return session.getByToken<User>(request.token());
+}
+
+Wt::Dbo::ptr<User> Resource::checkTeacher(const HttpRequest& request, Session& session) {
+    const auto caller = checkAuth(request, session);
+
+    if (caller->getUserType() == UserType::Student) {
+        throw ForbiddenException("Not teacher");
+    }
+
+    return caller;
+}
+
+Wt::Dbo::ptr<User> Resource::checkAdmin(const HttpRequest& request, Session& session) {
+    const auto caller = checkAuth(request, session);
+
+    if (caller->getUserType() != UserType::Admin) {
+        throw ForbiddenException("Not admin");
+    }
+
+    return caller;
+}
+
+Wt::Dbo::ptr<User> Resource::checkAuthId(const HttpRequest& request, Session& session, const int id) {
+    const auto caller = checkAuth(request, session);
+
+    if (caller.id() != id && caller->getUserType() != UserType::Admin) {
+        throw ForbiddenException("Don't have access to this user");
+    }
+
+    return caller;
 }
 
 void Resource::processGetId(const HttpRequest& request, Wt::Json::Object& response, Session& session, const int id) const {

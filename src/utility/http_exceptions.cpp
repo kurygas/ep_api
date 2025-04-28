@@ -8,7 +8,7 @@ int AuthException::code() const {
     return 401;
 }
 
-int AdminException::code() const {
+int ForbiddenException::code() const {
     return 403;
 }
 

@@ -24,7 +24,7 @@ public:
     int code() const override;
 };
 
-class AdminException : public HttpException {
+class ForbiddenException : public HttpException {
 public:
     using HttpException::HttpException;
 

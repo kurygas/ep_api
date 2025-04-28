@@ -3,7 +3,6 @@ add_library(Database STATIC
     group.cpp
     problem.cpp
     session.cpp
-    subject_type.cpp
     user.cpp
     work_result.cpp
     work.cpp)

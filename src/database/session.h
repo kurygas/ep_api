@@ -20,16 +20,12 @@ public:
 
     Wt::WString generateToken();
 
-    Wt::Dbo::ptr<User> addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& password, 
-        const Wt::WString& firstName, const Wt::WString& secondName, const Wt::WString& email);
+    Wt::Dbo::ptr<User> addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
     Wt::Dbo::ptr<Group> addGroup(const Wt::WString& name);
     Wt::Dbo::ptr<Work> addWork(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, 
         int semester, int workNumber);
     Wt::Dbo::ptr<WorkResult> addWorkResult(int userId, int workId);
     Wt::Dbo::ptr<Problem> addProblem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
-
-    Wt::Dbo::ptr<User> getUserByTgId(const Wt::WString& tgId);
-    Wt::Dbo::ptr<User> getUserByToken(const Wt::WString& token);
 
     template<typename T>
     Wt::Dbo::ptr<T> getByTgId(const Wt::WString& tgId) {
@@ -74,7 +70,7 @@ private:
         auto ptr = static_cast<Ptr>(collection);
         
         if (!ptr) {
-            throw NotFoundException();
+            throw NotFoundException("");
         }
 
         if constexpr (std::is_same_v<Ptr, Wt::Dbo::ptr<User>>) {

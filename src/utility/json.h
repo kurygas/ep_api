@@ -18,3 +18,8 @@ Wt::Json::Array getAllId(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection)
 
     return array;
 }
+
+template<typename T>
+T parse(const Wt::Json::Value& value) {
+    return static_cast<T>(static_cast<int>(value));
+}

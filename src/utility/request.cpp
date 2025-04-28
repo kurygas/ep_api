@@ -1,4 +1,5 @@
 #include "request.h"
+#include "http_exceptions.h"
 
 HttpRequest::HttpRequest(const Wt::Http::Request& request)
 : tokenHeader_(request.headerValue("Authorization")) {
@@ -7,7 +8,7 @@ HttpRequest::HttpRequest(const Wt::Http::Request& request)
 
 std::string HttpRequest::token() const {
     if (tokenHeader_.substr(0, 7) != "Bearer ") {
-        throw std::runtime_error("Invalid token");
+        throw AuthException("Invalid token");
     }
 
     return tokenHeader_.substr(7);

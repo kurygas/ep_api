@@ -4,11 +4,14 @@
 #include <string>
 #include <Wt/Dbo/collection.h>
 
-const std::string alphanumCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const std::string alphanumCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";\
+constexpr std::string numCharacters = "0123456789";
 
 namespace Random {
     std::mt19937 createGenerator();
+    std::string generateString(const std::string& pool, int length);
     std::string generateRandomString(int length);
+    std::string generateRandomNumString(int length);
     int randInt(int from, int to);
     
     template<typename T>
