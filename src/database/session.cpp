@@ -4,7 +4,7 @@
 #include <Wt/Dbo/backend/Sqlite3.h>
 
 Session::Session() {
-    setConnection(std::make_unique<Wt::Dbo::backend::Sqlite3>("database.db"));
+    setConnection(std::make_unique<Wt::Dbo::backend::Sqlite3>("/home/kuryga/projects/ep_api/database.db"));
     mapClass<User>("users");
     mapClass<Group>("groups");
     mapClass<Problem>("problems");

@@ -13,8 +13,10 @@ namespace JsonFunctions {
     Wt::Json::Array getAllId(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection) {
         Wt::Json::Array array;
         
-        for (const auto& elem : collection) {
-            array.emplace_back(elem.id());
+        if (!collection.empty()) {
+            for (const auto& elem : collection) {
+                array.emplace_back(elem.id());
+            }
         }
 
         return array;

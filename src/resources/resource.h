@@ -77,6 +77,8 @@ public:
 
             if (ptr) {
                 responseContent = static_cast<Wt::Json::Object>(*ptr);
+                tr.commit();
+                responseContent[Str::id] = ptr.id();
             }
         }
         catch (const HttpException& e) {
@@ -89,7 +91,6 @@ public:
             responseContent.clear();
             responseContent[Str::error] = e.what();
         }
-
         response.out() << Wt::Json::serialize(responseContent);
     }
 
