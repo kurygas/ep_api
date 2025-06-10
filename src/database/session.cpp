@@ -1,11 +1,5 @@
 #include "session.h"
-#include "user.h"
-#include "group.h"
-#include "problem.h"
-#include "work_result.h"
-#include "work.h"
 #include "random_functions.h"
-#include "http_exceptions.h"
 
 #include <Wt/Dbo/backend/Sqlite3.h>
 
@@ -19,15 +13,17 @@ Session::Session() {
 }
 
 void Session::configureDatabase() {
+    Session session;
+
     try {
-        createTables();
+        session.createTables();
     }
     catch (...) {}
 
-    const Wt::Dbo::Transaction transaction(*this);
+    const Wt::Dbo::Transaction transaction(session);
     
-    if (!exist(&Session::getByTgId<User>, "admin")) {
-        add(User::createAdmin());
+    if (!session.exist(&Session::getByTgId<User>, "admin")) {
+        session.add(User::createAdmin());
     }
 }
 
@@ -40,37 +36,4 @@ Wt::WString Session::generateToken() {
     while (exist(&Session::getByToken<User>, token));
 
     return token;
-}
-
-Wt::Dbo::ptr<Problem> Session::addProblem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, 
-    const int semester, const int workNumber) {
-    checkName<Problem>(name);
-    return add(std::make_unique<Problem>(name, statement, subject, semester, workNumber));
-}
-
-Wt::Dbo::ptr<User> Session::addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, 
-    const Wt::WString& surname) {
-    if (exist(&Session::getByTgId<User>, tgId)) {
-        throw UnprocessableEntityException("User already exists");
-    }
-
-    return add(std::make_unique<User>(tgId, tgUsername, name, surname, generateToken()));
-}
-
-Wt::Dbo::ptr<Group> Session::addGroup(const Wt::WString& name) {
-    checkName<Group>(name);
-    return add(std::make_unique<Group>(name));
-}
-
-Wt::Dbo::ptr<Work> Session::addWork(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, 
-    const int semester, const int workNumber) {
-    checkName<Work>(name);
-    return add(std::make_unique<Work>(name, start, end, subject, semester, workNumber));
-}
-
-Wt::Dbo::ptr<WorkResult> Session::addWorkResult(int userId, int workId) {
-    auto user = getById<User>(userId);
-    auto work = getById<Work>(workId);
-    auto problem = Random::pickRandom(work->getProblemSet());
-    return add(std::make_unique<WorkResult>(work, problem, user));
 }

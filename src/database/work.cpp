@@ -1,5 +1,5 @@
 #include "work.h"
-#include "checker.h"
+#include "validator.h"
 #include "problem.h"
 #include "group.h"
 #include "work_result.h"
@@ -42,7 +42,7 @@ void Work::setEnd(const Wt::WDateTime& end) {
 }
 
 void Work::setSemester(const int semester) {
-    if (!isSemesterValid(semester)) {
+    if (!Validator::isSemesterValid(semester)) {
         throw BadRequestException("Invalid semester for Work");
     }
 
@@ -50,7 +50,7 @@ void Work::setSemester(const int semester) {
 }
 
 void Work::setWorkNumber(const int workNumber) {
-    if (!isWorkNumberValid(workNumber)) {
+    if (!Validator::isWorkNumberValid(workNumber)) {
         throw BadRequestException("Invalid work_number for Work");
     }
 

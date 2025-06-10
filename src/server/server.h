@@ -4,7 +4,7 @@
 
 class Server : public Wt::WServer {
 public:
-    Server(int argc, char** argv);
+    Server(const std::string& applicationPath);
 
     template<typename Resource>
     void addResource(const std::string& path) {

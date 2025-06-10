@@ -2,6 +2,8 @@
 
 #include "resource.h"
 
-class WorkResultResource : public Resource {
+class WorkResult;
+
+class WorkResultResource : public Resource<WorkResult> {
 
 };

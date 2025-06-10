@@ -1,5 +1,5 @@
 #include "problem.h"
-#include "checker.h"
+#include "validator.h"
 #include "work.h"
 #include "work_result.h"
 #include "http_exceptions.h"
@@ -33,7 +33,7 @@ void Problem::setSubject(const Subject::Type subject) {
 }
 
 void Problem::setSemester(const int semester) {
-    if (!isSemesterValid(semester)) {
+    if (!Validator::isSemesterValid(semester)) {
         throw BadRequestException("Invalid semester for Problem");
     }
 
@@ -41,7 +41,7 @@ void Problem::setSemester(const int semester) {
 }
 
 void Problem::setWorkNumber(const int workNumber) {
-    if (!isWorkNumberValid(workNumber)) {
+    if (!Validator::isWorkNumberValid(workNumber)) {
         throw BadRequestException("Invalid work_number for Problem");
     }
 

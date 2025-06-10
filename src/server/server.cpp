@@ -6,12 +6,15 @@
 #include "work_result_resource.h"
 #include "session.h"
 
-Server::Server(const int argc, char** const argv)
-: Wt::WServer(argc, argv, WTHTTP_CONFIGURATION) {
-    Session().configureDatabase();
+Server::Server(const std::string& applicationPath)
+: Wt::WServer(applicationPath) {
+    const std::vector<std::string> args = {applicationPath, "--docroot", ".", "--http-address", "127.0.0.1", "--http-port", "8080"};
+    setServerConfiguration(applicationPath, args, WTHTTP_CONFIGURATION);
+    Session::configureDatabase();
+    
     addResource<UserResource>("/api/user");
-    addResource<GroupResource>("/api/group");
-    addResource<ProblemResource>("/api/problem");
-    addResource<WorkResource>("/api/work");
-    addResource<WorkResultResource>("/api/work_result");
+    //addResource<GroupResource>("/api/group");
+    //addResource<ProblemResource>("/api/problem");
+    //addResource<WorkResource>("/api/work");
+    //addResource<WorkResultResource>("/api/work_result");
 }

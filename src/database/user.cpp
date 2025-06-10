@@ -1,6 +1,6 @@
 #include "user.h"
 #include "session.h"
-#include "checker.h"
+#include "validator.h"
 #include "group.h"
 #include "work_result.h"
 #include "random_functions.h"
@@ -17,52 +17,47 @@ std::unique_ptr<User> User::createAdmin() {
     return std::move(user);
 }
 
-UserType User::parse(const Wt::Json::Value& value) {
-    return static_cast<UserType>(static_cast<int>(value));
+User::operator Wt::Json::Object() const {
+    Wt::Json::Object json;
+    json[Str::userType] = static_cast<int>(getUserType());
+    json[Str::name] = getName();
+    json[Str::surname] = getSurname();
+    json[Str::tgId] = getTgId();
+    json[Str::tgUsername] = getTgUsername();
+    json[Str::groupId] = getGroup().id();
+    json[Str::workResultList] = JsonFunctions::getAllId(getWorkResults());
+    return json;
 }
 
 User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
-    const Wt::WString& token)
+    const Wt::WString& password)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime())
-, confirmTimeLimit_(Wt::WDateTime::currentDateTime()) {
+, salt_(Random::generateRandomString(16)) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setName(name);
     setSurname(surname);
+    setPassword(password);
 }
+
+User::User(const Wt::Json::Object& json)
+: User(json.at(Str::tgId), json.at(Str::tgUsername), json.at(Str::name), json.at(Str::surname), json.at(Str::password)) {}
 
 bool User::isCorrect(const Wt::WString& password) const {
     return !salt_.empty() && Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_) == passwordHash_;
 }
 
 void User::setPassword(const Wt::WString& password) {
-    if (!isPasswordValid(password)) {
+    if (!Validator::isPasswordValid(password)) {
         throw BadRequestException("Invalid password for User");
     }
 
-    if (salt_.empty()) {
-        salt_ = Random::generateRandomString(16);
-    }
-
-    comingPasswordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
-    confirmCode_ = Random::generateRandomNumString(6);
-    confirmTimeLimit_ = Wt::WDateTime::currentDateTime().addSecs(300);
-}
-
-void User::confirmPassword(const Wt::WString& confirmCode) {
-    if (confirmCode != confirmCode_ || confirmTimeLimit_ < Wt::WDateTime::currentDateTime() || comingPasswordHash_.empty()) {
-        throw ForbiddenException("Incorrect confirm code");
-    }
-
-    passwordHash_ = comingPasswordHash_;
-    comingPasswordHash_.clear();
-    confirmCode_.clear();
-    confirmTimeLimit_ = Wt::WDateTime::currentDateTime();
+    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
 }
 
 void User::setName(const Wt::WString& firstName) {
-    if (firstName.empty() || !isRussianString(firstName)) {
+    if (firstName.empty() || !Validator::isRussianString(firstName)) {
         throw BadRequestException("Invalid name for User");
     }
 
@@ -70,7 +65,7 @@ void User::setName(const Wt::WString& firstName) {
 }
 
 void User::setSurname(const Wt::WString& secondName) {
-    if (secondName.empty() || !isRussianString(secondName)) {
+    if (secondName.empty() || !Validator::isRussianString(secondName)) {
         throw BadRequestException("Invalid surname for User");
     }
 
@@ -86,7 +81,7 @@ void User::setTgId(const Wt::WString& tgId) {
 }
 
 void User::setTgUsername(const Wt::WString& tgUsername) {
-    if (tgUsername.empty() || tgUsername.toUTF32().front() != '@') {
+    if (tgUsername.empty() || tgUsername.toUTF8().front() != '@') {
         throw BadRequestException("Invalid tg username for User");
     }
 
@@ -113,6 +108,10 @@ void User::setToken(const Wt::WString& token) {
     token_ = token;
 }
 
+void User::setWorkResults(const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& workResults) {
+    workResults_ = workResults;
+}
+
 const Wt::WString& User::getToken(const Wt::WString& password) const {
     if (!isCorrect(password)) {
         throw ForbiddenException("Invalid password");
@@ -121,8 +120,7 @@ const Wt::WString& User::getToken(const Wt::WString& password) const {
     return token_;
 }
 
-UserType User::getUserType() const
-{
+UserType User::getUserType() const {
     return userType_;
 }
 
@@ -154,6 +152,6 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
-const std::string& User::getConfirmCode() const {
-    return confirmCode_;
+std::string User::getListName() {
+    return Str::userList;
 }

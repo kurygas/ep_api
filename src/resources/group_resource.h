@@ -2,6 +2,8 @@
 
 #include "resource.h"
 
-class GroupResource : public Resource {
+class Group;
+
+class GroupResource : public Resource<Group> {
 
 };

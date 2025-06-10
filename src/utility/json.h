@@ -8,18 +8,20 @@
 #include <Wt/Json/Serializer.h>
 #include <Wt/Json/Parser.h>
 
-template<typename T>
-Wt::Json::Array getAllId(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection) {
-    Wt::Json::Array array;
-    
-    for (const auto& elem : collection) {
-        array.emplace_back(elem.id());
+namespace JsonFunctions {
+    template<typename T>
+    Wt::Json::Array getAllId(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection) {
+        Wt::Json::Array array;
+        
+        for (const auto& elem : collection) {
+            array.emplace_back(elem.id());
+        }
+
+        return array;
     }
 
-    return array;
-}
-
-template<typename T>
-T parse(const Wt::Json::Value& value) {
-    return static_cast<T>(static_cast<int>(value));
+    template<typename T>
+    T parse(const Wt::Json::Value& value) {
+        return static_cast<T>(static_cast<int>(value));
+    }
 }

@@ -6,6 +6,12 @@
 
 #include "subject_type.h"
 #include "http_exceptions.h"
+#include "str.h"
+#include "user.h"
+#include "group.h"
+#include "problem.h"
+#include "work_result.h"
+#include "work.h"
 
 class User;
 class Group;
@@ -16,16 +22,35 @@ class Problem;
 class Session : public Wt::Dbo::Session {
 public:
     Session();
-    void configureDatabase();
+    static void configureDatabase();
 
     Wt::WString generateToken();
 
-    Wt::Dbo::ptr<User> addUser(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
-    Wt::Dbo::ptr<Group> addGroup(const Wt::WString& name);
-    Wt::Dbo::ptr<Work> addWork(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, 
-        int semester, int workNumber);
-    Wt::Dbo::ptr<WorkResult> addWorkResult(int userId, int workId);
-    Wt::Dbo::ptr<Problem> addProblem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
+    template<typename T>
+    Wt::Dbo::ptr<T> create(const Wt::Json::Object& json) {
+        if constexpr (std::is_same_v<T, User>) {
+            if (exist(&Session::getByTgId<User>, json.at(Str::tgId))) {
+                throw UnprocessableEntityException("User already exists");
+            }
+        }
+        else {
+            if (exist(&Session::getByName<T>, json.at(Str::name))) {
+                throw UnprocessableEntityException("Name already exists");
+            }
+        }
+        return add(std::make_unique<T>(json));
+    }
+
+    template<typename T>
+    Wt::Dbo::collection<Wt::Dbo::ptr<T>> getByArray(const Wt::Json::Array& array) {
+        Wt::Dbo::collection<Wt::Dbo::ptr<T>> collection;
+        
+        for (const auto& id : array) {
+            collection.insert(getById<T>(id));
+        }
+
+        return collection;
+    }
 
     template<typename T>
     Wt::Dbo::ptr<T> getByTgId(const Wt::WString& tgId) {
@@ -80,12 +105,5 @@ private:
         }
 
         return ptr;
-    }
-
-    template<typename T>
-    void checkName(const Wt::WString& name) {
-        if (exist(&Session::getByName<T>, name)) {
-            throw UnprocessableEntityException("This name already exists");
-        }
     }
 };
