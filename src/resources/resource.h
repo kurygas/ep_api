@@ -34,7 +34,7 @@ public:
             if (path.empty()) {
                 if (method == "GET") {
                     getRequirements(requestContent, session);
-                    responseContent[DatabaseType::getListName()] = JsonFunctions::getAllId(session.getAll<DatabaseType>());
+                    responseContent[DatabaseType::getListName()] = JsonFunctions::getIdArray(session.getAll<DatabaseType>());
                 }
                 else if (method == "POST") {
                     postRequirements(requestContent, session);

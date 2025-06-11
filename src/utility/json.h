@@ -10,7 +10,7 @@
 
 namespace JsonFunctions {
     template<typename T>
-    Wt::Json::Array getAllId(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection) {
+    Wt::Json::Array getIdArray(const Wt::Dbo::collection<Wt::Dbo::ptr<T>>& collection) {
         Wt::Json::Array array;
         
         if (!collection.empty()) {

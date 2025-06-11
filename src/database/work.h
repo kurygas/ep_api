@@ -20,9 +20,12 @@ public:
         Wt::Dbo::field(a, semester_, "semester");
         Wt::Dbo::field(a, workNumber_, "work_number");
         Wt::Dbo::belongsTo(a, group_, "group");
-        Wt::Dbo::hasMany(a, problemSet_, Wt::Dbo::ManyToMany, "work_problems");
+        Wt::Dbo::hasMany(a, problems_, Wt::Dbo::ManyToMany, "work_problems");
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "work");
     }
+
+    operator Wt::Json::Object() const;
+    static std::string getListName();
 
     Work() = default;
     Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, 
@@ -35,8 +38,7 @@ public:
     void setSemester(int semester);
     void setWorkNumber(int workNumber);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
-    void addProblem(const Wt::Dbo::ptr<Problem>& problem);
-    void removeProblem(const Wt::Dbo::ptr<Problem>& problem);
+    void setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problems);
 
     const Wt::WString& getName() const;
     const Wt::WDateTime& getStart() const;
@@ -45,7 +47,7 @@ public:
     int getSemester() const;
     int getWorkNumber() const;
     const Wt::Dbo::ptr<Group> getGroup() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& getProblemSet() const;
+    const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& getProblems() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
 
 private:
@@ -57,6 +59,6 @@ private:
     int workNumber_;
 
     Wt::Dbo::ptr<Group> group_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<Problem>> problemSet_;
+    Wt::Dbo::collection<Wt::Dbo::ptr<Problem>> problems_;
     Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
 };

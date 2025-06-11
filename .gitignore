@@ -33,7 +33,7 @@
 
 /build
 *.db
-test.py
+/tests/__pycache__
 run.sh
 methods.txt
 /.vscode

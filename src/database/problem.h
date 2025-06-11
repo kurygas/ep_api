@@ -22,8 +22,12 @@ public:
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "problem");
     }
 
+    operator Wt::Json::Object() const;
+    static std::string getListName();
+
     Problem() = default;
     Problem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
+    explicit Problem(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
     void setStatement(const Wt::WString& statement);

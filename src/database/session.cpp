@@ -37,3 +37,15 @@ Wt::WString Session::generateToken() {
 
     return token;
 }
+
+Wt::Dbo::ptr<Problem> Session::getCurrentProblem(const Wt::Dbo::ptr<User>& user) {
+    for (const auto& workResult : user->getWorkResults()) {
+        const auto currentTime = Wt::WDateTime::currentDateTime();
+
+        if (workResult->getWork()->getStart() <= currentTime && currentTime <= workResult->getWork()->getEnd()) {
+            return workResult->getProblem();
+        }
+    }
+
+    return nullptr;
+}

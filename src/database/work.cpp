@@ -4,11 +4,29 @@
 #include "group.h"
 #include "work_result.h"
 #include "http_exceptions.h"
+#include "str.h"
 
-Work::Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, 
+Work::operator Wt::Json::Object() const {
+    Wt::Json::Object json;
+    json[Str::name] = getName();
+    json[Str::start] = getStart().toString();
+    json[Str::end] = getEnd().toString();
+    json[Str::subject] = static_cast<int>(getSubject());
+    json[Str::semester] = getSemester();
+    json[Str::workNumber] = getWorkNumber();
+    json[Str::groupId] = getGroup().id();
+    json[Str::problemList] = JsonFunctions::getIdArray(getProblems());
+    json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
+    return json;
+}
+
+std::string Work::getListName() {
+    return Str::workList;
+}
+
+Work::Work(const Wt::WString &name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject,
     const int semester, const int workNumber)
-: start_(Wt::WDateTime::currentDateTime())
-, end_(Wt::WDateTime::currentDateTime()) {
+: start_(Wt::WDateTime::currentDateTime()), end_(Wt::WDateTime::currentDateTime()) {
     setName(name);
     setStart(start);
     setEnd(end);
@@ -26,6 +44,8 @@ void Work::setName(const Wt::WString &name) {
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
+    // TODO: check time segments intersection
+
     if (start < Wt::WDateTime::currentDateTime() || start > end_) {
         throw BadRequestException("Invalid start for Work");
     }
@@ -34,6 +54,8 @@ void Work::setStart(const Wt::WDateTime& start) {
 }
 
 void Work::setEnd(const Wt::WDateTime& end) {
+    // TODO: check time segments intersection
+
     if (end < Wt::WDateTime::currentDateTime() || start_ > end) {
         throw BadRequestException("Invalid end for Work");
     }
@@ -61,16 +83,25 @@ void Work::setGroup(const Wt::Dbo::ptr<Group>& group) {
     group_ = group;
 }
 
-void Work::addProblem(const Wt::Dbo::ptr<Problem>& problem) {
-    if (!problem || problem->getSubject() != subject_ || problem->getSemester() != semester_ || problem->getWorkNumber() != workNumber_) {
-        throw BadRequestException("Invalid problem for Work");
+void Work::setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problems) {
+    for (const auto& problem : problems) {
+        if (problems_.count(problem) == 0 && (!problem || problem->getSubject() != subject_ || problem->getSemester() != semester_ || 
+            problem->getWorkNumber() != workNumber_)) {
+            throw BadRequestException("Invalid problems for work");
+        } 
     }
 
-    problemSet_.insert(problem);
-}
+    for (const auto& problem : problems_) {
+        if (problems_.count(problem) == 0) {
+            for (const auto& workResult : workResults_) {
+                if (workResult->getProblem() == problem) {
+                    throw BadRequestException("Invalid problems for work");
+                }
+            }
+        }
+    }
 
-void Work::removeProblem(const Wt::Dbo::ptr<Problem>& problem) {
-    problemSet_.erase(problem);
+    problems_ = problems;
 }
 
 void Work::setSubject(const Subject::Type subject) {
@@ -101,8 +132,8 @@ const Wt::Dbo::ptr<Group> Work::getGroup() const {
     return group_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& Work::getProblemSet() const {
-    return problemSet_;
+const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& Work::getProblems() const {
+    return problems_;
 }
 
 const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& Work::getWorkResults() const {

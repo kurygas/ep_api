@@ -3,6 +3,8 @@
 #include <Wt/Dbo/Dbo.h>
 #include <Wt/Dbo/WtSqlTraits.h>
 
+#include "json.h"
+
 class User;
 class Work;
 
@@ -15,8 +17,12 @@ public:
         Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToOne, "group");
     }
 
+    operator Wt::Json::Object() const;
+    static std::string getListName();
+
     Group() = default;
-    Group(const Wt::WString& name);
+    explicit Group(const Wt::WString& name);
+    explicit Group(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
 

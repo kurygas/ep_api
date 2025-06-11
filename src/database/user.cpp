@@ -25,7 +25,7 @@ User::operator Wt::Json::Object() const {
     json[Str::tgId] = getTgId();
     json[Str::tgUsername] = getTgUsername();
     json[Str::groupId] = getGroup().id();
-    json[Str::workResultList] = JsonFunctions::getAllId(getWorkResults());
+    json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
     return json;
 }
 

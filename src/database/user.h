@@ -50,7 +50,6 @@ public:
     void setUserType(UserType userType);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
     void setToken(const Wt::WString& token);
-    void setWorkResults(const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& workResults);
 
     const Wt::WString& getToken(const Wt::WString& password) const;
     UserType getUserType() const;

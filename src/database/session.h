@@ -13,12 +13,6 @@
 #include "work_result.h"
 #include "work.h"
 
-class User;
-class Group;
-class Work;
-class WorkResult;
-class Problem;
-
 class Session : public Wt::Dbo::Session {
 public:
     Session();
@@ -26,12 +20,26 @@ public:
 
     Wt::WString generateToken();
 
+    Wt::Dbo::ptr<Problem> getCurrentProblem(const Wt::Dbo::ptr<User>& user);
+
     template<typename T>
     Wt::Dbo::ptr<T> create(const Wt::Json::Object& json) {
         if constexpr (std::is_same_v<T, User>) {
             if (exist(&Session::getByTgId<User>, json.at(Str::tgId))) {
                 throw UnprocessableEntityException("User already exists");
             }
+        }
+        else if constexpr (std::is_same_v<T, WorkResult>) {
+            const auto work = getById(json.at(Str::workId));
+            const auto problem = getById(json.at(Str::problemId));
+            const auto user = getById(json.at(Str::userId));
+
+            if (getPtr(find<WorkResult>().where("work_id = ?").bind(work.id()).where("problem_id = ?").bind(problem.id()).
+                where("user_id = ?").bind(user.id()))) {
+                throw UnprocessableEntityException("WorkResult already exists");
+            }
+
+            return add(std::make_unique<WorkResult>(work, problem, user));
         }
         else {
             if (exist(&Session::getByName<T>, json.at(Str::name))) {

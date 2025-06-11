@@ -4,6 +4,8 @@
 #include <Wt/Dbo/SqlTraits.h>
 #include <Wt/WString.h>
 
+#include "json.h"
+
 class User;
 class Problem;
 class Work;
@@ -20,23 +22,27 @@ public:
         Wt::Dbo::belongsTo(a, user_, "user");
     }
 
+    operator Wt::Json::Object() const;
+    static std::string getListName();
+
     WorkResult() = default;
     WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<Problem>& problem, const Wt::Dbo::ptr<User>& user);
 
     void setFilename(const Wt::WString& filename);
     void setMark(int mark);
+    void setWork(const Wt::Dbo::ptr<Work>& work);
+    void setProblem(const Wt::Dbo::ptr<Problem>& problem);
+    void setUser(const Wt::Dbo::ptr<User>& user);
+    void setQueued(bool queued);
 
     const Wt::WString& getFilename() const;
     int getMark() const;
+    bool isQueued() const;
     const Wt::Dbo::ptr<Work>& getWork() const;
     const Wt::Dbo::ptr<Problem>& getProblem() const;
     const Wt::Dbo::ptr<User>& getUser() const;
 
 private:
-    void setWork(const Wt::Dbo::ptr<Work>& work);
-    void setProblem(const Wt::Dbo::ptr<Problem>& problem);
-    void setUser(const Wt::Dbo::ptr<User>& user);
-    
     Wt::WString filename_;
     int mark_;
     bool queued_;

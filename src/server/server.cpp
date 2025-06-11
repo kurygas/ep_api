@@ -13,8 +13,8 @@ Server::Server(const std::string& applicationPath)
     Session::configureDatabase();
     
     addResource<UserResource>("/api/user");
-    //addResource<GroupResource>("/api/group");
-    //addResource<ProblemResource>("/api/problem");
-    //addResource<WorkResource>("/api/work");
-    //addResource<WorkResultResource>("/api/work_result");
+    addResource<GroupResource>("/api/group");
+    addResource<ProblemResource>("/api/problem");
+    addResource<WorkResource>("/api/work");
+    addResource<WorkResultResource>("/api/work_result");
 }

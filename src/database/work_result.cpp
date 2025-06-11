@@ -3,6 +3,18 @@
 #include "problem.h"
 #include "work.h"
 #include "http_exceptions.h"
+#include "str.h"
+
+WorkResult::operator Wt::Json::Object() const {
+    Wt::Json::Object json;
+    json[Str::filename] = getFilename();
+    json[Str::mark] = getMark();
+    json[Str::queued] = isQueued();
+    json[Str::workId] = getWork().id();
+    json[Str::problemId] = getProblem().id();
+    json[Str::userId] = getUser().id();
+    return json;
+}
 
 WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<Problem>& problem, const Wt::Dbo::ptr<User>& user)
 : queued_(true) {
@@ -36,6 +48,10 @@ int WorkResult::getMark() const {
     return mark_;
 }
 
+bool WorkResult::isQueued() const {
+    return queued_;
+}
+
 const Wt::Dbo::ptr<Work>& WorkResult::getWork() const {
     return work_;
 }
@@ -65,11 +81,13 @@ void WorkResult::setProblem(const Wt::Dbo::ptr<Problem>& problem) {
 }
 
 void WorkResult::setUser(const Wt::Dbo::ptr<User>& user) {
-    // can we compare pointers here?
-
-    if (!user || user->getGroup() != work_->getGroup()) {
+    if (!user) {
         throw BadRequestException("Invalid user for WorkResult");
     }
 
     user_ = user;
+}
+
+void WorkResult::setQueued(const bool queued) {
+    queued_ = queued;
 }

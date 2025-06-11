@@ -3,14 +3,20 @@
 #include "work.h"
 #include "work_result.h"
 #include "http_exceptions.h"
+#include "str.h"
 
-Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, const int semester, const int workNumber) {
+Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const Subject::Type subject, const int semester, 
+    const int workNumber) {
     setName(name);
     setStatement(statement);
     setSubject(subject);
     setSemester(semester);
     setWorkNumber(workNumber);
 }
+
+Problem::Problem(const Wt::Json::Object& json)
+: Problem(json.at(Str::name), json.at(Str::statement), JsonFunctions::parse<Subject::Type>(json.at(Str::subject)), json.at(Str::semester), 
+    json.at(Str::workNumber)) {}
 
 void Problem::setName(const Wt::WString& name) {
     if (name.empty()) {
@@ -74,4 +80,20 @@ const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& Problem::getWorks() const {
 
 const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& Problem::getWorkResults() const {
     return workResults_;
+}
+
+Problem::operator Wt::Json::Object() const {
+    Wt::Json::Object json;
+    json[Str::name] = getName();
+    json[Str::statement] = getStatement();
+    json[Str::semester] = getSemester();
+    json[Str::workNumber] = getWorkNumber();
+    json[Str::subject] = static_cast<int>(getSubject());
+    json[Str::workList] = JsonFunctions::getIdArray(getWorks());
+    json[Str::workResultId] = JsonFunctions::getIdArray(getWorkResults());
+    return json;
+}
+
+std::string Problem::getListName() {
+    return Str::problemList;
 }

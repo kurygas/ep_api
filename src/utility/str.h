@@ -32,6 +32,8 @@ namespace Str {
     constexpr std::string error = "error";
     constexpr std::string token = "token";
     constexpr std::string confirmCode = "confirm_code";
+    constexpr std::string mark = "mark";
+    constexpr std::string queued = "queued";
     
     constexpr std::string auth = "auth";
 }
