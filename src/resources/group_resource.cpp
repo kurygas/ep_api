@@ -5,11 +5,11 @@ void GroupResource::getRequirements(const HttpRequest& request, Session& session
     RootRequirements::requireAuth(request, session);
 }
 
-void GroupResource::getIdRequirements(const HttpRequest& request, Session& session, int id) const {
+void GroupResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Group>& group) const {
     RootRequirements::requireAuth(request, session);
 }
 
-void GroupResource::deleteRequirements(const HttpRequest& request, Session& session, int id) const {
+void GroupResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Group>& group) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 

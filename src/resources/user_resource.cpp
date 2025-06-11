@@ -1,10 +1,8 @@
 #include "user_resource.h"
 #include "root_requirements.h"
 
-void UserResource::processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, const int id, 
-    const std::string& method) const {
-    const auto user = session.getById<User>(id);
-
+void UserResource::processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+    const Wt::Dbo::ptr<User>& user, const std::string& method) const {
     if (method == Str::auth) {
         response[Str::token] = user->getToken(request.body().at(Str::password));
     }
@@ -16,15 +14,15 @@ void UserResource::processPostMethod(const HttpRequest& request, Wt::Json::Objec
 void UserResource::processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user) const {
     for (const auto& [key, value] : request.body()) {
         if (key == Str::name) {
-            RootRequirements::requireAuthId(request, session, user.id());
+            RootRequirements::requireAuthId(request, session, user);
             user.modify()->setName(value);
         }
         else if (key == Str::surname) {
-            RootRequirements::requireAuthId(request, session, user.id());
+            RootRequirements::requireAuthId(request, session, user);
             user.modify()->setSurname(value);
         }
         else if (key == Str::tgUsername) {
-            RootRequirements::requireAuthId(request, session, user.id());
+            RootRequirements::requireAuthId(request, session, user);
             user.modify()->setTgUsername(value);
         }
         else if (key == Str::userType) {
@@ -42,10 +40,10 @@ void UserResource::getRequirements(const HttpRequest& request, Session& session)
     RootRequirements::requireAuth(request, session);
 }
 
-void UserResource::getIdRequirements(const HttpRequest& request, Session& session, int id) const {
+void UserResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user) const {
     RootRequirements::requireAuth(request, session);
 }
 
-void UserResource::deleteRequirements(const HttpRequest& request, Session& session, int id) const {
+void UserResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user) const {
     RootRequirements::requireTeacherRoots(request, session);
 }

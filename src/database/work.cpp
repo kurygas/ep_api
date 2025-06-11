@@ -5,6 +5,7 @@
 #include "work_result.h"
 #include "http_exceptions.h"
 #include "str.h"
+#include "utility_functions.h"
 
 Work::operator Wt::Json::Object() const {
     Wt::Json::Object json;
@@ -44,20 +45,28 @@ void Work::setName(const Wt::WString &name) {
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
-    // TODO: check time segments intersection
-
     if (start < Wt::WDateTime::currentDateTime() || start > end_) {
         throw BadRequestException("Invalid start for Work");
+    }
+
+    for (const auto& work : group_->getWorks()) {
+        if (Utility::isIntersect(start, end_, work->getStart(), work->getEnd())) {
+            throw BadRequestException("Invalid start for work");
+        }
     }
 
     start_ = start;
 }
 
 void Work::setEnd(const Wt::WDateTime& end) {
-    // TODO: check time segments intersection
-
     if (end < Wt::WDateTime::currentDateTime() || start_ > end) {
         throw BadRequestException("Invalid end for Work");
+    }
+
+    for (const auto& work : group_->getWorks()) {
+        if (Utility::isIntersect(start_, end, work->getStart(), work->getEnd())) {
+            throw BadRequestException("Invalid end for Work");
+        }
     }
 
     end_ = end;

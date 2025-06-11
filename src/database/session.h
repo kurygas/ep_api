@@ -33,12 +33,6 @@ public:
             const auto work = getById(json.at(Str::workId));
             const auto problem = getById(json.at(Str::problemId));
             const auto user = getById(json.at(Str::userId));
-
-            if (getPtr(find<WorkResult>().where("work_id = ?").bind(work.id()).where("problem_id = ?").bind(problem.id()).
-                where("user_id = ?").bind(user.id()))) {
-                throw UnprocessableEntityException("WorkResult already exists");
-            }
-
             return add(std::make_unique<WorkResult>(work, problem, user));
         }
         else {

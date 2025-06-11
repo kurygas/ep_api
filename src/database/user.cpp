@@ -108,10 +108,6 @@ void User::setToken(const Wt::WString& token) {
     token_ = token;
 }
 
-void User::setWorkResults(const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& workResults) {
-    workResults_ = workResults;
-}
-
 const Wt::WString& User::getToken(const Wt::WString& password) const {
     if (!isCorrect(password)) {
         throw ForbiddenException("Invalid password");

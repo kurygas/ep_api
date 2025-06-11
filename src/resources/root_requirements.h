@@ -7,5 +7,5 @@ namespace RootRequirements {
     void requireAuth(const HttpRequest& request, Session& session);
     void requireTeacherRoots(const HttpRequest& request, Session& session);
     void requireAdminRoots(const HttpRequest& request, Session& session);
-    void requireAuthId(const HttpRequest& request, Session& session, int id);
+    void requireAuthId(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user);
 }

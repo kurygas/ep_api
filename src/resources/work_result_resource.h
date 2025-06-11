@@ -5,9 +5,9 @@
 
 class WorkResultResource : public Resource<WorkResult> {
 protected:
-    void processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& group) const override;
+    void processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const override;
 
     void getRequirements(const HttpRequest& request, Session& session) const override;
-    void getIdRequirements(const HttpRequest& request, Session& session, int id) const override;
-    void deleteRequirements(const HttpRequest& request, Session& session, int id) const override;
+    void getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const override;
+    void deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const override;
 };

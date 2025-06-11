@@ -45,33 +45,42 @@ public:
                     throw InvalidMethodException("");
                 }
             }
-            else if (path.size() == 1) {
+            else {
                 const auto id = Utility::getId(path);
                 ptr = session.getById<DatabaseType>(id);
 
-                if (method == "GET") {
-                    getIdRequirements(requestContent, session, id);
+                if (path.size() == 1) {
+                    if (method == "GET") {
+                        getIdRequirements(requestContent, session, id);
+                    }
+                    else if (method == "PATCH") {
+                        processPatch(requestContent, session, ptr);
+                    }
+                    else if (method == "DELETE") {
+                        deleteRequirements(requestContent, session, id);
+                        responseContent = static_cast<Wt::Json::Object>(*ptr);
+                        ptr.remove();
+                        ptr = nullptr;
+                        response.setStatus(204);
+                    }
+                    else {
+                        throw InvalidMethodException("");
+                    }
                 }
-                else if (method == "PATCH") {
-                    processPatch(requestContent, session, ptr);
-                }
-                else if (method == "DELETE") {
-                    deleteRequirements(requestContent, session, id);
-                    responseContent = static_cast<Wt::Json::Object>(*ptr);
-                    ptr.remove();
+                else {
+                    const auto& pathMethod = Utility::getMethod(path);
+
+                    if (method == "POST") {
+                        processPostMethod(requestContent, responseContent, session, ptr, pathMethod);
+                    }
+                    else if (method == "GET") {
+                        processGetMethod(requestContent, responseContent, session, ptr, pathMethod)
+                    }
+                    else {
+                        throw InvalidMethodException("");
+                    }
+
                     ptr = nullptr;
-                    response.setStatus(204);
-                }
-                else {
-                    throw InvalidMethodException("");
-                }
-            }
-            else {
-                if (method == "POST") {
-                    processPostMethod(requestContent, responseContent, session, Utility::getId(path), Utility::getMethod(path));
-                }
-                else {
-                    throw InvalidMethodException("");
                 }
             }
 
@@ -95,15 +104,20 @@ public:
     }
 
 protected:
-    virtual void processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, int id, 
-        const std::string& method) const {
+    virtual void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+        const Wt::Dbo::ptr<DatabaseType>& ptr, const std::string& method) const {
+        throw InvalidMethodException("");
+    }
+
+    virtual void processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+        const Wt::Dbo::ptr<DatabaseType>& ptr, const std::string& method) const {
         throw InvalidMethodException("");
     }
 
     virtual void processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const = 0;
 
     virtual void getRequirements(const HttpRequest& request, Session& session) const {}
-    virtual void getIdRequirements(const HttpRequest& request, Session& session, int id) const {}
-    virtual void deleteRequirements(const HttpRequest& request, Session& session, int id) const {}
+    virtual void getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const {}
+    virtual void deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const {}
     virtual void postRequirements(const HttpRequest& request, Session& session) const {}
 };
