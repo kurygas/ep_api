@@ -37,13 +37,24 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
 }
 
 void WorkResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireTeacherRoots(request, session);
+    RootRequirements::requireAuth(request, session);
 }
 
 void WorkResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {
-    RootRequirements::requireTeacherRoots(request, session);
+    RootRequirements::requireAuth(request, session);
 }
 
 void WorkResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {
     RootRequirements::requireTeacherRoots(request, session);
+}
+
+void WorkResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+    const Wt::Dbo::ptr<Work>& work, const std::string& method) const {
+    if (method == Str::problemList) {
+        RootRequirements::requireTeacherRoots(request, session);
+        response[Str::problemList] = JsonFunctions::getIdArray(work->getProblems());
+    }
+    else {
+        throw NotFoundException("unknown method");
+    }
 }

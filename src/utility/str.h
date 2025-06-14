@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdlib>
 
 namespace Str {
     constexpr std::string userList = "user_list";
@@ -34,6 +35,7 @@ namespace Str {
     constexpr std::string confirmCode = "confirm_code";
     constexpr std::string mark = "mark";
     constexpr std::string queued = "queued";
-    
     constexpr std::string auth = "auth";
+
+    const std::string botToken = std::getenv("BOT_TOKEN");
 }

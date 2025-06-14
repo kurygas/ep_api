@@ -24,22 +24,10 @@ public:
 
     template<typename T>
     Wt::Dbo::ptr<T> create(const Wt::Json::Object& json) {
-        if constexpr (std::is_same_v<T, User>) {
-            if (exist(&Session::getByTgId<User>, json.at(Str::tgId))) {
-                throw UnprocessableEntityException("User already exists");
-            }
+        if (exist(&Session::getByName<T>, json.at(Str::name))) {
+            throw UnprocessableEntityException("Name already exists");
         }
-        else if constexpr (std::is_same_v<T, WorkResult>) {
-            const auto work = getById(json.at(Str::workId));
-            const auto problem = getById(json.at(Str::problemId));
-            const auto user = getById(json.at(Str::userId));
-            return add(std::make_unique<WorkResult>(work, problem, user));
-        }
-        else {
-            if (exist(&Session::getByName<T>, json.at(Str::name))) {
-                throw UnprocessableEntityException("Name already exists");
-            }
-        }
+
         return add(std::make_unique<T>(json));
     }
 
@@ -109,3 +97,32 @@ private:
         return ptr;
     }
 };
+
+template<>
+Wt::Dbo::ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
+    return add(std::make_unique<WorkResult>(getById<Work>(json.at(Str::workId)), getById<User>(json.at(Str::userId))));
+}
+
+template<>
+Wt::Dbo::ptr<User> Session::create<User>(const Wt::Json::Object& json) {
+    if (exist(&Session::getByTgId<User>, json.at(Str::tgId))) {
+        throw UnprocessableEntityException("User already exists");
+    }
+
+    return add(std::make_unique<User>(json));
+}
+
+template<>
+Wt::Dbo::ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
+    const auto results = find<Problem>()
+        .where("subject = ?").bind(json.at(Str::subject))
+        .where("semester = ?").bind(json.at(Str::semester))
+        .where("work_number = ?").bind(json.at(Str::workNumber))
+        .where("name = ?").bind(json.at(Str::name));
+
+    if (!results.resultList().empty()) {
+        throw UnprocessableEntityException("Problem already exists");
+    }
+
+    return add(std::make_unique<Problem>(json));
+}

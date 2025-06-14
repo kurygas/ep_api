@@ -4,23 +4,24 @@
 #include "work.h"
 #include "http_exceptions.h"
 #include "str.h"
+#include "random_functions.h"
 
 WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::filename] = getFilename();
-    json[Str::mark] = getMark();
-    json[Str::queued] = isQueued();
     json[Str::workId] = getWork().id();
-    json[Str::problemId] = getProblem().id();
     json[Str::userId] = getUser().id();
     return json;
 }
 
-WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<Problem>& problem, const Wt::Dbo::ptr<User>& user)
-: queued_(true) {
+WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user)
+: mark_(-1) {
     setWork(work);
-    setProblem(problem);
+    setProblem(Random::pickRandom(work->getProblems()));
     setUser(user);
+}
+
+const std::string& WorkResult::getListName() {
+    return Str::workResultList;
 }
 
 void WorkResult::setFilename(const Wt::WString& filename) {
@@ -31,12 +32,11 @@ void WorkResult::setFilename(const Wt::WString& filename) {
     filename_ = filename;
 }
 
-void WorkResult::setMark(int mark) {
+void WorkResult::setMark(const int mark) {
     if (mark < 0) {
         throw BadRequestException("Invalid mark for WorkResult");
     }
 
-    queued_ = false;
     mark_ = mark;
 }
 
@@ -46,10 +46,6 @@ const Wt::WString& WorkResult::getFilename() const {
 
 int WorkResult::getMark() const {
     return mark_;
-}
-
-bool WorkResult::isQueued() const {
-    return queued_;
 }
 
 const Wt::Dbo::ptr<Work>& WorkResult::getWork() const {
@@ -86,8 +82,4 @@ void WorkResult::setUser(const Wt::Dbo::ptr<User>& user) {
     }
 
     user_ = user;
-}
-
-void WorkResult::setQueued(const bool queued) {
-    queued_ = queued;
 }

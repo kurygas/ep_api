@@ -51,13 +51,13 @@ public:
 
                 if (path.size() == 1) {
                     if (method == "GET") {
-                        getIdRequirements(requestContent, session, id);
+                        getIdRequirements(requestContent, session, ptr);
                     }
                     else if (method == "PATCH") {
                         processPatch(requestContent, session, ptr);
                     }
                     else if (method == "DELETE") {
-                        deleteRequirements(requestContent, session, id);
+                        deleteRequirements(requestContent, session, ptr);
                         responseContent = static_cast<Wt::Json::Object>(*ptr);
                         ptr.remove();
                         ptr = nullptr;
@@ -74,7 +74,7 @@ public:
                         processPostMethod(requestContent, responseContent, session, ptr, pathMethod);
                     }
                     else if (method == "GET") {
-                        processGetMethod(requestContent, responseContent, session, ptr, pathMethod)
+                        processGetMethod(requestContent, responseContent, session, ptr, pathMethod);
                     }
                     else {
                         throw InvalidMethodException("");

@@ -6,6 +6,8 @@
 class WorkResultResource : public Resource<WorkResult> {
 protected:
     void processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const override;
+    void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+        const Wt::Dbo::ptr<WorkResult>& workResult, const std::string& method) const override;
 
     void getRequirements(const HttpRequest& request, Session& session) const override;
     void getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const override;

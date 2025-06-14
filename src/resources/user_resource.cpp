@@ -1,10 +1,23 @@
 #include "user_resource.h"
 #include "root_requirements.h"
 
-void UserResource::processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+#include <ctime>
+
+void UserResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
     const Wt::Dbo::ptr<User>& user, const std::string& method) const {
-    if (method == Str::auth) {
-        response[Str::token] = user->getToken(request.body().at(Str::password));
+    if (method == Str::token) {
+        if (static_cast<int64_t>(request.body().at("auth_date")) - time(nullptr) >= 3600) {
+            throw ForbiddenException("Too old data");
+        }
+
+        std::string checkString;
+
+        for (const auto& [key, value] : request.body()) {
+            checkString += key + '=' + static_cast<std::string>(value) + '\n';
+        }
+
+        checkString.pop_back();
+        response[Str::token] = user->getToken(checkString, Str::botToken);
     }
     else {
         throw NotFoundException("");

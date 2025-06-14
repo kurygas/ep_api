@@ -94,6 +94,6 @@ Problem::operator Wt::Json::Object() const {
     return json;
 }
 
-std::string Problem::getListName() {
+const std::string& Problem::getListName() {
     return Str::problemList;
 }

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <Wt/Dbo/ptr.h>
+
 class HttpRequest;
 class Session;
+class User;
 
 namespace RootRequirements {
     void requireAuth(const HttpRequest& request, Session& session);

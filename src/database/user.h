@@ -21,8 +21,6 @@ public:
     template<typename Action>
     void persist(Action& a) {
         Wt::Dbo::field(a, userType_, "user_type");
-        Wt::Dbo::field(a, passwordHash_, "password_hash");
-        Wt::Dbo::field(a, salt_, "salt");
         Wt::Dbo::field(a, name_, "name");
         Wt::Dbo::field(a, surname_, "surname");
         Wt::Dbo::field(a, tgId_, "tg_id");
@@ -35,14 +33,11 @@ public:
 
     static std::unique_ptr<User> createAdmin();
     operator Wt::Json::Object() const;
-    static std::string getListName();
+    static const std::string& getListName();
 
     User() = default;
-    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
-        const Wt::WString& password);
+    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
     explicit User(const Wt::Json::Object& json);
-
-    bool isCorrect(const Wt::WString& password) const;
 
     void setName(const Wt::WString& name);
     void setSurname(const Wt::WString& surname);
@@ -51,7 +46,7 @@ public:
     void setGroup(const Wt::Dbo::ptr<Group>& group);
     void setToken(const Wt::WString& token);
 
-    const Wt::WString& getToken(const Wt::WString& password) const;
+    const Wt::WString& getToken(const Wt::WString& checkString, const Wt::WString& hash) const;
     UserType getUserType() const;
     const Wt::WString& getName() const;
     const Wt::WString& getSurname() const;
@@ -63,7 +58,6 @@ public:
 
 private:
     void setTgId(const Wt::WString& tgId);
-    void setPassword(const Wt::WString& password); // TODO: make changing password system
 
     UserType userType_;
     Wt::WString name_;
@@ -72,9 +66,6 @@ private:
     Wt::WString tgUsername_;
     Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;
-
-    std::string passwordHash_;
-    std::string salt_;
 
     Wt::Dbo::ptr<Group> group_;
     Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;

@@ -25,11 +25,12 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static std::string getListName();
+    static const std::string& getListName();
 
     Work() = default;
     Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, 
         int workNumber);
+    explicit Work(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
     void setStart(const Wt::WDateTime& start);

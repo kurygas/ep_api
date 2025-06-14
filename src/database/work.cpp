@@ -16,16 +16,15 @@ Work::operator Wt::Json::Object() const {
     json[Str::semester] = getSemester();
     json[Str::workNumber] = getWorkNumber();
     json[Str::groupId] = getGroup().id();
-    json[Str::problemList] = JsonFunctions::getIdArray(getProblems());
     json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
     return json;
 }
 
-std::string Work::getListName() {
+const std::string& Work::getListName() {
     return Str::workList;
 }
 
-Work::Work(const Wt::WString &name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject,
+Work::Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject,
     const int semester, const int workNumber)
 : start_(Wt::WDateTime::currentDateTime()), end_(Wt::WDateTime::currentDateTime()) {
     setName(name);
@@ -35,6 +34,10 @@ Work::Work(const Wt::WString &name, const Wt::WDateTime& start, const Wt::WDateT
     setWorkNumber(workNumber);
     setSubject(subject);
 }
+
+Work::Work(const Wt::Json::Object& json)
+: Work(json.at(Str::name), Wt::WDateTime::fromString(json.at(Str::start)), Wt::WDateTime::fromString(json.at(Str::end)), 
+    JsonFunctions::parse<Subject::Type>(json.at(Str::subject)), json.at(Str::semester), json.at(Str::workNumber)) {}
 
 void Work::setName(const Wt::WString &name) {
     if (name.empty()) {

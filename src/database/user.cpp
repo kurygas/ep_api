@@ -5,14 +5,12 @@
 #include "work_result.h"
 #include "random_functions.h"
 #include "str.h"
-
-#include <Wt/Auth/HashFunction.h>
+#include "crypto.h"
 
 std::unique_ptr<User> User::createAdmin() {
     auto user = std::make_unique<User>();
     user->tgId_ = "admin";
     user->tgUsername_ = "admin";
-    user->setPassword("adminadmin");
     user->userType_ = UserType::Admin;
     return std::move(user);
 }
@@ -29,32 +27,17 @@ User::operator Wt::Json::Object() const {
     return json;
 }
 
-User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
-    const Wt::WString& password)
+User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname)
 : userType_(UserType::Student)
-, tokenTimeLimit_(Wt::WDateTime::currentDateTime())
-, salt_(Random::generateRandomString(16)) {
+, tokenTimeLimit_(Wt::WDateTime::currentDateTime()) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setName(name);
     setSurname(surname);
-    setPassword(password);
 }
 
 User::User(const Wt::Json::Object& json)
-: User(json.at(Str::tgId), json.at(Str::tgUsername), json.at(Str::name), json.at(Str::surname), json.at(Str::password)) {}
-
-bool User::isCorrect(const Wt::WString& password) const {
-    return !salt_.empty() && Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_) == passwordHash_;
-}
-
-void User::setPassword(const Wt::WString& password) {
-    if (!Validator::isPasswordValid(password)) {
-        throw BadRequestException("Invalid password for User");
-    }
-
-    passwordHash_ = Wt::Auth::BCryptHashFunction().compute(password.toUTF8(), salt_);
-}
+: User(json.at(Str::tgId), json.at(Str::tgUsername), json.at(Str::name), json.at(Str::surname)) {}
 
 void User::setName(const Wt::WString& firstName) {
     if (firstName.empty() || !Validator::isRussianString(firstName)) {
@@ -108,9 +91,9 @@ void User::setToken(const Wt::WString& token) {
     token_ = token;
 }
 
-const Wt::WString& User::getToken(const Wt::WString& password) const {
-    if (!isCorrect(password)) {
-        throw ForbiddenException("Invalid password");
+const Wt::WString& User::getToken(const Wt::WString& checkString, const Wt::WString& hash) const {
+    if (Crypto::hmacSha256(checkString.toUTF8(), Crypto::sha256(Str::botToken)) != hash.toUTF8()) {
+        throw ForbiddenException("Incorrect auth data");
     }
 
     return token_;
@@ -148,6 +131,6 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
-std::string User::getListName() {
+const std::string& User::getListName() {
     return Str::userList;
 }

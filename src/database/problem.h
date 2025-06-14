@@ -23,7 +23,7 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static std::string getListName();
+    static const std::string& getListName();
 
     Problem() = default;
     Problem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);

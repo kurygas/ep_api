@@ -8,8 +8,9 @@ Group::Group(const Wt::WString& name) {
     setName(name);
 }
 
-Group::Group(const Wt::Json::Object& json)
-: Group(static_cast<Wt::WString>(json.at(Str::name))) {}
+Group::Group(const Wt::Json::Object& json) {
+    setName(json.at(Str::name));
+}
 
 void Group::setName(const Wt::WString& name) {
     if (name.empty()) {
@@ -37,4 +38,8 @@ Group::operator Wt::Json::Object() const {
     json[Str::userList] = JsonFunctions::getIdArray(getUsers());
     json[Str::workList] = JsonFunctions::getIdArray(getWorks());
     return json;
+}
+
+const std::string& Group::getListName() {
+    return Str::groupList;
 }
