@@ -1,7 +1,7 @@
 #include "work_resource.h"
 #include "root_requirements.h"
 
-void WorkResource::processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {
+void WorkResource::processPatch(const HttpRequest& request, Session& session, const Ptr<Work>& work) const {
     RootRequirements::requireTeacherRoots(request, session);
 
     for (const auto& [key, value] : request.body()) {
@@ -57,16 +57,16 @@ void WorkResource::postRequirements(const HttpRequest& request, Session& session
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void WorkResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {
+void WorkResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Work>& work) const {
     RootRequirements::requireAuth(request, session);
 }
 
-void WorkResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {
+void WorkResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Work>& work) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
 void WorkResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
-    const Wt::Dbo::ptr<Work>& work, const std::string& method) const {
+    const Ptr<Work>& work, const std::string& method) const {
     if (method == Str::problemList) {
         RootRequirements::requireTeacherRoots(request, session);
         response[Str::problemList] = JsonFunctions::getIdArray(work->getProblems());

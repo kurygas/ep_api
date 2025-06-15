@@ -6,6 +6,7 @@
 #include "subject_type.h"
 #include "json.h"
 #include "str.h"
+#include "types.h"
 
 class Work;
 class WorkResult;
@@ -40,8 +41,8 @@ public:
     Subject::Type getSubject() const;
     int getSemester() const;
     int getWorkNumber() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& getWorks() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
+    const List<Work>& getWorks() const;
+    const List<WorkResult>& getWorkResults() const;
 
 private:
     Wt::WString name_;
@@ -50,6 +51,6 @@ private:
     int semester_;
     int workNumber_;
 
-    Wt::Dbo::collection<Wt::Dbo::ptr<Work>> works_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
+    List<Work> works_;
+    List<WorkResult> workResults_;
 };

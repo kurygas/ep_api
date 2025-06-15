@@ -13,6 +13,7 @@
 #include "work_result.h"
 #include "work.h"
 #include "point.h"
+#include "types.h"
 
 class Session : public Wt::Dbo::Session {
 public:
@@ -22,11 +23,11 @@ public:
     Wt::WString generateToken();
 
     template<typename T>
-    Wt::Dbo::ptr<T> create(const Wt::Json::Object& json);
+    Ptr<T> create(const Wt::Json::Object& json);
 
     template<typename T>
-    Wt::Dbo::collection<Wt::Dbo::ptr<T>> getByArray(const Wt::Json::Array& array) {
-        Wt::Dbo::collection<Wt::Dbo::ptr<T>> collection;
+    List<T> getByArray(const Wt::Json::Array& array) {
+        List<T> collection;
         
         for (const auto& id : array) {
             collection.insert(getById<T>(id));
@@ -36,28 +37,28 @@ public:
     }
 
     template<typename T>
-    Wt::Dbo::ptr<T> getByTgId(const Wt::WString& tgId) {
+    Ptr<T> getByTgId(const Wt::WString& tgId) {
         return getPtr(find<T>().where("tg_id = ?").bind(tgId));
     }
 
     template<typename T>
-    Wt::Dbo::ptr<T> getByToken(const Wt::WString& token) {
+    Ptr<T> getByToken(const Wt::WString& token) {
         return getPtr(find<T>().where("token = ?").bind(token));
     }
 
     template<typename T>
-    Wt::Dbo::ptr<T> getById(const int id) {
+    Ptr<T> getById(const int id) {
         return getPtr(find<T>().where("id = ?").bind(id));
     }
 
     template<typename T>
-    Wt::Dbo::ptr<T> getByName(const Wt::WString& name) {
+    Ptr<T> getByName(const Wt::WString& name) {
         return getPtr(find<T>().where("name = ?").bind(name));
     }
 
-    Wt::Dbo::ptr<Problem> getProblem(Subject::Type subject, int semester, int workNumber, const Wt::WString& name);
-    Wt::Dbo::ptr<Work> getWork(Subject::Type subject, int semester, int workNumber, const Wt::Dbo::ptr<Group>& group);
-    Wt::Dbo::ptr<WorkResult> getWorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user);
+    Ptr<Problem> getProblem(Subject::Type subject, int semester, int workNumber, const Wt::WString& name);
+    Ptr<Work> getWork(Subject::Type subject, int semester, int workNumber, const Ptr<Group>& group);
+    Ptr<WorkResult> getWorkResult(const Ptr<Work>& work, const Ptr<User>& user);
 
     template<typename F, typename... Args>
     bool exist(F method, Args&&... args) {
@@ -72,20 +73,20 @@ public:
     }
     
     template<typename T> 
-    Wt::Dbo::collection<Wt::Dbo::ptr<T>> getAll() {
+    List<T> getAll() {
         return find<T>().resultList();
     }
 
 private:
-    template<typename Ptr, typename... Other>
-    Ptr getPtr(Wt::Dbo::Query<Ptr, Other...>& collection) {
-        auto ptr = static_cast<Ptr>(collection);
+    template<typename T, typename... Other>
+    T getPtr(Wt::Dbo::Query<T, Other...>& collection) {
+        auto ptr = static_cast<T>(collection);
         
         if (!ptr) {
             throw NotFoundException("");
         }
 
-        if constexpr (std::is_same_v<Ptr, Wt::Dbo::ptr<User>>) {
+        if constexpr (std::is_same_v<T, Ptr<User>>) {
             if (ptr->getUserType() != UserType::Admin && ptr->getTokenTimeLimit() < Wt::WDateTime::currentDateTime()) {
                 ptr.modify()->setToken(generateToken());
             }
@@ -98,7 +99,7 @@ private:
 };
 
 template<>
-inline Wt::Dbo::ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
+inline Ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
     const auto work = getById<Work>(json.at(Str::workId));
     const auto user = getById<User>(json.at(Str::userId));
 
@@ -110,21 +111,22 @@ inline Wt::Dbo::ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Obje
 }
 
 template<>
-inline Wt::Dbo::ptr<User> Session::create<User>(const Wt::Json::Object& json) {
+inline Ptr<User> Session::create<User>(const Wt::Json::Object& json) {
     const auto tgId = json.at(Str::tgId);
     const auto tgUsername = json.at(Str::tgUsername);
     const auto name = json.at(Str::name);
     const auto surname = json.at(Str::surname);
+    const auto group = getById<Group>(json.at(Str::groupId));
 
     if (exist(&Session::getByTgId<User>, tgId)) {
         throw UnprocessableEntityException("User already exists");
     }
 
-    return add(std::make_unique<User>(tgId, tgUsername, name, surname));
+    return add(std::make_unique<User>(tgId, tgUsername, name, surname, group));
 }
 
 template<>
-inline Wt::Dbo::ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
+inline Ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
     const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
     const auto semester = json.at(Str::semester);
     const auto workNumber = json.at(Str::workNumber);
@@ -139,7 +141,7 @@ inline Wt::Dbo::ptr<Problem> Session::create<Problem>(const Wt::Json::Object& js
 }
 
 template<>
-inline Wt::Dbo::ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
+inline Ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
     const auto group = getById<Group>(json.at(Str::groupId));
     const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
     const auto semester = json.at(Str::semester);
@@ -155,7 +157,7 @@ inline Wt::Dbo::ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
 }
 
 template<>
-inline Wt::Dbo::ptr<Group> Session::create<Group>(const Wt::Json::Object& json) {
+inline Ptr<Group> Session::create<Group>(const Wt::Json::Object& json) {
     const auto name = json.at(Str::name);
 
     if (exist(&Session::getByName<Group>, name)) {
@@ -166,7 +168,7 @@ inline Wt::Dbo::ptr<Group> Session::create<Group>(const Wt::Json::Object& json) 
 }
 
 template<>
-inline Wt::Dbo::ptr<Point> Session::create<Point>(const Wt::Json::Object& json) {
+inline Ptr<Point> Session::create<Point>(const Wt::Json::Object& json) {
     const auto reason = json.at(Str::reason);
     const auto amount = json.at(Str::amount);
     const auto user = getById<User>(json.at(Str::userId));

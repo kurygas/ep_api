@@ -5,6 +5,7 @@
 
 #include "subject_type.h"
 #include "str.h"
+#include "types.h"
 
 class Group;
 class Problem;
@@ -29,7 +30,7 @@ public:
 
     Work() = default;
     Work(const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, int workNumber, 
-        const Wt::Dbo::ptr<Group>& group);
+        const Ptr<Group>& group);
 
     void setStart(const Wt::WDateTime& start);
     void setEnd(const Wt::WDateTime& end);
@@ -37,17 +38,17 @@ public:
     void setSubject(Subject::Type subject);
     void setSemester(int semester);
     void setWorkNumber(int workNumber);
-    void setGroup(const Wt::Dbo::ptr<Group>& group);
-    void setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problems);
+    void setGroup(const Ptr<Group>& group);
+    void setProblems(const List<Problem>& problems);
 
     const Wt::WDateTime& getStart() const;
     const Wt::WDateTime& getEnd() const;
     Subject::Type getSubject() const;
     int getSemester() const;
     int getWorkNumber() const;
-    const Wt::Dbo::ptr<Group> getGroup() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& getProblems() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
+    const Ptr<Group> getGroup() const;
+    const List<Problem>& getProblems() const;
+    const List<WorkResult>& getWorkResults() const;
 
 private:
     Wt::WDateTime start_;
@@ -56,7 +57,7 @@ private:
     int semester_;
     int workNumber_;
 
-    Wt::Dbo::ptr<Group> group_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<Problem>> problems_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
+    Ptr<Group> group_;
+    List<Problem> problems_;
+    List<WorkResult> workResults_;
 };

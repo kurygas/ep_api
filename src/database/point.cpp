@@ -9,7 +9,7 @@ Point::operator Wt::Json::Object() const {
     return json;
 }
 
-Point::Point(const Wt::WString& reason, const int amount, const Wt::Dbo::ptr<User>& user) {
+Point::Point(const Wt::WString& reason, const int amount, const Ptr<User>& user) {
     setReason(reason);
     setAmount(amount);
     setUser(user);
@@ -31,7 +31,7 @@ void Point::setAmount(const int amount) {
     amount_ = amount;
 }
 
-void Point::setUser(const Wt::Dbo::ptr<User>& user) {
+void Point::setUser(const Ptr<User>& user) {
     user_ = user;
 }
 
@@ -43,7 +43,7 @@ int Point::getAmount() const {
     return amount_;
 }
 
-const Wt::Dbo::ptr<User>& Point::getUser() const {
+const Ptr<User>& Point::getUser() const {
     return user_;
 }
 

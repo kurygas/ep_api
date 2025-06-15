@@ -9,15 +9,15 @@ void PointResource::postRequirements(const HttpRequest& request, Session& sessio
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void PointResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Point>& point) const {
+void PointResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Point>& point) const {
     RootRequirements::requireAuthId(request, session, point->getUser());
 }
 
-void PointResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Point>& point) const {
+void PointResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Point>& point) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void PointResource::processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Point>& point) const {
+void PointResource::processPatch(const HttpRequest& request, Session& session, const Ptr<Point>& point) const {
     RootRequirements::requireTeacherRoots(request, session);
 
     for (const auto& [key, value] : request.body()) {

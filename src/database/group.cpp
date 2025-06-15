@@ -3,6 +3,7 @@
 #include "work.h"
 #include "str.h"
 #include "http_exceptions.h"
+#include "types.h"
 
 Group::Group(const Wt::WString& name) {
     setName(name);
@@ -20,11 +21,11 @@ const Wt::WString& Group::getName() const {
     return name_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<User>>& Group::getUsers() const {
+const List<User>& Group::getUsers() const {
     return users_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& Group::getWorks() const {
+const List<Work>& Group::getWorks() const {
     return works_;
 }
 

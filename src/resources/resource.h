@@ -28,7 +28,7 @@ public:
             HttpRequest requestContent(request);
             const auto path = Utility::split(request.pathInfo().substr(1));
             response.setStatus(200);
-            Wt::Dbo::ptr<DatabaseType> ptr = nullptr;
+            Ptr<DatabaseType> ptr = nullptr;
             const auto method = request.method();
 
             if (path.empty()) {
@@ -91,14 +91,13 @@ public:
             }
         }
         catch (const HttpException& e) {
-            response.setStatus(e.code());
-            responseContent.clear();
-            responseContent[Str::error] = e.what();
+            processException(response, responseContent, e.code(), e.what());
+        }
+        catch (const std::out_of_range& e) {
+            processException(response, responseContent, BadRequestException("").code(), e.what());
         }
         catch (const std::exception& e) {
-            response.setStatus(500);
-            responseContent.clear();
-            responseContent[Str::error] = e.what();
+            processException(response, responseContent, 500, e.what());
         }
         
         response.out() << Wt::Json::serialize(responseContent);
@@ -106,19 +105,26 @@ public:
 
 protected:
     virtual void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
-        const Wt::Dbo::ptr<DatabaseType>& ptr, const std::string& method) const {
+        const Ptr<DatabaseType>& ptr, const std::string& method) const {
         throw InvalidMethodException("");
     }
 
     virtual void processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
-        const Wt::Dbo::ptr<DatabaseType>& ptr, const std::string& method) const {
+        const Ptr<DatabaseType>& ptr, const std::string& method) const {
         throw InvalidMethodException("");
     }
 
-    virtual void processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const = 0;
+    virtual void processPatch(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const = 0;
 
     virtual void getRequirements(const HttpRequest& request, Session& session) const {}
-    virtual void getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const {}
-    virtual void deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<DatabaseType>& ptr) const {}
+    virtual void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
+    virtual void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
     virtual void postRequirements(const HttpRequest& request, Session& session) const {}
+
+private:
+    void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) {
+        response.setStatus(code);
+        responseContent.clear();
+        responseContent[Str::error] = error;
+    }
 };

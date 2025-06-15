@@ -1,7 +1,7 @@
 #include "work_result_resource.h"
 #include "root_requirements.h"
 
-void WorkResultResource::processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<WorkResult>& workResult) const {
+void WorkResultResource::processPatch(const HttpRequest& request, Session& session, const Ptr<WorkResult>& workResult) const {
     for (const auto& [key, value] : request.body()) {
         if (key == Str::filename) {
             RootRequirements::requireAuthId(request, session, workResult->getUser());
@@ -59,17 +59,17 @@ void WorkResultResource::postRequirements(const HttpRequest& request, Session& s
 }
 
 void WorkResultResource::getIdRequirements(const HttpRequest& request, Session& session, 
-    const Wt::Dbo::ptr<WorkResult>& workResult) const {
+    const Ptr<WorkResult>& workResult) const {
     RootRequirements::requireAuth(request, session);
 }
 
 void WorkResultResource::deleteRequirements(const HttpRequest& request, Session& session, 
-    const Wt::Dbo::ptr<WorkResult>& workResult) const {
+    const Ptr<WorkResult>& workResult) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
 void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
-    const Wt::Dbo::ptr<WorkResult>& workResult, const std::string& method) const {
+    const Ptr<WorkResult>& workResult, const std::string& method) const {
     if (method == Str::problemId) {
         RootRequirements::requireTeacherRoots(request, session);
         response[Str::problemId] = workResult->getProblem().id();

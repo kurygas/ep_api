@@ -70,11 +70,11 @@ int Problem::getWorkNumber() const {
     return workNumber_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& Problem::getWorks() const {
+const List<Work>& Problem::getWorks() const {
     return works_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& Problem::getWorkResults() const {
+const List<WorkResult>& Problem::getWorkResults() const {
     return workResults_;
 }
 

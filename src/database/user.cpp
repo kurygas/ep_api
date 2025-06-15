@@ -27,13 +27,15 @@ User::operator Wt::Json::Object() const {
     return json;
 }
 
-User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname)
+User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
+    const Ptr<Group>& group)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime()) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setName(name);
     setSurname(surname);
+    setGroup(group);
 }
 
 void User::setName(const Wt::WString& firstName) {
@@ -75,7 +77,7 @@ void User::setUserType(const UserType userType) {
     userType_ = userType;
 }
 
-void User::setGroup(const Wt::Dbo::ptr<Group>& group) {
+void User::setGroup(const Ptr<Group>& group) {
     group_ = group;
 }
 
@@ -116,11 +118,11 @@ const Wt::WString& User::getTgId() const {
     return tgId_;
 }
 
-const Wt::Dbo::ptr<Group>& User::getGroup() const {
+const Ptr<Group>& User::getGroup() const {
     return group_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& User::getWorkResults() const {
+const List<WorkResult>& User::getWorkResults() const {
     return workResults_;
 }
 
@@ -128,7 +130,7 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<Point>>& User::getPoints() const {
+const List<Point>& User::getPoints() const {
     return points_;
 }
 

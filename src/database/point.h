@@ -5,6 +5,7 @@
 
 #include "json.h"
 #include "str.h"
+#include "types.h"
 
 class User;
 
@@ -21,19 +22,19 @@ public:
     static const std::string& getListName();
 
     Point() = default;
-    Point(const Wt::WString& reason, int amount, const Wt::Dbo::ptr<User>& user);
+    Point(const Wt::WString& reason, int amount, const Ptr<User>& user);
 
     void setReason(const Wt::WString& reason);
     void setAmount(int amount);
-    void setUser(const Wt::Dbo::ptr<User>& user);
+    void setUser(const Ptr<User>& user);
 
     const Wt::WString& getReason() const;
     int getAmount() const;
-    const Wt::Dbo::ptr<User>& getUser() const;
+    const Ptr<User>& getUser() const;
 
 private:
     Wt::WString reason_;
     int amount_;
 
-    Wt::Dbo::ptr<User> user_;
+    Ptr<User> user_;
 };

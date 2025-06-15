@@ -7,6 +7,7 @@
 
 #include "json.h"
 #include "str.h"
+#include "types.h"
 
 class Group;
 class WorkResult;
@@ -39,13 +40,14 @@ public:
     static const std::string& getListName();
 
     User() = default;
-    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
+    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
+        const Ptr<Group>& group);
 
     void setName(const Wt::WString& name);
     void setSurname(const Wt::WString& surname);
     void setTgUsername(const Wt::WString& tgUsername);
     void setUserType(UserType userType);
-    void setGroup(const Wt::Dbo::ptr<Group>& group);
+    void setGroup(const Ptr<Group>& group);
     void setToken(const Wt::WString& token);
 
     const Wt::WString& getToken(const Wt::WString& checkString, const Wt::WString& hash) const;
@@ -54,10 +56,10 @@ public:
     const Wt::WString& getSurname() const;
     const Wt::WString& getTgUsername() const;
     const Wt::WString& getTgId() const;
-    const Wt::Dbo::ptr<Group>& getGroup() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
+    const Ptr<Group>& getGroup() const;
+    const List<WorkResult>& getWorkResults() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<Point>>& getPoints() const;
+    const List<Point>& getPoints() const;
 
 private:
     void setTgId(const Wt::WString& tgId);
@@ -70,7 +72,7 @@ private:
     Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;
 
-    Wt::Dbo::ptr<Group> group_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<Point>> points_;
+    Ptr<Group> group_;
+    List<WorkResult> workResults_;
+    List<Point> points_;
 };

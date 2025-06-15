@@ -14,7 +14,7 @@ WorkResult::operator Wt::Json::Object() const {
     return json;
 }
 
-WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user)
+WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<User>& user)
 : mark_(-1) {
     if (work->getProblems().empty()) {
         throw BadRequestException("No tasks in work");
@@ -75,19 +75,19 @@ int WorkResult::getMark() const {
     return mark_;
 }
 
-const Wt::Dbo::ptr<Work>& WorkResult::getWork() const {
+const Ptr<Work>& WorkResult::getWork() const {
     return work_;
 }
 
-const Wt::Dbo::ptr<Problem>& WorkResult::getProblem() const {
+const Ptr<Problem>& WorkResult::getProblem() const {
     return problem_;
 }
 
-const Wt::Dbo::ptr<User>& WorkResult::getUser() const {
+const Ptr<User>& WorkResult::getUser() const {
     return user_;
 }
 
-void WorkResult::setWork(const Wt::Dbo::ptr<Work>& work) {
+void WorkResult::setWork(const Ptr<Work>& work) {
     if (!work) {
         throw BadRequestException("Invalid work for WorkResult");
     }
@@ -95,7 +95,7 @@ void WorkResult::setWork(const Wt::Dbo::ptr<Work>& work) {
     work_ = work;
 }
 
-void WorkResult::setProblem(const Wt::Dbo::ptr<Problem>& problem) {
+void WorkResult::setProblem(const Ptr<Problem>& problem) {
     if (!problem || problem->getWorks().count(work_) == 0) {
         throw BadRequestException("Invalid problem for WorkResult");
     }
@@ -103,7 +103,7 @@ void WorkResult::setProblem(const Wt::Dbo::ptr<Problem>& problem) {
     problem_ = problem;
 }
 
-void WorkResult::setUser(const Wt::Dbo::ptr<User>& user) {
+void WorkResult::setUser(const Ptr<User>& user) {
     if (!user) {
         throw BadRequestException("Invalid user for WorkResult");
     }

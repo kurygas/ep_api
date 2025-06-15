@@ -5,6 +5,7 @@
 
 #include "json.h"
 #include "str.h"
+#include "types.h"
 
 class User;
 class Work;
@@ -27,12 +28,12 @@ public:
     void setName(const Wt::WString& name);
 
     const Wt::WString& getName() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<User>>& getUsers() const;
-    const Wt::Dbo::collection<Wt::Dbo::ptr<Work>>& getWorks() const;
+    const List<User>& getUsers() const;
+    const List<Work>& getWorks() const;
 
 private:
     Wt::WString name_;
 
-    Wt::Dbo::collection<Wt::Dbo::ptr<User>> users_;
-    Wt::Dbo::collection<Wt::Dbo::ptr<Work>> works_;
+    List<User> users_;
+    List<Work> works_;
 };

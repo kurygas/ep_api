@@ -24,7 +24,7 @@ const std::string& Work::getListName() {
 }
 
 Work::Work(const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, const int semester, 
-    const int workNumber, const Wt::Dbo::ptr<Group>& group) {
+    const int workNumber, const Ptr<Group>& group) {
     setTime(start, end);
     setSemester(semester);
     setWorkNumber(workNumber);
@@ -73,11 +73,11 @@ void Work::setWorkNumber(const int workNumber) {
     workNumber_ = workNumber;
 }
 
-void Work::setGroup(const Wt::Dbo::ptr<Group>& group) {
+void Work::setGroup(const Ptr<Group>& group) {
     group_ = group;
 }
 
-void Work::setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problems) {
+void Work::setProblems(const List<Problem>& problems) {
     for (const auto& problem : problems) {
         if (problems_.count(problem) == 0 && (!problem || problem->getSubject() != subject_ || problem->getSemester() != semester_ || 
             problem->getWorkNumber() != workNumber_)) {
@@ -118,15 +118,15 @@ int Work::getWorkNumber() const {
     return workNumber_;
 }
 
-const Wt::Dbo::ptr<Group> Work::getGroup() const {
+const Ptr<Group> Work::getGroup() const {
     return group_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& Work::getProblems() const {
+const List<Problem>& Work::getProblems() const {
     return problems_;
 }
 
-const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& Work::getWorkResults() const {
+const List<WorkResult>& Work::getWorkResults() const {
     return workResults_;
 }
 

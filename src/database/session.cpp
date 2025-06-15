@@ -42,7 +42,7 @@ void Session::checkAdmin(const Wt::WString& name) {
     }
 }
 
-Wt::Dbo::ptr<Problem> Session::getProblem(Subject::Type subject, const int semester, const int workNumber, const Wt::WString& name) {
+Ptr<Problem> Session::getProblem(Subject::Type subject, const int semester, const int workNumber, const Wt::WString& name) {
     return getPtr(find<Problem>()
             .where("subject = ?").bind(subject)
             .where("semester = ?").bind(semester)
@@ -50,8 +50,8 @@ Wt::Dbo::ptr<Problem> Session::getProblem(Subject::Type subject, const int semes
             .where("name = ?").bind(name));
 }
 
-Wt::Dbo::ptr<Work> Session::getWork(const Subject::Type subject, const int semester, const int workNumber, 
-    const Wt::Dbo::ptr<Group>& group) {
+Ptr<Work> Session::getWork(const Subject::Type subject, const int semester, const int workNumber, 
+    const Ptr<Group>& group) {
     return getPtr(find<Work>()
             .where("subject = ?").bind(subject)
             .where("semester = ?").bind(semester)
@@ -59,7 +59,7 @@ Wt::Dbo::ptr<Work> Session::getWork(const Subject::Type subject, const int semes
             .where("group_id = ?").bind(group.id()));
 }
 
-Wt::Dbo::ptr<WorkResult> Session::getWorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user) {
+Ptr<WorkResult> Session::getWorkResult(const Ptr<Work>& work, const Ptr<User>& user) {
     return getPtr(find<WorkResult>()
             .where("work_id = ?").bind(work.id())
             .where("user_id = ?").bind(user.id()));

@@ -21,7 +21,7 @@ void RootRequirements::requireAdminRoots(const HttpRequest& request, Session& se
     }
 }
 
-void RootRequirements::requireAuthId(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user) {
+void RootRequirements::requireAuthId(const HttpRequest& request, Session& session, const Ptr<User>& user) {
     const auto caller = session.getByToken<User>(request.token());
 
     if (caller != user && caller->getUserType() == UserType::Student) {

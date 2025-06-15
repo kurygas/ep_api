@@ -10,15 +10,15 @@ void ProblemResource::postRequirements(const HttpRequest& request, Session& sess
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void ProblemResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Problem>& problem) const {
+void ProblemResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Problem>& problem) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void ProblemResource::deleteRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Problem>& problem) const {
+void ProblemResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Problem>& problem) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void ProblemResource::processPatch(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Problem>& problem) const {
+void ProblemResource::processPatch(const HttpRequest& request, Session& session, const Ptr<Problem>& problem) const {
     RootRequirements::requireTeacherRoots(request, session);
 
     for (const auto& [key, value] : request.body()) {

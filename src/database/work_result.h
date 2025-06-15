@@ -6,6 +6,7 @@
 
 #include "json.h"
 #include "str.h"
+#include "types.h"
 
 class User;
 class Problem;
@@ -26,26 +27,26 @@ public:
     static const std::string& getListName();
 
     WorkResult() = default;
-    WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user);
+    WorkResult(const Ptr<Work>& work, const Ptr<User>& user);
 
     void setFilename(const Wt::WString& filename);
     void setMark(int mark);
-    void setWork(const Wt::Dbo::ptr<Work>& work);
-    void setProblem(const Wt::Dbo::ptr<Problem>& problem);
-    void setUser(const Wt::Dbo::ptr<User>& user);
+    void setWork(const Ptr<Work>& work);
+    void setProblem(const Ptr<Problem>& problem);
+    void setUser(const Ptr<User>& user);
 
     const Wt::WString& getFilename() const;
     int getMark() const;
-    const Wt::Dbo::ptr<Work>& getWork() const;
-    const Wt::Dbo::ptr<Problem>& getProblem() const;
-    const Wt::Dbo::ptr<User>& getUser() const;
+    const Ptr<Work>& getWork() const;
+    const Ptr<Problem>& getProblem() const;
+    const Ptr<User>& getUser() const;
     std::string getSolutionPath() const;    
 
 private:
     Wt::WString filename_;
     int mark_;
 
-    Wt::Dbo::ptr<Work> work_;
-    Wt::Dbo::ptr<Problem> problem_;
-    Wt::Dbo::ptr<User> user_;
+    Ptr<Work> work_;
+    Ptr<Problem> problem_;
+    Ptr<User> user_;
 };
