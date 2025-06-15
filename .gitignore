@@ -34,8 +34,9 @@
 /build
 *.db
 /tests/__pycache__
-run.sh
 methods.txt
 /.vscode
 todo.txt
-.env
+*.env
+*.ini
+*.json

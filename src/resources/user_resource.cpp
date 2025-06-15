@@ -6,7 +6,7 @@
 void UserResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
     const Wt::Dbo::ptr<User>& user, const std::string& method) const {
     if (method == Str::token) {
-        if (static_cast<int64_t>(request.body().at("auth_date")) - time(nullptr) >= 3600) {
+        if (time(nullptr) - static_cast<int64_t>(request.body().at("auth_date")) >= 3600) {
             throw ForbiddenException("Too old data");
         }
 

@@ -16,7 +16,6 @@ public:
     void persist(Action& a) {
         Wt::Dbo::field(a, filename_, "filename");
         Wt::Dbo::field(a, mark_, "mark");
-        Wt::Dbo::field(a, queued_, "queued");
         Wt::Dbo::belongsTo(a, work_, "work");
         Wt::Dbo::belongsTo(a, problem_, "problem");
         Wt::Dbo::belongsTo(a, user_, "user");
@@ -39,6 +38,7 @@ public:
     const Wt::Dbo::ptr<Work>& getWork() const;
     const Wt::Dbo::ptr<Problem>& getProblem() const;
     const Wt::Dbo::ptr<User>& getUser() const;
+    std::string getSolutionPath() const;    
 
 private:
     Wt::WString filename_;

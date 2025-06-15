@@ -100,6 +100,7 @@ public:
             responseContent.clear();
             responseContent[Str::error] = e.what();
         }
+        
         response.out() << Wt::Json::serialize(responseContent);
     }
 

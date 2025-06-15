@@ -20,11 +20,8 @@ void Session::configureDatabase() {
     }
     catch (...) {}
 
-    const Wt::Dbo::Transaction transaction(session);
-    
-    if (!session.exist(&Session::getByTgId<User>, "admin")) {
-        session.add(User::createAdmin());
-    }
+    const Wt::Dbo::Transaction tr(session);
+    session.checkAdmin("tg_bot");
 }
 
 Wt::WString Session::generateToken() {
@@ -38,14 +35,31 @@ Wt::WString Session::generateToken() {
     return token;
 }
 
-Wt::Dbo::ptr<Problem> Session::getCurrentProblem(const Wt::Dbo::ptr<User>& user) {
-    for (const auto& workResult : user->getWorkResults()) {
-        const auto currentTime = Wt::WDateTime::currentDateTime();
-
-        if (workResult->getWork()->getStart() <= currentTime && currentTime <= workResult->getWork()->getEnd()) {
-            return workResult->getProblem();
-        }
+void Session::checkAdmin(const Wt::WString& name) {
+    if (!exist(&Session::getByTgId<User>, "ADMIN:" + name)) {
+        add(User::createAdmin("ADMIN:" + name)).modify()->setToken(generateToken());
     }
+}
 
-    return nullptr;
+Wt::Dbo::ptr<Problem> Session::getProblem(Subject::Type subject, const int semester, const int workNumber, const Wt::WString& name) {
+    return getPtr(find<Problem>()
+            .where("subject = ?").bind(subject)
+            .where("semester = ?").bind(semester)
+            .where("work_number = ?").bind(workNumber)
+            .where("name = ?").bind(name));
+}
+
+Wt::Dbo::ptr<Work> Session::getWork(const Subject::Type subject, const int semester, const int workNumber, 
+    const Wt::Dbo::ptr<Group>& group) {
+    return getPtr(find<Work>()
+            .where("subject = ?").bind(subject)
+            .where("semester = ?").bind(semester)
+            .where("work_number = ?").bind(workNumber)
+            .where("group_id = ?").bind(group.id()));
+}
+
+Wt::Dbo::ptr<WorkResult> Session::getWorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user) {
+    return getPtr(find<WorkResult>()
+            .where("work_id = ?").bind(work.id())
+            .where("user_id = ?").bind(user.id()));
 }

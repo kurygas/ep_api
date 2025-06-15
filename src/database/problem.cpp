@@ -14,10 +14,6 @@ Problem::Problem(const Wt::WString& name, const Wt::WString& statement, const Su
     setWorkNumber(workNumber);
 }
 
-Problem::Problem(const Wt::Json::Object& json)
-: Problem(json.at(Str::name), json.at(Str::statement), JsonFunctions::parse<Subject::Type>(json.at(Str::subject)), json.at(Str::semester), 
-    json.at(Str::workNumber)) {}
-
 void Problem::setName(const Wt::WString& name) {
     if (name.empty()) {
         throw BadRequestException("Invalid name for Problem");

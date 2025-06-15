@@ -9,9 +9,8 @@
 
 Work::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::name] = getName();
-    json[Str::start] = getStart().toString();
-    json[Str::end] = getEnd().toString();
+    json[Str::start] = getStart().toTime_t();
+    json[Str::end] = getEnd().toTime_t();
     json[Str::subject] = static_cast<int>(getSubject());
     json[Str::semester] = getSemester();
     json[Str::workNumber] = getWorkNumber();
@@ -24,38 +23,18 @@ const std::string& Work::getListName() {
     return Str::workList;
 }
 
-Work::Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject,
-    const int semester, const int workNumber)
-: start_(Wt::WDateTime::currentDateTime()), end_(Wt::WDateTime::currentDateTime()) {
-    setName(name);
-    setStart(start);
-    setEnd(end);
+Work::Work(const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, const int semester, 
+    const int workNumber, const Wt::Dbo::ptr<Group>& group) {
+    setTime(start, end);
     setSemester(semester);
     setWorkNumber(workNumber);
     setSubject(subject);
-}
-
-Work::Work(const Wt::Json::Object& json)
-: Work(json.at(Str::name), Wt::WDateTime::fromString(json.at(Str::start)), Wt::WDateTime::fromString(json.at(Str::end)), 
-    JsonFunctions::parse<Subject::Type>(json.at(Str::subject)), json.at(Str::semester), json.at(Str::workNumber)) {}
-
-void Work::setName(const Wt::WString &name) {
-    if (name.empty()) {
-        throw BadRequestException("Invalid name for Work");
-    }
-
-    name_ = name;
+    setGroup(group);
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
     if (start < Wt::WDateTime::currentDateTime() || start > end_) {
         throw BadRequestException("Invalid start for Work");
-    }
-
-    for (const auto& work : group_->getWorks()) {
-        if (Utility::isIntersect(start, end_, work->getStart(), work->getEnd())) {
-            throw BadRequestException("Invalid start for work");
-        }
     }
 
     start_ = start;
@@ -66,12 +45,15 @@ void Work::setEnd(const Wt::WDateTime& end) {
         throw BadRequestException("Invalid end for Work");
     }
 
-    for (const auto& work : group_->getWorks()) {
-        if (Utility::isIntersect(start_, end, work->getStart(), work->getEnd())) {
-            throw BadRequestException("Invalid end for Work");
-        }
+    end_ = end;
+}
+
+void Work::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
+    if (start > end || start < Wt::WDateTime::currentDateTime()) {
+        throw BadRequestException("Invalid time segment for Work");
     }
 
+    start_ = start;
     end_ = end;
 }
 
@@ -118,10 +100,6 @@ void Work::setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problem
 
 void Work::setSubject(const Subject::Type subject) {
     subject_ = subject;
-}
-
-const Wt::WString& Work::getName() const {
-    return name_;
 }
 
 const Wt::WDateTime& Work::getStart() const {

@@ -5,6 +5,10 @@ void GroupResource::getRequirements(const HttpRequest& request, Session& session
     RootRequirements::requireAuth(request, session);
 }
 
+void GroupResource::postRequirements(const HttpRequest& request, Session& session) const {
+    RootRequirements::requireAuth(request, session);
+}
+
 void GroupResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Group>& group) const {
     RootRequirements::requireAuth(request, session);
 }

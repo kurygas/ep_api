@@ -20,16 +20,8 @@ public:
 
     Wt::WString generateToken();
 
-    Wt::Dbo::ptr<Problem> getCurrentProblem(const Wt::Dbo::ptr<User>& user);
-
     template<typename T>
-    Wt::Dbo::ptr<T> create(const Wt::Json::Object& json) {
-        if (exist(&Session::getByName<T>, json.at(Str::name))) {
-            throw UnprocessableEntityException("Name already exists");
-        }
-
-        return add(std::make_unique<T>(json));
-    }
+    Wt::Dbo::ptr<T> create(const Wt::Json::Object& json);
 
     template<typename T>
     Wt::Dbo::collection<Wt::Dbo::ptr<T>> getByArray(const Wt::Json::Array& array) {
@@ -62,6 +54,10 @@ public:
         return getPtr(find<T>().where("name = ?").bind(name));
     }
 
+    Wt::Dbo::ptr<Problem> getProblem(Subject::Type subject, int semester, int workNumber, const Wt::WString& name);
+    Wt::Dbo::ptr<Work> getWork(Subject::Type subject, int semester, int workNumber, const Wt::Dbo::ptr<Group>& group);
+    Wt::Dbo::ptr<WorkResult> getWorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user);
+
     template<typename F, typename... Args>
     bool exist(F method, Args&&... args) {
         try {
@@ -89,40 +85,81 @@ private:
         }
 
         if constexpr (std::is_same_v<Ptr, Wt::Dbo::ptr<User>>) {
-            if (ptr->getTokenTimeLimit() < Wt::WDateTime::currentDateTime()) {
+            if (ptr->getUserType() != UserType::Admin && ptr->getTokenTimeLimit() < Wt::WDateTime::currentDateTime()) {
                 ptr.modify()->setToken(generateToken());
             }
         }
 
         return ptr;
     }
+
+    void checkAdmin(const Wt::WString& name);
 };
 
 template<>
-Wt::Dbo::ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
-    return add(std::make_unique<WorkResult>(getById<Work>(json.at(Str::workId)), getById<User>(json.at(Str::userId))));
+inline Wt::Dbo::ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
+    const auto work = getById<Work>(json.at(Str::workId));
+    const auto user = getById<User>(json.at(Str::userId));
+
+    if (exist(&Session::getWorkResult, work, user)) {
+        throw UnprocessableEntityException("WorkResult result already exists");
+    }
+
+    return add(std::make_unique<WorkResult>(work, user));
 }
 
 template<>
-Wt::Dbo::ptr<User> Session::create<User>(const Wt::Json::Object& json) {
-    if (exist(&Session::getByTgId<User>, json.at(Str::tgId))) {
+inline Wt::Dbo::ptr<User> Session::create<User>(const Wt::Json::Object& json) {
+    const auto tgId = json.at(Str::tgId);
+    const auto tgUsername = json.at(Str::tgUsername);
+    const auto name = json.at(Str::name);
+    const auto surname = json.at(Str::surname);
+
+    if (exist(&Session::getByTgId<User>, tgId)) {
         throw UnprocessableEntityException("User already exists");
     }
 
-    return add(std::make_unique<User>(json));
+    return add(std::make_unique<User>(tgId, tgUsername, name, surname));
 }
 
 template<>
-Wt::Dbo::ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
-    const auto results = find<Problem>()
-        .where("subject = ?").bind(json.at(Str::subject))
-        .where("semester = ?").bind(json.at(Str::semester))
-        .where("work_number = ?").bind(json.at(Str::workNumber))
-        .where("name = ?").bind(json.at(Str::name));
+inline Wt::Dbo::ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
+    const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
+    const auto semester = json.at(Str::semester);
+    const auto workNumber = json.at(Str::workNumber);
+    const auto statement = json.at(Str::statement);
+    const auto name = json.at(Str::name);
 
-    if (!results.resultList().empty()) {
+    if (exist(&Session::getProblem, subject, semester, workNumber, name)) {
         throw UnprocessableEntityException("Problem already exists");
     }
 
-    return add(std::make_unique<Problem>(json));
+    return add(std::make_unique<Problem>(name, statement, subject, semester, workNumber));
+}
+
+template<>
+inline Wt::Dbo::ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
+    const auto group = getById<Group>(json.at(Str::groupId));
+    const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
+    const auto semester = json.at(Str::semester);
+    const auto workNumber = json.at(Str::workNumber);
+    const auto start = Wt::WDateTime::fromTime_t(json.at(Str::start));
+    const auto end = Wt::WDateTime::fromTime_t(json.at(Str::end));
+
+    if (exist(&Session::getWork, subject, semester, workNumber, group)) {
+        throw UnprocessableEntityException("Work already exists");
+    }
+
+    return add(std::make_unique<Work>(start, end, subject, semester, workNumber, group));
+}
+
+template<>
+inline Wt::Dbo::ptr<Group> Session::create<Group>(const Wt::Json::Object& json) {
+    const auto name = json.at(Str::name);
+
+    if (exist(&Session::getByName<Group>, name)) {
+        throw UnprocessableEntityException("Group already exists");
+    }
+
+    return add(std::make_unique<Group>(name));
 }

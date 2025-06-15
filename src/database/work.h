@@ -28,20 +28,18 @@ public:
     static const std::string& getListName();
 
     Work() = default;
-    Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, 
-        int workNumber);
-    explicit Work(const Wt::Json::Object& json);
+    Work(const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, int workNumber, 
+        const Wt::Dbo::ptr<Group>& group);
 
-    void setName(const Wt::WString& name);
     void setStart(const Wt::WDateTime& start);
     void setEnd(const Wt::WDateTime& end);
+    void setTime(const Wt::WDateTime& start, const Wt::WDateTime& end);
     void setSubject(Subject::Type subject);
     void setSemester(int semester);
     void setWorkNumber(int workNumber);
     void setGroup(const Wt::Dbo::ptr<Group>& group);
     void setProblems(const Wt::Dbo::collection<Wt::Dbo::ptr<Problem>>& problems);
 
-    const Wt::WString& getName() const;
     const Wt::WDateTime& getStart() const;
     const Wt::WDateTime& getEnd() const;
     Subject::Type getSubject() const;
@@ -52,7 +50,6 @@ public:
     const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
 
 private:
-    Wt::WString name_;
     Wt::WDateTime start_;
     Wt::WDateTime end_;
     Subject::Type subject_;

@@ -31,13 +31,12 @@ public:
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
     }
 
-    static std::unique_ptr<User> createAdmin();
+    static std::unique_ptr<User> createAdmin(const Wt::WString& name);
     operator Wt::Json::Object() const;
     static const std::string& getListName();
 
     User() = default;
     User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
-    explicit User(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
     void setSurname(const Wt::WString& surname);

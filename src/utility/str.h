@@ -34,8 +34,10 @@ namespace Str {
     constexpr std::string token = "token";
     constexpr std::string confirmCode = "confirm_code";
     constexpr std::string mark = "mark";
-    constexpr std::string queued = "queued";
     constexpr std::string auth = "auth";
+    constexpr std::string solution = "solution";
 
-    const std::string botToken = std::getenv("BOT_TOKEN");
+    const std::string solutionsPath = "/home/kuryga/projects/ep_api/solutions";
+
+    inline std::string botToken = "";
 }

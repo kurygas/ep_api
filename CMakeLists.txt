@@ -6,6 +6,7 @@ find_package(Wt REQUIRED Wt HTTP Dbo DboSqlite3)
 find_package(OpenSSL REQUIRED)
 add_subdirectory(src)
 add_executable(ep_api main.cpp)
+target_include_directories(ep_api PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(
     ep_api PUBLIC
     Server

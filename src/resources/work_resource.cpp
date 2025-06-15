@@ -5,30 +5,43 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
     RootRequirements::requireTeacherRoots(request, session);
 
     for (const auto& [key, value] : request.body()) {
-        if (key == Str::name) {
-            if (session.exist(&Session::getByName<Work>, value)) {
-                throw UnprocessableEntityException("Name already exists");
-            }
-
-            work.modify()->setName(value);
-        }
-        else if (key == Str::start) {
+        if (key == Str::start) {
             work.modify()->setStart(Wt::WDateTime::fromString(value));
         }
         else if (key == Str::end) {
             work.modify()->setEnd(Wt::WDateTime::fromString(value));
         }
         else if (key == Str::subject) {
-            work.modify()->setSubject(JsonFunctions::parse<Subject::Type>(value));
+            const auto subject = JsonFunctions::parse<Subject::Type>(value);
+
+            if (session.exist(&Session::getWork, subject, work->getSemester(), work->getWorkNumber(), work->getGroup())) {
+                throw UnprocessableEntityException("Already exists");
+            }
+
+            work.modify()->setSubject(subject);
         }
         else if (key == Str::semester) {
+            if (session.exist(&Session::getWork, work->getSubject(), value, work->getWorkNumber(), work->getGroup())) {
+                throw UnprocessableEntityException("Already exists");
+            }
+
             work.modify()->setSemester(value);
         }
         else if (key == Str::workNumber) {
+            if (session.exist(&Session::getWork, work->getSubject(), work->getSemester(), value, work->getGroup())) {
+                throw UnprocessableEntityException("Already exists");
+            }
+
             work.modify()->setWorkNumber(value);
         }
         else if (key == Str::groupId) {
-            work.modify()->setGroup(session.getById<Group>(value));
+            const auto group = session.getById<Group>(value);
+
+            if (session.exist(&Session::getWork, work->getSubject(), work->getSemester(), work->getWorkNumber(), group)) {
+                throw UnprocessableEntityException("Already exists");
+            }
+
+            work.modify()->setGroup(group);
         }
         else if (key == Str::problemList) {
             work.modify()->setProblems(session.getByArray<Problem>(value));
@@ -38,6 +51,10 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
 
 void WorkResource::getRequirements(const HttpRequest& request, Session& session) const {
     RootRequirements::requireAuth(request, session);
+}
+
+void WorkResource::postRequirements(const HttpRequest& request, Session& session) const {
+    RootRequirements::requireTeacherRoots(request, session);
 }
 
 void WorkResource::getIdRequirements(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<Work>& work) const {

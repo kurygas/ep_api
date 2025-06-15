@@ -5,6 +5,12 @@
 #include "work_resource.h"
 #include "work_result_resource.h"
 #include "session.h"
+#include "get_solution_resource.h"
+
+#include <fstream>
+#include <sstream>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 Server::Server(const std::string& applicationPath)
 : Wt::WServer(applicationPath) {
@@ -17,4 +23,9 @@ Server::Server(const std::string& applicationPath)
     addResource<ProblemResource>("/api/problem");
     addResource<WorkResource>("/api/work");
     addResource<WorkResultResource>("/api/work_result");
+    addResource<GetSolutionResource>("/api/solution");
+
+    boost::property_tree::ptree pt;
+    boost::property_tree::read_ini("/home/kuryga/projects/ep_api/config.ini", pt);
+    Str::botToken = pt.get<std::string>("tokens.bot");
 }

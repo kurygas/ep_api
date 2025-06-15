@@ -7,10 +7,9 @@
 #include "str.h"
 #include "crypto.h"
 
-std::unique_ptr<User> User::createAdmin() {
+std::unique_ptr<User> User::createAdmin(const Wt::WString& name) {
     auto user = std::make_unique<User>();
-    user->tgId_ = "admin";
-    user->tgUsername_ = "admin";
+    user->tgId_ = name;
     user->userType_ = UserType::Admin;
     return std::move(user);
 }
@@ -35,9 +34,6 @@ User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WSt
     setName(name);
     setSurname(surname);
 }
-
-User::User(const Wt::Json::Object& json)
-: User(json.at(Str::tgId), json.at(Str::tgUsername), json.at(Str::name), json.at(Str::surname)) {}
 
 void User::setName(const Wt::WString& firstName) {
     if (firstName.empty() || !Validator::isRussianString(firstName)) {

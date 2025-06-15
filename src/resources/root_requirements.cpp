@@ -24,7 +24,7 @@ void RootRequirements::requireAdminRoots(const HttpRequest& request, Session& se
 void RootRequirements::requireAuthId(const HttpRequest& request, Session& session, const Wt::Dbo::ptr<User>& user) {
     const auto caller = session.getByToken<User>(request.token());
 
-    if (caller.id() != user.id() && caller->getUserType() != UserType::Admin) {
+    if (caller != user && caller->getUserType() == UserType::Student) {
         throw ForbiddenException("Don't have access to this user");
     }
 }

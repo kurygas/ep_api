@@ -15,6 +15,14 @@ WorkResult::operator Wt::Json::Object() const {
 
 WorkResult::WorkResult(const Wt::Dbo::ptr<Work>& work, const Wt::Dbo::ptr<User>& user)
 : mark_(-1) {
+    if (work->getProblems().empty()) {
+        throw BadRequestException("No tasks in work");
+    }
+
+    if (work->getStart() > Wt::WDateTime::currentDateTime()) {
+        throw BadRequestException("Not begin yet");
+    }
+
     setWork(work);
     setProblem(Random::pickRandom(work->getProblems()));
     setUser(user);
@@ -25,8 +33,12 @@ const std::string& WorkResult::getListName() {
 }
 
 void WorkResult::setFilename(const Wt::WString& filename) {
-    if (filename.empty() || !filename_.empty()) {
+    if (filename.empty()) {
         throw BadRequestException("Invalid filename for WorkResult");
+    }
+
+    if (Wt::WDateTime::currentDateTime() > work_->getEnd()) {
+        throw BadRequestException("Time is up");
     }
 
     filename_ = filename;
@@ -42,6 +54,20 @@ void WorkResult::setMark(const int mark) {
 
 const Wt::WString& WorkResult::getFilename() const {
     return filename_;
+}
+
+std::string WorkResult::getSolutionPath() const {
+    if (filename_.empty()) {
+        throw NotFoundException("No solution in work result");
+    }
+
+    auto path = Str::solutionsPath;
+    path += user_->getTgId().toUTF8() + '/';
+    path += std::to_string(static_cast<int>(work_->getSubject())) + '/';
+    path += std::to_string(work_->getSemester()) + '/';
+    path += std::to_string(work_->getWorkNumber()) + '/';
+    path += filename_.toUTF8();
+    return path;
 }
 
 int WorkResult::getMark() const {

@@ -27,7 +27,6 @@ public:
 
     Problem() = default;
     Problem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, int semester, int workNumber);
-    explicit Problem(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
     void setStatement(const Wt::WString& statement);
