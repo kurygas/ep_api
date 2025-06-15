@@ -4,6 +4,7 @@
 #include <Wt/Dbo/WtSqlTraits.h>
 
 #include "json.h"
+#include "str.h"
 
 class User;
 class Work;
@@ -12,7 +13,7 @@ class Group {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::field(a, name_, "name");
+        Wt::Dbo::field(a, name_, Str::name);
         Wt::Dbo::hasMany(a, users_, Wt::Dbo::ManyToOne, "group");
         Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToOne, "group");
     }
@@ -22,7 +23,6 @@ public:
 
     Group() = default;
     explicit Group(const Wt::WString& name);
-    explicit Group(const Wt::Json::Object& json);
 
     void setName(const Wt::WString& name);
 

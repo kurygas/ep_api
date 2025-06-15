@@ -1,5 +1,5 @@
 add_library(
-    Utility STATIC 
+    Utility STATIC
     http_exceptions.cpp
     random_functions.cpp
     request.cpp

@@ -12,6 +12,7 @@
 #include "problem.h"
 #include "work_result.h"
 #include "work.h"
+#include "point.h"
 
 class Session : public Wt::Dbo::Session {
 public:
@@ -162,4 +163,12 @@ inline Wt::Dbo::ptr<Group> Session::create<Group>(const Wt::Json::Object& json) 
     }
 
     return add(std::make_unique<Group>(name));
+}
+
+template<>
+inline Wt::Dbo::ptr<Point> Session::create<Point>(const Wt::Json::Object& json) {
+    const auto reason = json.at(Str::reason);
+    const auto amount = json.at(Str::amount);
+    const auto user = getById<User>(json.at(Str::userId));
+    return add(std::make_unique<Point>(reason, amount, user));
 }

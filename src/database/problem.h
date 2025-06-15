@@ -5,6 +5,7 @@
 
 #include "subject_type.h"
 #include "json.h"
+#include "str.h"
 
 class Work;
 class WorkResult;
@@ -13,11 +14,11 @@ class Problem {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::field(a, name_, "name");
-        Wt::Dbo::field(a, statement_, "statement");
-        Wt::Dbo::field(a, subject_, "subject");
-        Wt::Dbo::field(a, semester_, "semester");
-        Wt::Dbo::field(a, workNumber_, "work_number");
+        Wt::Dbo::field(a, name_, Str::name);
+        Wt::Dbo::field(a, statement_, Str::statement);
+        Wt::Dbo::field(a, subject_, Str::subject);
+        Wt::Dbo::field(a, semester_, Str::semester);
+        Wt::Dbo::field(a, workNumber_, Str::workNumber);
         Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToMany, "work_problems");
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "problem");
     }

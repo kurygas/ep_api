@@ -8,10 +8,6 @@ Group::Group(const Wt::WString& name) {
     setName(name);
 }
 
-Group::Group(const Wt::Json::Object& json) {
-    setName(json.at(Str::name));
-}
-
 void Group::setName(const Wt::WString& name) {
     if (name.empty()) {
         throw BadRequestException("Invalid name for Group");

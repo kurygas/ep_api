@@ -5,6 +5,7 @@
 #include "http_exceptions.h"
 #include "str.h"
 #include "random_functions.h"
+#include "point.h"
 
 WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;

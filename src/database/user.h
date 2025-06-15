@@ -6,9 +6,11 @@
 #include <Wt/WDateTime.h>
 
 #include "json.h"
+#include "str.h"
 
 class Group;
 class WorkResult;
+class Point;
 
 enum class UserType {
     Student = 0,
@@ -20,15 +22,16 @@ class User {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::field(a, userType_, "user_type");
-        Wt::Dbo::field(a, name_, "name");
-        Wt::Dbo::field(a, surname_, "surname");
-        Wt::Dbo::field(a, tgId_, "tg_id");
-        Wt::Dbo::field(a, tgUsername_, "tg_username");
-        Wt::Dbo::field(a, token_, "token");
+        Wt::Dbo::field(a, userType_, Str::userType);
+        Wt::Dbo::field(a, name_, Str::name);
+        Wt::Dbo::field(a, surname_, Str::surname);
+        Wt::Dbo::field(a, tgId_, Str::tgId);
+        Wt::Dbo::field(a, tgUsername_, Str::tgUsername);
+        Wt::Dbo::field(a, token_, Str::token);
         Wt::Dbo::field(a, tokenTimeLimit_, "token_time_limit");
         Wt::Dbo::belongsTo(a, group_, "group");
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
+        Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne, "user");
     }
 
     static std::unique_ptr<User> createAdmin(const Wt::WString& name);
@@ -54,6 +57,7 @@ public:
     const Wt::Dbo::ptr<Group>& getGroup() const;
     const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& getWorkResults() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
+    const Wt::Dbo::collection<Wt::Dbo::ptr<Point>>& getPoints() const;
 
 private:
     void setTgId(const Wt::WString& tgId);
@@ -68,4 +72,5 @@ private:
 
     Wt::Dbo::ptr<Group> group_;
     Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>> workResults_;
+    Wt::Dbo::collection<Wt::Dbo::ptr<Point>> points_;
 };

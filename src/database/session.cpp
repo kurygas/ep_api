@@ -10,6 +10,7 @@ Session::Session() {
     mapClass<Problem>("problems");
     mapClass<WorkResult>("work_results");
     mapClass<Work>("works");
+    mapClass<Point>("points");
 }
 
 void Session::configureDatabase() {

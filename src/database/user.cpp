@@ -6,6 +6,7 @@
 #include "random_functions.h"
 #include "str.h"
 #include "crypto.h"
+#include "point.h"
 
 std::unique_ptr<User> User::createAdmin(const Wt::WString& name) {
     auto user = std::make_unique<User>();
@@ -125,6 +126,10 @@ const Wt::Dbo::collection<Wt::Dbo::ptr<WorkResult>>& User::getWorkResults() cons
 
 const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
+}
+
+const Wt::Dbo::collection<Wt::Dbo::ptr<Point>>& User::getPoints() const {
+    return points_;
 }
 
 const std::string& User::getListName() {

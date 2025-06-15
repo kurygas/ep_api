@@ -6,6 +6,7 @@
 #include "work_result_resource.h"
 #include "session.h"
 #include "get_solution_resource.h"
+#include "point_resource.h"
 
 #include <fstream>
 #include <sstream>
@@ -24,6 +25,7 @@ Server::Server(const std::string& applicationPath)
     addResource<WorkResource>("/api/work");
     addResource<WorkResultResource>("/api/work_result");
     addResource<GetSolutionResource>("/api/solution");
+    addResource<PointResource>("/api/point");
 
     boost::property_tree::ptree pt;
     boost::property_tree::read_ini("/home/kuryga/projects/ep_api/config.ini", pt);

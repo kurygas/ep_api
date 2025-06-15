@@ -7,6 +7,7 @@ add_library(
     work_result_resource.cpp
     root_requirements.cpp
     get_solution_resource.cpp
+    point_resource.cpp
 )
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)

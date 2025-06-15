@@ -40,3 +40,5 @@ todo.txt
 *.env
 *.ini
 *.json
+/solutions
+/.pytest_cache

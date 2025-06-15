@@ -9,6 +9,7 @@ namespace Str {
     constexpr std::string problemList = "problem_list";
     constexpr std::string workList = "work_list";
     const std::string workResultList = "work_result_list";
+    constexpr std::string pointList = "point_list";
 
     constexpr std::string id = "id";
     constexpr std::string userId = "user_id";
@@ -16,6 +17,7 @@ namespace Str {
     constexpr std::string problemId = "problem_id";
     constexpr std::string workId = "work_id";
     constexpr std::string workResultId = "work_result_id";
+    constexpr std::string pointId = "point_id";
 
     constexpr std::string tgId = "tg_id";
     constexpr std::string tgUsername = "tg_username";
@@ -36,6 +38,8 @@ namespace Str {
     constexpr std::string mark = "mark";
     constexpr std::string auth = "auth";
     constexpr std::string solution = "solution";
+    constexpr std::string amount = "amount";
+    constexpr std::string reason = "reason";
 
     const std::string solutionsPath = "/home/kuryga/projects/ep_api/solutions";
 

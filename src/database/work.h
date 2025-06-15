@@ -4,6 +4,7 @@
 #include <Wt/Dbo/WtSqlTraits.h>
 
 #include "subject_type.h"
+#include "str.h"
 
 class Group;
 class Problem;
@@ -13,12 +14,11 @@ class Work {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::field(a, name_, "name");
-        Wt::Dbo::field(a, start_, "start");
-        Wt::Dbo::field(a, end_, "end");
-        Wt::Dbo::field(a, subject_, "subject");
-        Wt::Dbo::field(a, semester_, "semester");
-        Wt::Dbo::field(a, workNumber_, "work_number");
+        Wt::Dbo::field(a, start_, Str::start);
+        Wt::Dbo::field(a, end_, Str::end);
+        Wt::Dbo::field(a, subject_, Str::subject);
+        Wt::Dbo::field(a, semester_, Str::semester);
+        Wt::Dbo::field(a, workNumber_, Str::workNumber);
         Wt::Dbo::belongsTo(a, group_, "group");
         Wt::Dbo::hasMany(a, problems_, Wt::Dbo::ManyToMany, "work_problems");
         Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "work");
