@@ -40,8 +40,7 @@ public:
     static const std::string& getListName();
 
     User() = default;
-    User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
-        const Ptr<Group>& group);
+    User(int64_t tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
 
     void setName(const Wt::WString& name);
     void setSurname(const Wt::WString& surname);
@@ -55,19 +54,19 @@ public:
     const Wt::WString& getName() const;
     const Wt::WString& getSurname() const;
     const Wt::WString& getTgUsername() const;
-    const Wt::WString& getTgId() const;
+    int64_t getTgId() const;
     const Ptr<Group>& getGroup() const;
     const List<WorkResult>& getWorkResults() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
     const List<Point>& getPoints() const;
 
 private:
-    void setTgId(const Wt::WString& tgId);
+    void setTgId(int64_t);
 
     UserType userType_;
     Wt::WString name_;
     Wt::WString surname_;
-    Wt::WString tgId_;
+    int64_t tgId_;
     Wt::WString tgUsername_;
     Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;

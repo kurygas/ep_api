@@ -37,8 +37,13 @@ public:
     }
 
     template<typename T>
-    Ptr<T> getByTgId(const Wt::WString& tgId) {
+    Ptr<T> getByTgId(int64_t tgId) {
         return getPtr(find<T>().where("tg_id = ?").bind(tgId));
+    }
+
+    template<typename T>
+    Ptr<T> getByTgUsername(const Wt::WString& tgUsername) {
+        return getPtr(find<T>().where("tg_username = ?").bind(tgUsername));
     }
 
     template<typename T>
@@ -116,13 +121,12 @@ inline Ptr<User> Session::create<User>(const Wt::Json::Object& json) {
     const auto tgUsername = json.at(Str::tgUsername);
     const auto name = json.at(Str::name);
     const auto surname = json.at(Str::surname);
-    const auto group = getById<Group>(json.at(Str::groupId));
 
     if (exist(&Session::getByTgId<User>, tgId)) {
         throw UnprocessableEntityException("User already exists");
     }
 
-    return add(std::make_unique<User>(tgId, tgUsername, name, surname, group));
+    return add(std::make_unique<User>(tgId, tgUsername, name, surname));
 }
 
 template<>

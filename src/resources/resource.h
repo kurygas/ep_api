@@ -122,7 +122,7 @@ protected:
     virtual void postRequirements(const HttpRequest& request, Session& session) const {}
 
 private:
-    void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) {
+    void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) const {
         response.setStatus(code);
         responseContent.clear();
         responseContent[Str::error] = error;

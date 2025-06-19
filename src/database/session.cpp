@@ -37,7 +37,7 @@ Wt::WString Session::generateToken() {
 }
 
 void Session::checkAdmin(const Wt::WString& name) {
-    if (!exist(&Session::getByTgId<User>, "ADMIN:" + name)) {
+    if (!exist(&Session::getByTgUsername<User>, "ADMIN:" + name)) {
         add(User::createAdmin("ADMIN:" + name)).modify()->setToken(generateToken());
     }
 }

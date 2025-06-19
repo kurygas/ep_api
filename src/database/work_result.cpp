@@ -63,7 +63,7 @@ std::string WorkResult::getSolutionPath() const {
     }
 
     auto path = Str::solutionsPath;
-    path += user_->getTgId().toUTF8() + '/';
+    path += std::to_string(user_->getTgId()) + '/';
     path += std::to_string(static_cast<int>(work_->getSubject())) + '/';
     path += std::to_string(work_->getSemester()) + '/';
     path += std::to_string(work_->getWorkNumber()) + '/';

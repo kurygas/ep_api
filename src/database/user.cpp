@@ -10,7 +10,7 @@
 
 std::unique_ptr<User> User::createAdmin(const Wt::WString& name) {
     auto user = std::make_unique<User>();
-    user->tgId_ = name;
+    user->tgUsername_ = name;
     user->userType_ = UserType::Admin;
     return std::move(user);
 }
@@ -27,15 +27,13 @@ User::operator Wt::Json::Object() const {
     return json;
 }
 
-User::User(const Wt::WString& tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname, 
-    const Ptr<Group>& group)
+User::User(const int64_t tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime()) {
     setTgId(tgId);
     setTgUsername(tgUsername);
     setName(name);
     setSurname(surname);
-    setGroup(group);
 }
 
 void User::setName(const Wt::WString& firstName) {
@@ -54,16 +52,12 @@ void User::setSurname(const Wt::WString& secondName) {
     surname_ = secondName;
 }
 
-void User::setTgId(const Wt::WString& tgId) {
-    if (tgId.empty()) {
-        throw BadRequestException("Invalid tg id for User");
-    }
-
+void User::setTgId(const int64_t tgId) {
     tgId_ = tgId;
 }
 
 void User::setTgUsername(const Wt::WString& tgUsername) {
-    if (tgUsername.empty() || tgUsername.toUTF8().front() != '@') {
+    if (tgUsername.empty()) {
         throw BadRequestException("Invalid tg username for User");
     }
 
@@ -114,7 +108,7 @@ const Wt::WString& User::getTgUsername() const {
     return tgUsername_;
 }
 
-const Wt::WString& User::getTgId() const {
+int64_t User::getTgId() const {
     return tgId_;
 }
 

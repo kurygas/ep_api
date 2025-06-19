@@ -6,8 +6,7 @@ HttpRequest::HttpRequest(const Wt::Http::Request& request)
     setBody();
 }
 
-std::string HttpRequest::token() const
-{
+std::string HttpRequest::token() const {
     const auto tokenHeader = request_.headerValue("Authorization");
 
     if (tokenHeader.substr(0, 7) != "Bearer ") {

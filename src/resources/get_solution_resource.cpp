@@ -16,6 +16,11 @@ void GetSolutionResource::handleRequest(const Wt::Http::Request& request, Wt::Ht
             const Wt::Dbo::Transaction tr(session);
             const auto workResult = session.getById<WorkResult>(Utility::getId(path));
             std::ifstream file(workResult->getSolutionPath(), std::ios::binary);
+
+            if (!file.is_open()) {
+                throw NotFoundException("");
+            }
+
             response.out() << file.rdbuf();
         }
         else {
@@ -23,15 +28,16 @@ void GetSolutionResource::handleRequest(const Wt::Http::Request& request, Wt::Ht
         }
     }
     catch (const HttpException& e) {
-        response.setStatus(e.code());
-        Wt::Json::Object responseContent;
-        responseContent[Str::error] = e.what();
-        response.out() << Wt::Json::serialize(responseContent);
+        processException(response, e, e.code());
     }
     catch (const std::exception& e) {
-        response.setStatus(500);
-        Wt::Json::Object responseContent;
-        responseContent[Str::error] = e.what();
-        response.out() << Wt::Json::serialize(responseContent);
+        processException(response, e, 500);
     }
+}
+
+void GetSolutionResource::processException(Wt::Http::Response& response, const std::exception& e, const int code) const {
+    response.setStatus(code);
+    Wt::Json::Object responseContent;
+    responseContent[Str::error] = e.what();
+    response.out() << Wt::Json::serialize(responseContent);
 }
