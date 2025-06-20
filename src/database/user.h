@@ -37,7 +37,6 @@ public:
 
     static std::unique_ptr<User> createAdmin(const Wt::WString& name);
     operator Wt::Json::Object() const;
-    static const std::string& getListName();
 
     User() = default;
     User(int64_t tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);

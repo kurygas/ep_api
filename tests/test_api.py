@@ -1,6 +1,7 @@
 from random import choices
 from string import ascii_lowercase, digits
 from requests import get, post, delete, patch
+from datetime import datetime
 
 
 url = "http://127.0.0.1:8080/api/"
@@ -83,6 +84,18 @@ class User:
 
 
 def test_api():
-    users = [User() for _ in range(10)]
-    for user in users:
-        user.test()    
+    token = "Bearer qEl1Qzs3UWSiN3Lb"
+    start = datetime(2025, 6, 20, 10)
+    end = datetime(2025, 6, 20, 11)
+    json = {
+        "name": "test_work",
+        "start": int(start.timestamp()),
+        "end": int(end.timestamp()),
+        "subject": 0,
+        "semester": 1,
+        "work_number": 1,
+        
+    }
+    response = post(url + "work/", headers={"Authorization": token}, json=json)
+    print(response.json())
+    assert response.status_code == 201

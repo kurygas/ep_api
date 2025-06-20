@@ -127,7 +127,3 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
 const List<Point>& User::getPoints() const {
     return points_;
 }
-
-const std::string& User::getListName() {
-    return Str::userList;
-}

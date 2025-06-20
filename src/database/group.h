@@ -20,7 +20,6 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static const std::string& getListName();
 
     Group() = default;
     explicit Group(const Wt::WString& name);

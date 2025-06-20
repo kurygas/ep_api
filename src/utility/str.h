@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 namespace Str {
+    constexpr std::string list = "list";
     constexpr std::string userList = "user_list";
     constexpr std::string groupList = "group_list";
     constexpr std::string problemList = "problem_list";

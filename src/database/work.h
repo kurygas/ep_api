@@ -26,7 +26,6 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static const std::string& getListName();
 
     Work() = default;
     Work(const Wt::WDateTime& start, const Wt::WDateTime& end, Subject::Type subject, int semester, int workNumber, 

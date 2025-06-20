@@ -24,7 +24,6 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static const std::string& getListName();
 
     WorkResult() = default;
     WorkResult(const Ptr<Work>& work, const Ptr<User>& user);

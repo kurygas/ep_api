@@ -26,7 +26,7 @@ public:
             Wt::Dbo::Transaction tr(session);
             response.setMimeType("application/json");
             HttpRequest requestContent(request);
-            const auto path = Utility::split(request.pathInfo().substr(1));
+            const auto path = Utility::split(request.pathInfo());
             response.setStatus(200);
             Ptr<DatabaseType> ptr = nullptr;
             const auto method = request.method();
@@ -34,7 +34,7 @@ public:
             if (path.empty()) {
                 if (method == "GET") {
                     getRequirements(requestContent, session);
-                    responseContent[DatabaseType::getListName()] = JsonFunctions::getIdArray(session.getAll<DatabaseType>());
+                    responseContent[Str::list] = JsonFunctions::getIdArray(session.getAll<DatabaseType>());
                 }
                 else if (method == "POST") {
                     postRequirements(requestContent, session);

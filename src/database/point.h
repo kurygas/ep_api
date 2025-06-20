@@ -19,7 +19,6 @@ public:
     }
 
     operator Wt::Json::Object() const;
-    static const std::string& getListName();
 
     Point() = default;
     Point(const Wt::WString& reason, int amount, const Ptr<User>& user);

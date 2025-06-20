@@ -89,7 +89,3 @@ Problem::operator Wt::Json::Object() const {
     json[Str::workResultId] = JsonFunctions::getIdArray(getWorkResults());
     return json;
 }
-
-const std::string& Problem::getListName() {
-    return Str::problemList;
-}

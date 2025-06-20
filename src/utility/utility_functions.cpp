@@ -5,11 +5,11 @@ std::vector<std::string> Utility::split(const std::string& str) {
     std::vector<std::string> result;
 
     for (const auto& letter : str) {
-        if (letter == '/') {
+        if (letter == '/' && !buf.empty()) {
             result.emplace_back(buf);
             buf.clear();
         }
-        else {
+        else if (letter != '/') {
             buf.push_back(letter);
         }
     }

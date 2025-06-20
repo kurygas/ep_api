@@ -46,7 +46,3 @@ int Point::getAmount() const {
 const Ptr<User>& Point::getUser() const {
     return user_;
 }
-
-const std::string& Point::getListName() {
-    return Str::pointList;
-}

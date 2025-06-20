@@ -36,7 +36,3 @@ Group::operator Wt::Json::Object() const {
     json[Str::workList] = JsonFunctions::getIdArray(getWorks());
     return json;
 }
-
-const std::string& Group::getListName() {
-    return Str::groupList;
-}

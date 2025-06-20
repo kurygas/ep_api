@@ -29,10 +29,6 @@ WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<User>& user)
     setUser(user);
 }
 
-const std::string& WorkResult::getListName() {
-    return Str::workResultList;
-}
-
 void WorkResult::setFilename(const Wt::WString& filename) {
     if (filename.empty()) {
         throw BadRequestException("Invalid filename for WorkResult");

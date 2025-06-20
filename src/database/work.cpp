@@ -19,10 +19,6 @@ Work::operator Wt::Json::Object() const {
     return json;
 }
 
-const std::string& Work::getListName() {
-    return Str::workList;
-}
-
 Work::Work(const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, const int semester, 
     const int workNumber, const Ptr<Group>& group) {
     setTime(start, end);
