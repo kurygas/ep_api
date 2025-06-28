@@ -8,6 +8,7 @@ add_library(
     work_result.cpp
     work.cpp
     point.cpp
+    semester.cpp
 )
 target_include_directories(Database PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(Database PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)

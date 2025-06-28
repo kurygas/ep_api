@@ -1,12 +1,8 @@
 #include "validator.h"
 #include "random_functions.h"
 
-bool Validator::isSemesterValid(const int semester) {
-    return semester >= 1 && semester <= 8;
-}
-
-bool Validator::isWorkNumberValid(const int workNumber) {
-    return workNumber >= 1;
+bool Validator::isSemesterNumberValid(const int semesterNumber) {
+    return semesterNumber >= 1 && semesterNumber <= 8;
 }
 
 bool Validator::isRussianString(const Wt::WString& str) {
@@ -31,4 +27,8 @@ bool Validator::isPasswordValid(const Wt::WString& password) {
 	}
 
 	return true;
+}
+
+bool Validator::isTimeSegmentValid(const Wt::WDateTime& start, const Wt::WDateTime& end) {
+    return start < end;
 }

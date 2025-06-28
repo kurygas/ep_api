@@ -8,7 +8,7 @@
 #include "str.h"
 #include "types.h"
 
-class User;
+class SemesterResult;
 class Problem;
 class Work;
 
@@ -20,32 +20,32 @@ public:
         Wt::Dbo::field(a, mark_, Str::mark);
         Wt::Dbo::belongsTo(a, work_, "work");
         Wt::Dbo::belongsTo(a, problem_, "problem");
-        Wt::Dbo::belongsTo(a, user_, "user");
+        Wt::Dbo::belongsTo(a, semesterResult_, "semester_result");
     }
 
     operator Wt::Json::Object() const;
 
     WorkResult() = default;
-    WorkResult(const Ptr<Work>& work, const Ptr<User>& user);
+    WorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult);
 
     void setFilename(const Wt::WString& filename);
     void setMark(int mark);
     void setWork(const Ptr<Work>& work);
     void setProblem(const Ptr<Problem>& problem);
-    void setUser(const Ptr<User>& user);
+    void setSemesterResult(const Ptr<SemesterResult>& semesterResult);
 
     const Wt::WString& getFilename() const;
     int getMark() const;
     const Ptr<Work>& getWork() const;
     const Ptr<Problem>& getProblem() const;
-    const Ptr<User>& getUser() const;
+    const Ptr<SemesterResult>& getSemesterResult() const;
     std::string getSolutionPath() const;    
 
 private:
     Wt::WString filename_;
-    int mark_;
+    int mark_ = -1;
 
     Ptr<Work> work_;
     Ptr<Problem> problem_;
-    Ptr<User> user_;
+    Ptr<SemesterResult> semesterResult_;
 };

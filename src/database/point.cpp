@@ -1,23 +1,24 @@
 #include "point.h"
 #include "http_exceptions.h"
+#include "validator.h"
 
 Point::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::reason] = getReason();
     json[Str::amount] = getAmount();
-    json[Str::userId] = getUser().id();
+    json[Str::semesterResultId] = getSemesterResult().id();
     return json;
 }
 
-Point::Point(const Wt::WString& reason, const int amount, const Ptr<User>& user) {
+Point::Point(const Wt::WString& reason, const int amount, const Ptr<SemesterResult>& semesterResult) {
     setReason(reason);
     setAmount(amount);
-    setUser(user);
+    setSemesterResult(semesterResult);
 }
 
 void Point::setReason(const Wt::WString& reason) {
     if (reason.empty()) {
-        throw BadRequestException("Empty reason");
+        throw BadRequestException("Invalid reason for Point");
     }
 
     reason_ = reason;
@@ -25,14 +26,14 @@ void Point::setReason(const Wt::WString& reason) {
 
 void Point::setAmount(const int amount) {
     if (amount <= 0) {
-        throw BadRequestException("Amount must be positive");
+        throw BadRequestException("Invalid amount for Point");
     }
 
     amount_ = amount;
 }
 
-void Point::setUser(const Ptr<User>& user) {
-    user_ = user;
+void Point::setSemesterResult(const Ptr<SemesterResult>& semesterResult) {
+    semesterResult_ = semesterResult;
 }
 
 const Wt::WString& Point::getReason() const {
@@ -43,6 +44,6 @@ int Point::getAmount() const {
     return amount_;
 }
 
-const Ptr<User>& Point::getUser() const {
-    return user_;
+const Ptr<SemesterResult> &Point::getSemesterResult() const {
+    return semesterResult_;
 }

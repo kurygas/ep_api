@@ -84,6 +84,14 @@ void User::setToken(const Wt::WString& token) {
     token_ = token;
 }
 
+void User::setCfName(const Wt::WString& cfName) {
+    cfName_ = cfName;
+}
+
+void User::setAtcName(const Wt::WString& atcName) {
+    atcName_ = atcName;
+}
+
 const Wt::WString& User::getToken(const Wt::WString& checkString, const Wt::WString& hash) const {
     if (Crypto::hmacSha256(checkString.toUTF8(), Crypto::sha256(Str::botToken)) != hash.toUTF8()) {
         throw ForbiddenException("Incorrect auth data");
@@ -116,14 +124,18 @@ const Ptr<Group>& User::getGroup() const {
     return group_;
 }
 
-const List<WorkResult>& User::getWorkResults() const {
-    return workResults_;
-}
-
 const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
 const List<Point>& User::getPoints() const {
     return points_;
+}
+
+const Wt::WString& User::getCfName() const {
+    return cfName_;
+}
+
+const Wt::WString& User::getAtcName() const {
+    return atcName_;
 }

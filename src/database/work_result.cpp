@@ -6,16 +6,18 @@
 #include "str.h"
 #include "random_functions.h"
 #include "point.h"
+#include "semester_result.h"
+#include "semester.h"
 
 WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::workId] = getWork().id();
-    json[Str::userId] = getUser().id();
+    json[Str::mark] = getMark();
+    json[Str::semesterResultId] = getSemesterResult().id();
     return json;
 }
 
-WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<User>& user)
-: mark_(-1) {
+WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult) {
     if (work->getProblems().empty()) {
         throw BadRequestException("No tasks in work");
     }
@@ -24,9 +26,17 @@ WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<User>& user)
         throw BadRequestException("Not begin yet");
     }
 
+    if (work->getEnd() < Wt::WDateTime::currentDateTime()) {
+        throw BadRequestException("Already ended");
+    }
+
+    if (work->getSubject() != semesterResult->getSemester()->getSubject()) {
+        throw BadRequestException("Invalid SemesterResult for Work");
+    }
+
     setWork(work);
     setProblem(Random::pickRandom(work->getProblems()));
-    setUser(user);
+    setSemesterResult(semesterResult);
 }
 
 void WorkResult::setFilename(const Wt::WString& filename) {
@@ -59,10 +69,10 @@ std::string WorkResult::getSolutionPath() const {
     }
 
     auto path = Str::solutionsPath;
-    path += std::to_string(user_->getTgId()) + '/';
+    path += std::to_string(getSemesterResult()->getUser()->getTgId()) + '/';
     path += std::to_string(static_cast<int>(work_->getSubject())) + '/';
-    path += std::to_string(work_->getSemester()) + '/';
-    path += std::to_string(work_->getWorkNumber()) + '/';
+    path += std::to_string(getSemesterResult()->getSemester()->getSemesterNumber()) + '/';
+    path += getWork()->getName().toUTF8() + '/';
     path += filename_.toUTF8();
     return path;
 }
@@ -79,13 +89,13 @@ const Ptr<Problem>& WorkResult::getProblem() const {
     return problem_;
 }
 
-const Ptr<User>& WorkResult::getUser() const {
-    return user_;
+const Ptr<SemesterResult>& WorkResult::getSemesterResult() const {
+    return semesterResult_;
 }
 
 void WorkResult::setWork(const Ptr<Work>& work) {
     if (!work) {
-        throw BadRequestException("Invalid work for WorkResult");
+        throw BadRequestException("Invalid Work for WorkResult");
     }
 
     work_ = work;
@@ -93,16 +103,16 @@ void WorkResult::setWork(const Ptr<Work>& work) {
 
 void WorkResult::setProblem(const Ptr<Problem>& problem) {
     if (!problem || problem->getWorks().count(work_) == 0) {
-        throw BadRequestException("Invalid problem for WorkResult");
+        throw BadRequestException("Invalid Problem for WorkResult");
     }
 
     problem_ = problem;
 }
 
-void WorkResult::setUser(const Ptr<User>& user) {
-    if (!user) {
-        throw BadRequestException("Invalid user for WorkResult");
+void WorkResult::setSemesterResult(const Ptr<SemesterResult>& semesterResult) {
+    if (!semesterResult) {
+        throw BadRequestException("Invalid SemesterResult for WorkResult");
     }
 
-    user_ = user;
+    semesterResult_ = semesterResult;
 }

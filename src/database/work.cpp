@@ -9,27 +9,37 @@
 
 Work::operator Wt::Json::Object() const {
     Wt::Json::Object json;
+    json[Str::name] = getName();
     json[Str::start] = getStart().toTime_t();
     json[Str::end] = getEnd().toTime_t();
     json[Str::subject] = static_cast<int>(getSubject());
-    json[Str::semester] = getSemester();
-    json[Str::workNumber] = getWorkNumber();
+    json[Str::semesterNumber] = getSemesterNumber();
+    json[Str::isExam] = isExam();
     json[Str::groupId] = getGroup().id();
     json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
     return json;
 }
 
-Work::Work(const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, const int semester, 
-    const int workNumber, const Ptr<Group>& group) {
+Work::Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Subject::Type subject, 
+    const int semesterNumber, const Ptr<Group>& group, const bool isExam) {
+    setName(name);
     setTime(start, end);
-    setSemester(semester);
-    setWorkNumber(workNumber);
     setSubject(subject);
+    setSemesterNumber(semesterNumber);
     setGroup(group);
+    setIsExam(isExam);
+}
+
+void Work::setName(const Wt::WString& name) {
+    if (name.empty()) {
+        throw BadRequestException("Invalid name for Work");
+    }
+
+    name_ = name;
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
-    if (start < Wt::WDateTime::currentDateTime() || start > end_) {
+    if (Validator::isTimeSegmentValid(start, end_)) {
         throw BadRequestException("Invalid start for Work");
     }
 
@@ -37,7 +47,7 @@ void Work::setStart(const Wt::WDateTime& start) {
 }
 
 void Work::setEnd(const Wt::WDateTime& end) {
-    if (end < Wt::WDateTime::currentDateTime() || start_ > end) {
+    if (Validator::isTimeSegmentValid(start_, end)) {
         throw BadRequestException("Invalid end for Work");
     }
 
@@ -45,7 +55,7 @@ void Work::setEnd(const Wt::WDateTime& end) {
 }
 
 void Work::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
-    if (start > end || start < Wt::WDateTime::currentDateTime()) {
+    if (Validator::isTimeSegmentValid(start, end)) {
         throw BadRequestException("Invalid time segment for Work");
     }
 
@@ -53,30 +63,25 @@ void Work::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
     end_ = end;
 }
 
-void Work::setSemester(const int semester) {
-    if (!Validator::isSemesterValid(semester)) {
-        throw BadRequestException("Invalid semester for Work");
+void Work::setSemesterNumber(const int semesterNumber) {
+    if (!Validator::isSemesterNumberValid(semesterNumber)) {
+        throw BadRequestException("Invalid semester_number for Work");
     }
 
-    semester_ = semester;
-}
-
-void Work::setWorkNumber(const int workNumber) {
-    if (!Validator::isWorkNumberValid(workNumber)) {
-        throw BadRequestException("Invalid work_number for Work");
-    }
-
-    workNumber_ = workNumber;
+    semesterNumber_ = semesterNumber;
 }
 
 void Work::setGroup(const Ptr<Group>& group) {
+    if (!group) {
+        throw BadRequestException("Invalid Group for Work");
+    }
+
     group_ = group;
 }
 
 void Work::setProblems(const List<Problem>& problems) {
     for (const auto& problem : problems) {
-        if (problems_.count(problem) == 0 && (!problem || problem->getSubject() != subject_ || problem->getSemester() != semester_ || 
-            problem->getWorkNumber() != workNumber_)) {
+        if (problems_.count(problem) == 0 && problem->getSubject() != subject_) {
             throw BadRequestException("Invalid problems for work");
         } 
     }
@@ -98,6 +103,14 @@ void Work::setSubject(const Subject::Type subject) {
     subject_ = subject;
 }
 
+void Work::setIsExam(const bool isExam) {
+    isExam_ = isExam;
+}
+
+const Wt::WString& Work::getName() const {
+    return name_;
+}
+
 const Wt::WDateTime& Work::getStart() const {
     return start_;
 }
@@ -106,12 +119,8 @@ const Wt::WDateTime& Work::getEnd() const {
     return end_;
 }
 
-int Work::getSemester() const {
-    return semester_;
-}
-
-int Work::getWorkNumber() const {
-    return workNumber_;
+int Work::getSemesterNumber() const {
+    return semesterNumber_;
 }
 
 const Ptr<Group> Work::getGroup() const {
@@ -128,4 +137,8 @@ const List<WorkResult>& Work::getWorkResults() const {
 
 Subject::Type Work::getSubject() const {
     return subject_;
+}
+
+bool Work::isExam() const {
+    return isExam_;
 }

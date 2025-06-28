@@ -14,6 +14,8 @@
 #include "work.h"
 #include "point.h"
 #include "types.h"
+#include "semester.h"
+#include "semester_result.h"
 
 class Session : public Wt::Dbo::Session {
 public:

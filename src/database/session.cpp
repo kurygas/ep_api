@@ -11,6 +11,8 @@ Session::Session() {
     mapClass<WorkResult>("work_results");
     mapClass<Work>("works");
     mapClass<Point>("points");
+    mapClass<Semester>("semesters");
+    mapClass<SemesterResult>("semester_results");
 }
 
 void Session::configureDatabase() {

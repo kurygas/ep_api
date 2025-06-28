@@ -10,7 +10,7 @@
 #include "types.h"
 
 class Group;
-class WorkResult;
+class SemesterResult;
 class Point;
 
 enum class UserType {
@@ -30,8 +30,10 @@ public:
         Wt::Dbo::field(a, tgUsername_, Str::tgUsername);
         Wt::Dbo::field(a, token_, Str::token);
         Wt::Dbo::field(a, tokenTimeLimit_, "token_time_limit");
+        Wt::Dbo::field(a, cfName_, Str::cfName);
+        Wt::Dbo::field(a, atcName_, Str::atcName);
         Wt::Dbo::belongsTo(a, group_, "group");
-        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "user");
+        Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "user");
         Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne, "user");
     }
 
@@ -47,6 +49,8 @@ public:
     void setUserType(UserType userType);
     void setGroup(const Ptr<Group>& group);
     void setToken(const Wt::WString& token);
+    void setCfName(const Wt::WString& cfName);
+    void setAtcName(const Wt::WString& atcName);
 
     const Wt::WString& getToken(const Wt::WString& checkString, const Wt::WString& hash) const;
     UserType getUserType() const;
@@ -58,9 +62,11 @@ public:
     const List<WorkResult>& getWorkResults() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
     const List<Point>& getPoints() const;
+    const Wt::WString& getCfName() const;
+    const Wt::WString& getAtcName() const;
 
 private:
-    void setTgId(int64_t);
+    void setTgId(int64_t tgId);
 
     UserType userType_;
     Wt::WString name_;
@@ -69,8 +75,10 @@ private:
     Wt::WString tgUsername_;
     Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;
+    Wt::WString cfName_;
+    Wt::WString atcName_;
 
     Ptr<Group> group_;
-    List<WorkResult> workResults_;
+    List<SemesterResult> semesterResults_;
     List<Point> points_;
 };
