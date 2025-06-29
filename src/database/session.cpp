@@ -44,25 +44,30 @@ void Session::checkAdmin(const Wt::WString& name) {
     }
 }
 
-Ptr<Problem> Session::getProblem(Subject::Type subject, const int semester, const int workNumber, const Wt::WString& name) {
-    return getPtr(find<Problem>()
-            .where("subject = ?").bind(subject)
-            .where("semester = ?").bind(semester)
-            .where("work_number = ?").bind(workNumber)
-            .where("name = ?").bind(name));
-}
-
-Ptr<Work> Session::getWork(const Subject::Type subject, const int semester, const int workNumber, 
-    const Ptr<Group>& group) {
+Ptr<Work> Session::getWork(const Subject::Type subject, const int semesterNumber, const Ptr<Group>& group) {
     return getPtr(find<Work>()
-            .where("subject = ?").bind(subject)
-            .where("semester = ?").bind(semester)
-            .where("work_number = ?").bind(workNumber)
-            .where("group_id = ?").bind(group.id()));
+        .where("subject = ?").bind(subject)
+        .where("semester_number = ?").bind(semesterNumber)
+        .where("group_id = ?").bind(group.id()));
 }
 
-Ptr<WorkResult> Session::getWorkResult(const Ptr<Work>& work, const Ptr<User>& user) {
+Ptr<WorkResult> Session::getWorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult) {
     return getPtr(find<WorkResult>()
-            .where("work_id = ?").bind(work.id())
-            .where("user_id = ?").bind(user.id()));
+        .where("work_id = ?").bind(work.id())
+        .where("semester_result_id = ?").bind(semesterResult.id()));
+}
+
+Ptr<Semester> Session::getSemester(const Subject::Type subject, const int semesterNumber, const Ptr<Group>& group) {
+    return getPtr(find<Semester>()
+        .where("subject = ?").bind(subject)
+        .where("semester_number = ?").bind(semesterNumber)
+        .where("group_id = ?").bind(group.id())
+    );
+}
+
+Ptr<SemesterResult> Session::getSemesterResult(const Ptr<Semester>& semester, const Ptr<User>& user) {
+    return getPtr(find<SemesterResult>()
+        .where("semester_id = ?").bind(semester.id())
+        .where("user_id = ?").bind(user.id())
+    );
 }

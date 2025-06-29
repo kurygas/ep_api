@@ -10,4 +10,7 @@ public:
     void addResource(const std::string& path) {
         Wt::WServer::addResource(std::make_shared<Resource>(), path);
     }
+
+private:
+    void pullConfig();
 };

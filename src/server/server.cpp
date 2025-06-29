@@ -7,6 +7,7 @@
 #include "session.h"
 #include "get_solution_resource.h"
 #include "point_resource.h"
+#include "cf_service.h"
 
 #include <fstream>
 #include <sstream>
@@ -27,7 +28,13 @@ Server::Server(const std::string& applicationPath)
     addResource<GetSolutionResource>("/api/solution");
     addResource<PointResource>("/api/point");
 
+    pullConfig();
+}
+
+void Server::pullConfig() {
     boost::property_tree::ptree pt;
     boost::property_tree::read_ini("/home/kuryga/projects/ep_api/config.ini", pt);
     Str::botToken = pt.get<std::string>("tokens.bot");
+    CfService::key = pt.get<std::string>("cf.key");
+    CfService::secret = pt.get<std::string>("cf.secret");
 }
