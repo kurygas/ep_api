@@ -1,5 +1,7 @@
 #include "user_resource.h"
 #include "root_requirements.h"
+#include "cf_service.h"
+#include "atc_service.h"
 
 #include <ctime>
 
@@ -13,7 +15,7 @@ void UserResource::processGetMethod(const HttpRequest& request, Wt::Json::Object
         std::string checkString;
 
         for (const auto& [key, value] : request.body()) {
-            checkString += key + '=' + static_cast<std::string>(value) + '\n';
+            checkString += std::format("{}={}'\n", key, static_cast<std::string>(value));
         }
 
         checkString.pop_back();
@@ -40,11 +42,22 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
         }
         else if (key == Str::userType) {
             RootRequirements::requireTeacherRoots(request, session);
-            user.modify()->setUserType(JsonFunctions::parse<UserType>(value));
+
+            if (user->getUserType() != UserType::Student || JsonFunctions::parse<UserType>(value) != UserType::Teacher) {
+                throw ForbiddenException("No roots");
+            }
+
+            user.modify()->setUserType(UserType::Teacher);
         }
         else if (key == Str::groupId) {
             RootRequirements::requireTeacherRoots(request, session);
             user.modify()->setGroup(session.getById<Group>(value));
+        }
+        else if(key == Str::cfName) {
+            CfService::setCfName(value, user);
+        }
+        else if (key == Str::atcName) {
+            AtcService::setAtcName(value, user);
         }
     }
 }

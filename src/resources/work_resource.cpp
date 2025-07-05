@@ -14,37 +14,40 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
         else if (key == Str::subject) {
             const auto subject = JsonFunctions::parse<Subject::Type>(value);
 
-            if (session.exist(&Session::getWork, subject, work->getSemester(), work->getWorkNumber(), work->getGroup())) {
+            if (session.exist(&Session::getWork, subject, work->getSemesterNumber(), work->getGroup(), work->getName())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
             work.modify()->setSubject(subject);
         }
-        else if (key == Str::semester) {
-            if (session.exist(&Session::getWork, work->getSubject(), value, work->getWorkNumber(), work->getGroup())) {
+        else if (key == Str::semesterNumber) {
+            if (session.exist(&Session::getWork, work->getSubject(), value, work->getGroup(), work->getName())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            work.modify()->setSemester(value);
-        }
-        else if (key == Str::workNumber) {
-            if (session.exist(&Session::getWork, work->getSubject(), work->getSemester(), value, work->getGroup())) {
-                throw UnprocessableEntityException("Already exists");
-            }
-
-            work.modify()->setWorkNumber(value);
+            work.modify()->setSemesterNumber(value);
         }
         else if (key == Str::groupId) {
             const auto group = session.getById<Group>(value);
 
-            if (session.exist(&Session::getWork, work->getSubject(), work->getSemester(), work->getWorkNumber(), group)) {
+            if (session.exist(&Session::getWork, work->getSubject(), work->getSemesterNumber(), group, work->getName())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
             work.modify()->setGroup(group);
         }
+        else if (key == Str::name) {
+            if (session.exist(&Session::getWork, work->getSubject(), work->getSemesterNumber(), work->getGroup(), value)) {
+                throw UnprocessableEntityException("Already exists");
+            }
+
+            work.modify()->setName(value);
+        }
         else if (key == Str::problemList) {
             work.modify()->setProblems(session.getByArray<Problem>(value));
+        }
+        else if (key == Str::isExam) {
+            work.modify()->setIsExam(value);
         }
     }
 }
@@ -72,6 +75,6 @@ void WorkResource::processGetMethod(const HttpRequest& request, Wt::Json::Object
         response[Str::problemList] = JsonFunctions::getIdArray(work->getProblems());
     }
     else {
-        throw NotFoundException("unknown method");
+        throw NotFoundException("Unknown method");
     }
 }

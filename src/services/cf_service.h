@@ -2,9 +2,15 @@
 
 #include <Wt/WString.h>
 
-namespace CfService {
-    std::string key;
-    std::string secret;
+#include "types.h"
 
-    bool userExists(const std::string& cfUsername);
+class User;
+class Group;
+
+namespace CfService {
+    inline std::string key;
+    inline std::string secret;
+
+    void setCfName(const Wt::WString& cfName, const Ptr<User>& user);
+    void setGroupCode(const Wt::WString& groupCode, const Ptr<Group>& group);
 }

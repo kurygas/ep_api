@@ -8,6 +8,8 @@ add_library(
     root_requirements.cpp
     get_solution_resource.cpp
     point_resource.cpp
+    semester_resource.cpp
+    semester_result_resource.cpp
 )
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(Resources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)

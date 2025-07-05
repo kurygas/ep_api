@@ -44,6 +44,10 @@ void WorkResult::setFilename(const Wt::WString& filename) {
         throw BadRequestException("Invalid filename for WorkResult");
     }
 
+    if (!filename_.empty()) {
+        throw BadRequestException("Another solution has been already pinned");
+    }
+
     if (Wt::WDateTime::currentDateTime() > work_->getEnd()) {
         throw BadRequestException("Time is up");
     }

@@ -12,6 +12,7 @@
 class Group;
 class SemesterResult;
 class Point;
+class WorkResult;
 
 enum class UserType {
     Student = 0,
@@ -59,11 +60,11 @@ public:
     const Wt::WString& getTgUsername() const;
     int64_t getTgId() const;
     const Ptr<Group>& getGroup() const;
-    const List<WorkResult>& getWorkResults() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
     const List<Point>& getPoints() const;
     const Wt::WString& getCfName() const;
     const Wt::WString& getAtcName() const;
+    const List<SemesterResult> getSemesterResults() const;
 
 private:
     void setTgId(int64_t tgId);

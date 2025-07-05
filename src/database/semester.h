@@ -27,7 +27,7 @@ public:
     operator Wt::Json::Object() const;
 
     Semester() = default;
-    Semester(int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, Ptr<Group>& group);
+    Semester(int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, const Ptr<Group>& group);
 
     void setSemesterNumber(int semesterNumber);
     void setSubject(Subject::Type subject);

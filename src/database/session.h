@@ -63,7 +63,7 @@ public:
         return getPtr(find<T>().where("name = ?").bind(name));
     }
 
-    Ptr<Work> getWork(Subject::Type subject, const int semesterNumber, const Ptr<Group>& group);
+    Ptr<Work> getWork(Subject::Type subject, int semesterNumber, const Ptr<Group>& group, const Wt::WString& name);
     Ptr<WorkResult> getWorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult);
     Ptr<Semester> getSemester(Subject::Type subject, int semesterNumber, const Ptr<Group>& group);
     Ptr<SemesterResult> getSemesterResult(const Ptr<Semester>& semester, const Ptr<User>& user);
@@ -156,11 +156,11 @@ inline Ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
     const auto group = getById<Group>(json.at(Str::groupId));
     const auto isExam = json.at(Str::isExam);
     
-    if (exist(&Session::getWork, subject, semesterNumber, group)) {
+    if (exist(&Session::getWork, subject, semesterNumber, group, name)) {
         throw UnprocessableEntityException("Work already exists");
     }
 
-    return add(std::make_unique<Work>(start, end, subject, semesterNumber, group, isExam));
+    return add(std::make_unique<Work>(name, start, end, subject, semesterNumber, group, isExam));
 }
 
 template<>

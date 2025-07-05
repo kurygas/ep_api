@@ -4,12 +4,7 @@
 void WorkResultResource::processPatch(const HttpRequest& request, Session& session, const Ptr<WorkResult>& workResult) const {
     for (const auto& [key, value] : request.body()) {
         if (key == Str::filename) {
-            RootRequirements::requireAuthId(request, session, workResult->getUser());
-
-            if (!workResult->getFilename().empty()) {
-                throw ForbiddenException("Another solution has been already pinned");
-            }
-
+            RootRequirements::requireAuthId(request, session, workResult->getSemesterResult()->getUser());
             const auto* solution = request.file(Str::solution);
 
             if (!solution) {
@@ -27,7 +22,7 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
             RootRequirements::requireTeacherRoots(request, session);
             const auto work = session.getById<Work>(value);
 
-            if (session.exist(&Session::getWorkResult, work, workResult->getUser())) {
+            if (session.exist(&Session::getWorkResult, work, workResult->getSemesterResult())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
@@ -37,15 +32,15 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
             RootRequirements::requireTeacherRoots(request, session);
             workResult.modify()->setProblem(session.getById<Problem>(value));
         }
-        else if (key == Str::userId) {
+        else if (key == Str::semesterResultId) {
             RootRequirements::requireTeacherRoots(request, session);
-            const auto user = session.getById<User>(value);
+            const auto semesterResult = session.getById<SemesterResult>(value);
 
-            if (session.exist(&Session::getWorkResult, workResult->getWork(), user)) {
+            if (session.exist(&Session::getWorkResult, workResult->getWork(), semesterResult)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            workResult.modify()->setUser(user);
+            workResult.modify()->setSemesterResult(semesterResult);
         }
     }
 }
@@ -77,7 +72,7 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::
     else if (method == Str::statement) {
         const auto caller = session.getByToken<User>(request.token());
 
-        if (caller->getUserType() == UserType::Student && caller != workResult->getUser()) {
+        if (caller->getUserType() == UserType::Student && caller != workResult->getSemesterResult()->getUser()) {
             throw ForbiddenException("");
         }
 
@@ -86,7 +81,7 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::
     else if (method == Str::mark) {
         const auto caller = session.getByToken<User>(request.token());
 
-        if (caller->getUserType() == UserType::Student && caller != workResult->getUser()) {
+        if (caller->getUserType() == UserType::Student && caller != workResult->getSemesterResult()->getUser()) {
             throw ForbiddenException("");
         }
 

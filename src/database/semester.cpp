@@ -2,6 +2,7 @@
 #include "group.h"
 #include "validator.h"
 #include "http_exceptions.h"
+#include "semester_result.h"
 
 Semester::operator Wt::Json::Object() const {
     Wt::Json::Object json;
@@ -14,7 +15,8 @@ Semester::operator Wt::Json::Object() const {
     return json;
 }
 
-Semester::Semester(int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, Ptr<Group>& group) {
+Semester::Semester(const int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, 
+    const Ptr<Group>& group) {
     setSemesterNumber(semesterNumber);
     setSubject(subject);
     setTime(start, end);

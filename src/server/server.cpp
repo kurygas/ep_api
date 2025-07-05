@@ -8,6 +8,8 @@
 #include "get_solution_resource.h"
 #include "point_resource.h"
 #include "cf_service.h"
+#include "semester_resource.h"
+#include "semester_result_resource.h"
 
 #include <fstream>
 #include <sstream>
@@ -27,6 +29,8 @@ Server::Server(const std::string& applicationPath)
     addResource<WorkResultResource>("/api/work_result");
     addResource<GetSolutionResource>("/api/solution");
     addResource<PointResource>("/api/point");
+    addResource<SemesterResource>("/api/semester");
+    addResource<SemesterResultResource>("api/semester_result");
 
     pullConfig();
 }

@@ -10,7 +10,7 @@ void PointResource::postRequirements(const HttpRequest& request, Session& sessio
 }
 
 void PointResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Point>& point) const {
-    RootRequirements::requireAuthId(request, session, point->getUser());
+    RootRequirements::requireAuthId(request, session, point->getSemesterResult()->getUser());
 }
 
 void PointResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Point>& point) const {
@@ -27,8 +27,8 @@ void PointResource::processPatch(const HttpRequest& request, Session& session, c
         else if (key == Str::amount) {
             point.modify()->setAmount(value);
         }
-        else if (key == Str::userId) {
-            point.modify()->setUser(session.getById<User>(value));
+        else if (key == Str::semesterResultId) {
+            point.modify()->setSemesterResult(session.getById<SemesterResult>(value));
         }
     }
 }

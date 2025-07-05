@@ -23,7 +23,9 @@ User::operator Wt::Json::Object() const {
     json[Str::tgId] = getTgId();
     json[Str::tgUsername] = getTgUsername();
     json[Str::groupId] = getGroup().id();
-    json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
+    json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
+    json[Str::cfName] = getCfName();
+    json[Str::atcName] = getAtcName();
     return json;
 }
 
@@ -138,4 +140,8 @@ const Wt::WString& User::getCfName() const {
 
 const Wt::WString& User::getAtcName() const {
     return atcName_;
+}
+
+const List<SemesterResult> User::getSemesterResults() const {
+    return semesterResults_;
 }
