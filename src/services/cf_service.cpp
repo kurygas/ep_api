@@ -27,38 +27,42 @@ void CfService::pullPoints(Session& session, const Ptr<SemesterResult>& semester
                 const auto start = Wt::WDateTime::fromTime_t(contest.at("startTimeSeconds"));
                 const auto duration = contest.at("durationSeconds");
                 const auto end = start.addSecs(duration);
-                const auto contestId = contest.at("contest_id");
+                const auto contestId = contest.at("id");
 
                 if (start < semesterResult->getSemester()->getStart() || end > semesterResult->getSemester()->getEnd()) {
                     continue;
                 }
 
-                const auto officalRanklistRow = getRanklistRow(
+                officialPoints += getContestPoints(
                     contestId, 
                     semesterResult->getUser()->getCfName().toUTF8(),
                     true
                 );
 
-                const auto unofficalRanklistRow = getRanklistRow(
+                unofficalPoints += getContestPoints(
                     contestId, 
                     semesterResult->getUser()->getCfName().toUTF8(),
                     false
                 );
 
-                const auto officialDiff = static_cast<double>(officalRanklistRow.at("points"));
-                auto unofficialDiff = static_cast<double>(unofficalRanklistRow.at("points"));
-                unofficialDiff -= officialDiff;
-                officialPoints += officialDiff;
-                unofficalPoints += unofficialDiff;
-                sumPoints += static_cast<Wt::Json::Array>(contest.at("problemResults")).size();
+                sumPoints += getContestTaskCount(contestId);
             }
             catch (...) {}
         }
 
+        if (sumPoints == 0) {
+            return;
+        }
+
         unofficalPoints /= 2;
-        // ToDo: final formula and move cf max points into the semester
-        
-        session.getPoint(semesterResult, "cf_points")
+        const auto finalPoint = semesterResult->getSemester()->getCfMaxPoint() * (officialPoints + unofficalPoints) / sumPoints;
+
+        if (!session.exist(&Session::getPoint, semesterResult, "cf_points")) {
+            session.add(std::make_unique<Point>("cf_point", finalPoint, semesterResult));
+        }
+        else {
+            session.getPoint(semesterResult, "cf_points").modify()->setAmount(finalPoint);
+        }
     }
     catch (...) {}
 }
@@ -93,23 +97,62 @@ Wt::Json::Array CfService::getContestList(const Ptr<SemesterResult>& semesterRes
     return json.at("result");
 }
 
-Wt::Json::Object CfService::getRanklistRow(const int contestId, const std::string& handle, const bool official) {
-    std::vector<std::pair<std::string, std::string>> params = {
-        {"contestId", std::to_string(contestId)},
-        {"asManager", "true"},
-        {"handles", handle},
-    };
+int CfService::getContestPoints(const int contestId, const std::string& handle, const bool official) {
+    try {
+        std::vector<std::pair<std::string, std::string>> params = {
+            {"contestId", std::to_string(contestId)},
+            {"asManager", "true"},
+            {"handles", handle},
+        };
 
-    if (!official) {
-        params.emplace_back("showUnofficial", "true");
+        auto officialPoints = 0; 
+
+        if (!official) {
+            params.emplace_back("showUnofficial", "true");
+            officialPoints = getContestPoints(contestId, handle, true);
+        }
+
+        const auto r = cpr::Get(
+            cpr::Url{getUrl("contest.standings", params)},
+            cpr::Timeout{5000}
+        );
+
+        Wt::Json::Object json;
+        Wt::Json::parse(r.text, json);
+        auto result = static_cast<Wt::Json::Object>(json.at("result"));
+        auto rows = static_cast<Wt::Json::Array>(result.at("rows"));
+
+        if (rows.empty()) {
+            return 0;
+        }
+
+        auto ranklistRow = static_cast<Wt::Json::Object>(rows.front());
+        return static_cast<int>(ranklistRow.at("points")) - officialPoints;
     }
+    catch (...) {
+        return 0;
+    }
+}
 
-    const auto r = cpr::Get(
-        cpr::Url{getUrl("contest.standings", params)},
-        cpr::Timeout{5000}
-    );
+int CfService::getContestTaskCount(const int contestId) {
+    try {
+        std::vector<std::pair<std::string, std::string>> params = {
+            {"contestId", std::to_string(contestId)},
+            {"asManager", "true"}
+        };
 
-    Wt::Json::Object json;
-    Wt::Json::parse(r.text, json);
-    return static_cast<Wt::Json::Array>(json.at("result")).front();
+        const auto r = cpr::Get(
+            cpr::Url{getUrl("contest.standings", params)},
+            cpr::Timeout{5000}
+        );
+
+        Wt::Json::Object json;
+        Wt::Json::parse(r.text, json);
+        auto result = static_cast<Wt::Json::Object>(json.at("result"));
+        auto problems = static_cast<Wt::Json::Array>(result.at("problems"));
+        return problems.size();
+    }
+    catch (...) {
+        return 0;
+    }
 }

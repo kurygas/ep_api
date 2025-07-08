@@ -12,6 +12,8 @@ Semester::operator Wt::Json::Object() const {
     json[Str::end] = getEnd().toTime_t();
     json[Str::groupId] = getGroup().id();
     json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
+    json[Str::cfMaxPoint] = getCfMaxPoint();
+    json[Str::atcMaxPoint] = getAtcMaxPoint();
     return json;
 }
 
@@ -90,4 +92,28 @@ const Ptr<Group> Semester::getGroup() const {
 
 const List<SemesterResult>& Semester::getSemesterResults() const {
     return semesterResults_;
+}
+
+int Semester::getCfMaxPoint() const {
+    return cfMaxPoint_;
+}
+
+int Semester::getAtcMaxPoint() const {
+    return atcMaxPoint_;
+}
+
+void Semester::setCfMaxPoint(const int cfMaxPoint) {
+    if (cfMaxPoint < 0) {
+        throw BadRequestException("Invalid cf_max_point for Group");
+    }
+
+    cfMaxPoint_ = cfMaxPoint;
+}
+
+void Semester::setAtcMaxPoint(const int atcMaxPoint) {
+    if (atcMaxPoint < 0) {
+        throw BadRequestException("Invalid atc_max_point");
+    }
+
+    atcMaxPoint_ = atcMaxPoint;
 }

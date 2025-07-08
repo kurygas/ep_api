@@ -16,5 +16,6 @@ namespace CfService {
     std::string getUrl(const std::string& method, std::vector<std::pair<std::string, std::string>>& params);
     std::string getSignature(const std::string& method, std::vector<std::pair<std::string, std::string>>& params);
     Wt::Json::Array getContestList(const Ptr<SemesterResult>& semesterResult);
-    Wt::Json::Object getRanklistRow(int contestId, const std::string& handle, bool official);
+    int getContestPoints(int contestId, const std::string& handle, bool official);
+    int getContestTaskCount(int contestId);
 }

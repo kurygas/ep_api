@@ -48,7 +48,7 @@ public:
             else {
                 const auto id = Utility::getId(path);
                 ptr = session.load<DatabaseType>(id);
-                prepare(ptr);
+                prepare(session, ptr);
 
                 if (path.size() == 1) {
                     if (method == "GET") {
@@ -95,7 +95,7 @@ public:
             processException(response, responseContent, e.code(), e.what());
         }
         catch (const std::out_of_range& e) {
-            processException(response, responseContent, BadRequestException("").code(), e.what());
+            processException(response, responseContent, BadRequestException("").code(), "Couldn't find necessary fields");
         }
         catch (const std::exception& e) {
             processException(response, responseContent, 500, e.what());
@@ -128,6 +128,9 @@ private:
     void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) const {
         response.setStatus(code);
         responseContent.clear();
-        responseContent[Str::error] = error;
+        
+        if (std::strlen(error) > 0) {
+            responseContent[Str::error] = error;
+        }
     }
 };

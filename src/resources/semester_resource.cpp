@@ -36,6 +36,12 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
 
             semester.modify()->setGroup(group);
         }
+        else if (key == Str::cfMaxPoint) {
+            semester.modify()->setCfMaxPoint(value);
+        }
+        else if (key == Str::atcMaxPoint) {
+            semester.modify()->setAtcMaxPoint(value);
+        }
     }
 }
 

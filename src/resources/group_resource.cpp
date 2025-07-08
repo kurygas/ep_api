@@ -32,11 +32,5 @@ void GroupResource::processPatch(const HttpRequest& request, Session& session, c
         else if (key == Str::cfGroupCode) {
             group.modify()->setCfGroupCode(value);
         }
-        else if (key == Str::cfMaxPoint) {
-            group.modify()->setCfMaxPoint(value);
-        }
-        else if (key == Str::atcMaxPoint) {
-            group.modify()->setAtcMaxPoint(value);
-        }
     }
 }
