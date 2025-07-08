@@ -72,3 +72,10 @@ Ptr<SemesterResult> Session::getSemesterResult(const Ptr<Semester>& semester, co
         .where("user_id = ?").bind(user.id())
     );
 }
+
+Ptr<Point> Session::getPoint(const Ptr<SemesterResult>& semesterResult, const Wt::WString& reason) {
+    return getPtr(find<Point>()
+        .where("semester_result_id = ?").bind(semesterResult.id())
+        .where("reason = ?").bind(reason)
+    );
+}

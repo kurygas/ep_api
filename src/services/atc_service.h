@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-class User;
+class SemesterResult;
 
 namespace AtcService {
-    void setAtcName(const Wt::WString& atcName, const Ptr<User>& user);
+    void pullPoints(const Ptr<SemesterResult>& semesterResult);
 }

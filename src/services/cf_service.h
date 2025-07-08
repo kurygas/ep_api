@@ -3,14 +3,18 @@
 #include <Wt/WString.h>
 
 #include "types.h"
+#include "json.h"
 
-class User;
-class Group;
+class SemesterResult;
+class Session;
 
 namespace CfService {
     inline std::string key;
     inline std::string secret;
 
-    void setCfName(const Wt::WString& cfName, const Ptr<User>& user);
-    void setGroupCode(const Wt::WString& groupCode, const Ptr<Group>& group);
+    void pullPoints(Session& session, const Ptr<SemesterResult>& semesterResult);
+    std::string getUrl(const std::string& method, std::vector<std::pair<std::string, std::string>>& params);
+    std::string getSignature(const std::string& method, std::vector<std::pair<std::string, std::string>>& params);
+    Wt::Json::Array getContestList(const Ptr<SemesterResult>& semesterResult);
+    Wt::Json::Object getRanklistRow(int contestId, const std::string& handle, bool official);
 }

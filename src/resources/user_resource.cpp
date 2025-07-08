@@ -1,7 +1,5 @@
 #include "user_resource.h"
 #include "root_requirements.h"
-#include "cf_service.h"
-#include "atc_service.h"
 
 #include <ctime>
 
@@ -51,13 +49,13 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
         }
         else if (key == Str::groupId) {
             RootRequirements::requireTeacherRoots(request, session);
-            user.modify()->setGroup(session.getById<Group>(value));
+            user.modify()->setGroup(session.load<Group>(value));
         }
         else if(key == Str::cfName) {
-            CfService::setCfName(value, user);
+            user.modify()->setCfName(value);
         }
         else if (key == Str::atcName) {
-            AtcService::setAtcName(value, user);
+            user.modify()->setAtcName(value);
         }
     }
 }

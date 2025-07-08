@@ -33,9 +33,10 @@ public:
         Wt::Dbo::field(a, tokenTimeLimit_, "token_time_limit");
         Wt::Dbo::field(a, cfName_, Str::cfName);
         Wt::Dbo::field(a, atcName_, Str::atcName);
+        Wt::Dbo::field(a, lastCfUpdate_, "last_cf_update");
+        Wt::Dbo::field(a, lastAtcUpdate_, "last_atc_update");
         Wt::Dbo::belongsTo(a, group_, "group");
         Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "user");
-        Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne, "user");
     }
 
     static std::unique_ptr<User> createAdmin(const Wt::WString& name);
@@ -61,10 +62,11 @@ public:
     int64_t getTgId() const;
     const Ptr<Group>& getGroup() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
-    const List<Point>& getPoints() const;
     const Wt::WString& getCfName() const;
     const Wt::WString& getAtcName() const;
     const List<SemesterResult> getSemesterResults() const;
+    const Wt::WDateTime& getLastCfUpdate() const;
+    const Wt::WDateTime& getLastAtcUpdate() const;
 
 private:
     void setTgId(int64_t tgId);
@@ -77,9 +79,10 @@ private:
     Wt::WString token_;
     Wt::WDateTime tokenTimeLimit_;
     Wt::WString cfName_;
+    Wt::WDateTime lastCfUpdate_;
     Wt::WString atcName_;
+    Wt::WDateTime lastAtcUpdate_;
 
     Ptr<Group> group_;
     List<SemesterResult> semesterResults_;
-    List<Point> points_;
 };

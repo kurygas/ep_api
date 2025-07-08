@@ -47,7 +47,8 @@ public:
             }
             else {
                 const auto id = Utility::getId(path);
-                ptr = session.getById<DatabaseType>(id);
+                ptr = session.load<DatabaseType>(id);
+                prepare(ptr);
 
                 if (path.size() == 1) {
                     if (method == "GET") {
@@ -120,6 +121,8 @@ protected:
     virtual void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
     virtual void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
     virtual void postRequirements(const HttpRequest& request, Session& session) const {}
+
+    virtual void prepare(Session& session, const Ptr<DatabaseType>& ptr) const {};
 
 private:
     void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) const {

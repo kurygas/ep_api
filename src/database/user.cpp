@@ -87,10 +87,18 @@ void User::setToken(const Wt::WString& token) {
 }
 
 void User::setCfName(const Wt::WString& cfName) {
+    if (cfName.empty()) {
+        throw BadRequestException("Invalid cf name");
+    }
+
     cfName_ = cfName;
 }
 
 void User::setAtcName(const Wt::WString& atcName) {
+    if (atcName.empty()) {
+        throw BadRequestException("Invalid atc name");
+    }
+
     atcName_ = atcName;
 }
 
@@ -130,10 +138,6 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
-const List<Point>& User::getPoints() const {
-    return points_;
-}
-
 const Wt::WString& User::getCfName() const {
     return cfName_;
 }
@@ -144,4 +148,12 @@ const Wt::WString& User::getAtcName() const {
 
 const List<SemesterResult> User::getSemesterResults() const {
     return semesterResults_;
+}
+
+const Wt::WDateTime& User::getLastCfUpdate() const {
+    return lastCfUpdate_;
+}
+
+const Wt::WDateTime& User::getLastAtcUpdate() const {
+    return lastAtcUpdate_;
 }

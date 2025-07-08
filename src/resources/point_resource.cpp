@@ -28,7 +28,7 @@ void PointResource::processPatch(const HttpRequest& request, Session& session, c
             point.modify()->setAmount(value);
         }
         else if (key == Str::semesterResultId) {
-            point.modify()->setSemesterResult(session.getById<SemesterResult>(value));
+            point.modify()->setSemesterResult(session.load<SemesterResult>(value));
         }
     }
 }

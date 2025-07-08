@@ -20,7 +20,7 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
         }
         else if (key == Str::workId) {
             RootRequirements::requireTeacherRoots(request, session);
-            const auto work = session.getById<Work>(value);
+            const auto work = session.load<Work>(value);
 
             if (session.exist(&Session::getWorkResult, work, workResult->getSemesterResult())) {
                 throw UnprocessableEntityException("Already exists");
@@ -30,11 +30,11 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
         }
         else if (key == Str::problemId) {
             RootRequirements::requireTeacherRoots(request, session);
-            workResult.modify()->setProblem(session.getById<Problem>(value));
+            workResult.modify()->setProblem(session.load<Problem>(value));
         }
         else if (key == Str::semesterResultId) {
             RootRequirements::requireTeacherRoots(request, session);
-            const auto semesterResult = session.getById<SemesterResult>(value);
+            const auto semesterResult = session.load<SemesterResult>(value);
 
             if (session.exist(&Session::getWorkResult, workResult->getWork(), semesterResult)) {
                 throw UnprocessableEntityException("Already exists");
@@ -50,7 +50,7 @@ void WorkResultResource::getRequirements(const HttpRequest& request, Session& se
 }
 
 void WorkResultResource::postRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuthId(request, session, session.getById<User>(request.body().at(Str::userId)));
+    RootRequirements::requireAuthId(request, session, session.load<User>(request.body().at(Str::userId)));
 }
 
 void WorkResultResource::getIdRequirements(const HttpRequest& request, Session& session, 

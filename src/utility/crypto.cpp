@@ -1,20 +1,18 @@
 #include "crypto.h"
 
-#include <array>
-#include <format>
 #include <openssl/sha.h>
 #include <openssl/hmac.h>
 
 std::string Crypto::sha256(const std::string& input) {
     std::array<uint8_t, SHA256_DIGEST_LENGTH> hash;
     SHA256(reinterpret_cast<const uint8_t*>(input.c_str()), input.size(), hash.data());
-    std::string result;
+    return joinHash(hash);
+}
 
-    for (const auto& i : hash) {
-        result += std::format("{:02x}", i);
-    }
-
-    return result;
+std::string Crypto::sha512(const std::string& input) {
+    std::array<uint8_t, SHA512_DIGEST_LENGTH> hash;
+    SHA512(reinterpret_cast<const uint8_t*>(input.c_str()), input.size(), hash.data());
+    return joinHash(hash);
 }
 
 std::string Crypto::hmacSha256(const std::string& key, const std::string& data) {

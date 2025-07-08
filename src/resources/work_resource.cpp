@@ -28,7 +28,7 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
             work.modify()->setSemesterNumber(value);
         }
         else if (key == Str::groupId) {
-            const auto group = session.getById<Group>(value);
+            const auto group = session.load<Group>(value);
 
             if (session.exist(&Session::getWork, work->getSubject(), work->getSemesterNumber(), group, work->getName())) {
                 throw UnprocessableEntityException("Already exists");

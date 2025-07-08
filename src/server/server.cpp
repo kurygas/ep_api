@@ -30,7 +30,7 @@ Server::Server(const std::string& applicationPath)
     addResource<GetSolutionResource>("/api/solution");
     addResource<PointResource>("/api/point");
     addResource<SemesterResource>("/api/semester");
-    addResource<SemesterResultResource>("api/semester_result");
+    addResource<SemesterResultResource>("/api/semester_result");
 
     pullConfig();
 }

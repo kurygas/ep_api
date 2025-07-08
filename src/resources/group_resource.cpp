@@ -30,7 +30,7 @@ void GroupResource::processPatch(const HttpRequest& request, Session& session, c
             group.modify()->setName(value);
         }
         else if (key == Str::cfGroupCode) {
-            CfService::setGroupCode(value, group);
+            group.modify()->setCfGroupCode(value);
         }
         else if (key == Str::cfMaxPoint) {
             group.modify()->setCfMaxPoint(value);

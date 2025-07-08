@@ -11,4 +11,6 @@ protected:
     void postRequirements(const HttpRequest& request, Session& session) const override;
     void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<SemesterResult>& semesterResult) const override;
     void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<SemesterResult>& semesterResult) const override;
+
+    void prepare(Session& session, const Ptr<SemesterResult>& semesterResult) const override;
 };

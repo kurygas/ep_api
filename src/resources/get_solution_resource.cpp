@@ -14,7 +14,7 @@ void GetSolutionResource::handleRequest(const Wt::Http::Request& request, Wt::Ht
         if (request.method() == "GET" && path.size() == 1) {
             Session session;
             const Wt::Dbo::Transaction tr(session);
-            const auto workResult = session.getById<WorkResult>(Utility::getId(path));
+            const auto workResult = session.load<WorkResult>(Utility::getId(path));
             std::ifstream file(workResult->getSolutionPath(), std::ios::binary);
 
             if (!file.is_open()) {

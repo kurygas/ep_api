@@ -17,7 +17,9 @@ Point::Point(const Wt::WString& reason, const int amount, const Ptr<SemesterResu
 }
 
 void Point::setReason(const Wt::WString& reason) {
-    if (reason.empty()) {
+    if (reason.empty() ||
+        reason == "cf_points" ||
+        reason == "atc_points") {
         throw BadRequestException("Invalid reason for Point");
     }
 
@@ -44,6 +46,6 @@ int Point::getAmount() const {
     return amount_;
 }
 
-const Ptr<SemesterResult> &Point::getSemesterResult() const {
+const Ptr<SemesterResult>& Point::getSemesterResult() const {
     return semesterResult_;
 }

@@ -28,7 +28,7 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
             semester.modify()->setEnd(Wt::WDateTime::fromTime_t(value));
         }
         else if (key == Str::groupId) {
-            const auto group = session.getById<Group>(value);
+            const auto group = session.load<Group>(value);
 
             if (session.exist(&Session::getSemester, semester->getSubject(), semester->getSemesterNumber(), group)) {
                 throw UnprocessableEntityException("Already exists");

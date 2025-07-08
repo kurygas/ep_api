@@ -1,12 +1,14 @@
 #include "semester_result_resource.h"
 #include "root_requirements.h"
+#include "cf_service.h"
+#include "atc_service.h"
 
 void SemesterResultResource::processPatch(const HttpRequest &request, Session& session, const Ptr<SemesterResult>& semesterResult) const {
     RootRequirements::requireTeacherRoots(request, session);
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::semesterId) {
-            const auto semester = session.getById<Semester>(value);
+            const auto semester = session.load<Semester>(value);
 
             if (session.exist(&Session::getSemesterResult, semester, semesterResult->getUser())) {
                 throw UnprocessableEntityException("Already exists");
@@ -15,7 +17,7 @@ void SemesterResultResource::processPatch(const HttpRequest &request, Session& s
             semesterResult.modify()->setSemester(semester);
         }
         else if (key == Str::userId) {
-            const auto user = session.getById<User>(value);
+            const auto user = session.load<User>(value);
 
             if (session.exist(&Session::getSemesterResult, semesterResult->getSemester(), user)) {
                 throw UnprocessableEntityException("Already exists");
@@ -42,4 +44,9 @@ void SemesterResultResource::getIdRequirements(const HttpRequest& request, Sessi
 void SemesterResultResource::deleteRequirements(const HttpRequest& request, Session& session, 
     const Ptr<SemesterResult>& semesterResult) const {
         RootRequirements::requireTeacherRoots(request, session);
+}
+
+void SemesterResultResource::prepare(Session& session, const Ptr<SemesterResult>& semesterResult) const {
+    CfService::pullPoints(session, semesterResult);
+    AtcService::pullPoints(semesterResult);
 }
