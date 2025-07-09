@@ -1,0 +1,282 @@
+swagger: "3.0"
+info:
+  title: MEPHI EP API
+  description: API created for providing the educational process in the training program "Extreme Programming" at NRNU MEPhI
+  version: 1.0.0
+
+host: 127.0.0.1:8080 # Not hosted yet
+basePath: /api
+schemes:
+  - https
+
+components:
+  securitySchemes:
+    BearerAuth:
+      scheme: bearer
+  schemas:
+    IdList:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            type: int
+    ErrorObject:
+      type: object
+      properties:
+        error:
+          type: string
+    Group:
+      type: object
+      properties:
+        name:
+          type: string
+        user_list:
+          $ref: '#/components/schemas/IdList'
+        semester_list:
+          $ref: '#/components/schemas/IdList'
+        cf_group_code:
+          type: string
+    Point:
+      type: object
+      properties:
+        reason:
+          type: string
+        amount:
+          type: int
+        semester_result_id:
+          type: int
+    Problem:
+      type: object
+      properties:
+        name:
+          type: string
+        statement:
+          type: string
+        subject:
+          type: int
+        semester_number:
+          type: int
+        work_list:
+          $ref: '#/components/schemas/IdList'
+        work_result_list:
+          $ref: '#/components/schemas/IdList'
+    SemesterResult:
+      semester_id:
+        type: int
+      user_id:
+        type: int
+      work_result_list:
+        $ref: '#/components/schemas/IdList'
+      point_list:
+        $ref: '#/components/schemas/IdList'
+    Semester:
+      semester_number:
+        type: int
+      subject:
+        type: int
+      start:
+        type: int
+      end:
+        type: int
+      group_id:
+        type: int
+      semester_result_list:
+        $ref: '#/components/schemas/IdList'
+      cf_max_point:
+        type: int
+        nullable: true
+      atc_ration:
+        type: int
+        nullable: true
+    User:
+      user_type:
+        type: int
+      name:
+        type: string
+      surname:
+        type: string
+      tg_id:
+        type: int
+      tg_username:
+        type: string
+      group_id:
+        type: int
+      semester_result_list:
+        $ref: '#/components/schemas/IdList'
+      cf_name:
+        type: string
+      atc_name:
+        type: string
+    WorkResult:
+      work_id:
+        type: int
+      mark:
+        type: int
+      semester_result_id:
+        type: int
+    Work:
+      name:
+        type: string
+      start:
+        type: int
+      end:
+        type: int
+      subject:
+        type: int
+      semester_number:
+        type: int
+      is_exam:
+        type: int
+      group_id:
+        type: int
+      work_result_list:
+        $ref: '#/components/schemas/IdList'
+  parameters:
+    PathId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: int
+  responses:
+    UnauthorizedError:
+      description: Authorization error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+    ForbiddenError:
+      description: Not enough roots
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+    BadRequestError:
+      description: Request which was sended was created with errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+    UnprocessableEntity:
+      description: Some properties which are wanted to be changed by request are alredy used by other objects
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+    ServerError:
+      description: Error on the server's side
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+
+
+security:
+  - BearerAuth: []
+
+paths:
+  /user:
+    get:
+      summary: Returns a list of users.
+      responses:
+        '200':
+          description: A list of user_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdList'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new user
+      responses:
+        '201':
+          description: Properties of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /user/{id}:
+    get:
+      summary: Get a user
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '201':
+          description: Properties of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Change user's properties
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '201':
+          description: Properties of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      summary: Delete a user
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '201':
+          description: Properties of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /user/{id}/token: 
+    get:
+      summary: Change user's properties
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '201':
+          description: Properties of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        
