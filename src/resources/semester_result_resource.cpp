@@ -48,5 +48,5 @@ void SemesterResultResource::deleteRequirements(const HttpRequest& request, Sess
 
 void SemesterResultResource::prepare(Session& session, const Ptr<SemesterResult>& semesterResult) const {
     CfService::pullPoints(session, semesterResult);
-    AtcService::pullPoints(semesterResult);
+    AtcService::pullPoints(session, semesterResult);
 }

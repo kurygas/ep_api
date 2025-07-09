@@ -63,6 +63,8 @@ void CfService::pullPoints(Session& session, const Ptr<SemesterResult>& semester
         else {
             session.getPoint(semesterResult, "cf_points").modify()->setAmount(finalPoint);
         }
+
+        semesterResult->getUser().modify()->setCfUpdated();
     }
     catch (...) {}
 }

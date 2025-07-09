@@ -102,6 +102,14 @@ void User::setAtcName(const Wt::WString& atcName) {
     atcName_ = atcName;
 }
 
+void User::setCfUpdated() {
+    lastCfUpdate_ = Wt::WDateTime::currentDateTime();
+}
+
+void User::setAtcUpdated() {
+    lastAtcUpdate_ = Wt::WDateTime::currentDateTime();
+}
+
 const Wt::WString& User::getToken(const Wt::WString& checkString, const Wt::WString& hash) const {
     if (Crypto::hmacSha256(checkString.toUTF8(), Crypto::sha256(Str::botToken)) != hash.toUTF8()) {
         throw ForbiddenException("Incorrect auth data");

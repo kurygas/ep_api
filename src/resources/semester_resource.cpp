@@ -39,8 +39,8 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
         else if (key == Str::cfMaxPoint) {
             semester.modify()->setCfMaxPoint(value);
         }
-        else if (key == Str::atcMaxPoint) {
-            semester.modify()->setAtcMaxPoint(value);
+        else if (key == Str::atcRatio) {
+            semester.modify()->setAtcRatio(value);
         }
     }
 }

@@ -128,9 +128,6 @@ private:
     void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) const {
         response.setStatus(code);
         responseContent.clear();
-        
-        if (std::strlen(error) > 0) {
-            responseContent[Str::error] = error;
-        }
+        responseContent[Str::error] = error;
     }
 };

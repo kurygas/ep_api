@@ -21,7 +21,7 @@ public:
         Wt::Dbo::field(a, end_, Str::end);
         Wt::Dbo::field(a, subject_, Str::subject);
         Wt::Dbo::field(a, cfMaxPoint_, Str::cfMaxPoint);
-        Wt::Dbo::field(a, atcMaxPoint_, Str::atcMaxPoint);
+        Wt::Dbo::field(a, atcRatio_, Str::atcRatio);
         Wt::Dbo::belongsTo(a, group_, "group");
         Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "semester");
     }
@@ -38,7 +38,7 @@ public:
     void setTime(const Wt::WDateTime& start, const Wt::WDateTime& end);
     void setGroup(const Ptr<Group>& group);
     void setCfMaxPoint(int cfMaxPoint);
-    void setAtcMaxPoint(int atcMaxPoint);
+    void setAtcRatio(int atcRatio);
 
     int getSemesterNumber() const;
     Subject::Type getSubject() const;
@@ -47,7 +47,7 @@ public:
     const Ptr<Group> getGroup() const;
     const List<SemesterResult>& getSemesterResults() const;
     int getCfMaxPoint() const;
-    int getAtcMaxPoint() const;
+    int getAtcRatio() const;
 
 private:
     int semesterNumber_;
@@ -55,7 +55,7 @@ private:
     Wt::WDateTime start_;
     Wt::WDateTime end_;
     int cfMaxPoint_ = 0;
-    int atcMaxPoint_ = 0;
+    int atcRatio_ = 0;
 
     Ptr<Group> group_;
     List<SemesterResult> semesterResults_;

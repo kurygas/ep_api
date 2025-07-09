@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Wt/WString.h>
-
 #include "types.h"
 #include "json.h"
 

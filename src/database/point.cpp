@@ -17,9 +17,7 @@ Point::Point(const Wt::WString& reason, const int amount, const Ptr<SemesterResu
 }
 
 void Point::setReason(const Wt::WString& reason) {
-    if (reason.empty() ||
-        reason == "cf_points" ||
-        reason == "atc_points") {
+    if (reason.empty()) {
         throw BadRequestException("Invalid reason for Point");
     }
 

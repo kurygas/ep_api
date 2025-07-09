@@ -53,6 +53,8 @@ public:
     void setToken(const Wt::WString& token);
     void setCfName(const Wt::WString& cfName);
     void setAtcName(const Wt::WString& atcName);
+    void setCfUpdated();
+    void setAtcUpdated();
 
     const Wt::WString& getToken(const Wt::WString& checkString, const Wt::WString& hash) const;
     UserType getUserType() const;

@@ -12,8 +12,12 @@ Semester::operator Wt::Json::Object() const {
     json[Str::end] = getEnd().toTime_t();
     json[Str::groupId] = getGroup().id();
     json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
-    json[Str::cfMaxPoint] = getCfMaxPoint();
-    json[Str::atcMaxPoint] = getAtcMaxPoint();
+
+    if (subject_ == Subject::Type::Algo) {
+        json[Str::cfMaxPoint] = getCfMaxPoint();
+        json[Str::atcRatio] = getAtcRatio();
+    }
+    
     return json;
 }
 
@@ -98,11 +102,15 @@ int Semester::getCfMaxPoint() const {
     return cfMaxPoint_;
 }
 
-int Semester::getAtcMaxPoint() const {
-    return atcMaxPoint_;
+int Semester::getAtcRatio() const {
+    return atcRatio_;
 }
 
 void Semester::setCfMaxPoint(const int cfMaxPoint) {
+    if (subject_ != Subject::Type::Algo) {
+        throw BadRequestException("Invalid subject");
+    }
+
     if (cfMaxPoint < 0) {
         throw BadRequestException("Invalid cf_max_point for Group");
     }
@@ -110,10 +118,14 @@ void Semester::setCfMaxPoint(const int cfMaxPoint) {
     cfMaxPoint_ = cfMaxPoint;
 }
 
-void Semester::setAtcMaxPoint(const int atcMaxPoint) {
-    if (atcMaxPoint < 0) {
+void Semester::setAtcRatio(const int atcRatio) {
+    if (subject_ != Subject::Type::Algo) {
+        throw BadRequestException("Invalid subject");
+    }
+
+    if (atcRatio <= 0) {
         throw BadRequestException("Invalid atc_max_point");
     }
 
-    atcMaxPoint_ = atcMaxPoint;
+    atcRatio_ = atcRatio;
 }

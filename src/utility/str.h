@@ -49,7 +49,7 @@ namespace Str {
     const std::string cfName = "cf_name";
     const std::string atcName = "atc_name";
     const std::string isExam = "is_exam";
-    const std::string atcMaxPoint = "atc_max_point";
+    const std::string atcRatio = "atc_ratio";
     const std::string cfMaxPoint = "cf_max_point";
     const std::string cfGroupCode = "cf_group_code";
 

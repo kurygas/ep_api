@@ -42,3 +42,4 @@ todo.txt
 *.json
 /solutions
 /.pytest_cache
+test.py
