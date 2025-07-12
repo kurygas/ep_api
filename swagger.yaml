@@ -989,11 +989,38 @@ paths:
                   type: integer
                 end:
                   type: integer
+              required:
+                - semester_number
+                - subject
+                - start
+                - end
       responses:
         '201':
           description: Created Semester's properties
           content:
             application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Semester'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /semester/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns Semester's properties
+      security:
+        - BearerAuth: []
+        
       
 
       
