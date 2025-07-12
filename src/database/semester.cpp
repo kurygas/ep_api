@@ -11,10 +11,16 @@ Semester::operator Wt::Json::Object() const {
     json[Str::start] = getStart().toTime_t();
     json[Str::end] = getEnd().toTime_t();
     json[Str::groupId] = getGroup().id();
-    json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
 
-    if (subject_ == Subject::Type::Algo) {
+    if (!getSemesterResults().empty()) {
+        json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
+    }
+
+    if (getCfMaxPoint() > 0) {
         json[Str::cfMaxPoint] = getCfMaxPoint();
+    }
+
+    if (getAtcRatio() > 0) {
         json[Str::atcRatio] = getAtcRatio();
     }
     

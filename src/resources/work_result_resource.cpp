@@ -12,7 +12,7 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
             }
 
             workResult.modify()->setFilename(value);
-            std::rename(solution->spoolFileName().c_str(), workResult->getSolutionPath().c_str());
+            std::rename(solution->spoolFileName().c_str(), Utility::getFilepath(workResult.id()).c_str());
         }
         else if (key == Str::mark) {
             RootRequirements::requireTeacherRoots(request, session);
@@ -63,11 +63,13 @@ void WorkResultResource::deleteRequirements(const HttpRequest& request, Session&
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
     const Ptr<WorkResult>& workResult, const std::string& method) const {
+    Wt::Json::Object json;
+
     if (method == Str::problemId) {
         RootRequirements::requireTeacherRoots(request, session);
-        response[Str::problemId] = workResult->getProblem().id();
+        json[Str::problemId] = workResult->getProblem().id();
     }
     else if (method == Str::statement) {
         const auto caller = session.getByToken<User>(request.token());
@@ -76,7 +78,7 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::
             throw ForbiddenException("");
         }
 
-        response[Str::statement] = workResult->getProblem()->getStatement();
+        json[Str::statement] = workResult->getProblem()->getStatement();
     }
     else if (method == Str::mark) {
         const auto caller = session.getByToken<User>(request.token());
@@ -85,9 +87,11 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Json::
             throw ForbiddenException("");
         }
 
-        response[Str::mark] = workResult->getMark();
+        json[Str::mark] = workResult->getMark();
     }
     else {
         throw NotFoundException("");
     }
+
+    response.out() << Wt::Json::serialize(json);
 }

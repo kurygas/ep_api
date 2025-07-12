@@ -22,10 +22,23 @@ User::operator Wt::Json::Object() const {
     json[Str::surname] = getSurname();
     json[Str::tgId] = getTgId();
     json[Str::tgUsername] = getTgUsername();
-    json[Str::groupId] = getGroup().id();
-    json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
-    json[Str::cfName] = getCfName();
-    json[Str::atcName] = getAtcName();
+
+    if (!getGroup()) {
+        json[Str::groupId] = getGroup().id();
+    }
+
+    if (!getSemesterResults().empty()) {
+        json[Str::semesterResultList] = JsonFunctions::getIdArray(getSemesterResults());
+    }
+
+    if (!getCfName().empty()) {
+        json[Str::cfName] = getCfName();
+    }
+
+    if (!getAtcName().empty()) {
+        json[Str::atcName] = getAtcName();
+    }
+    
     return json;
 }
 

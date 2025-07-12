@@ -19,8 +19,6 @@ template<typename DatabaseType>
 class Resource : public Wt::WResource {
 public:
     void handleRequest(const Wt::Http::Request& request, Wt::Http::Response& response) override {
-        Wt::Json::Object responseContent;
-
         try {
             Session session;
             Wt::Dbo::Transaction tr(session);
@@ -34,7 +32,7 @@ public:
             if (path.empty()) {
                 if (method == "GET") {
                     getRequirements(requestContent, session);
-                    responseContent[Str::list] = JsonFunctions::getIdArray(session.getAll<DatabaseType>());
+                    response.out() << Wt::Json::serialize(JsonFunctions::getIdArray(session.getAll<DatabaseType>()));
                 }
                 else if (method == "POST") {
                     postRequirements(requestContent, session);
@@ -59,7 +57,7 @@ public:
                     }
                     else if (method == "DELETE") {
                         deleteRequirements(requestContent, session, ptr);
-                        responseContent = static_cast<Wt::Json::Object>(*ptr);
+                        response.out() << Wt::Json::serialize(static_cast<Wt::Json::Object>(*ptr));
                         ptr.remove();
                         ptr = nullptr;
                         response.setStatus(204);
@@ -71,11 +69,11 @@ public:
                 else {
                     const auto& pathMethod = Utility::getMethod(path);
 
-                    if (method == "POST") {
-                        processPostMethod(requestContent, responseContent, session, ptr, pathMethod);
+                    if (method == "GET") {
+                        processGetMethod(requestContent, response, session, ptr, pathMethod);
                     }
-                    else if (method == "GET") {
-                        processGetMethod(requestContent, responseContent, session, ptr, pathMethod);
+                    else if (method == "POST") {
+                        processPostMethod(requestContent, response, session, ptr, pathMethod);
                     }
                     else {
                         throw InvalidMethodException("");
@@ -86,31 +84,30 @@ public:
             }
 
             if (ptr) {
-                responseContent = static_cast<Wt::Json::Object>(*ptr);
+                auto json = static_cast<Wt::Json::Object>(*ptr);
                 tr.commit();
-                responseContent[Str::id] = ptr.id();
+                json[Str::id] = ptr.id();
+                response.out() << Wt::Json::serialize(json);
             }
         }
         catch (const HttpException& e) {
-            processException(response, responseContent, e.code(), e.what());
+            processException(response, e.code(), e.what());
         }
         catch (const std::out_of_range& e) {
-            processException(response, responseContent, BadRequestException("").code(), "Couldn't find necessary fields");
+            processException(response, BadRequestException("").code(), "Couldn't find necessary fields");
         }
         catch (const std::exception& e) {
-            processException(response, responseContent, 500, e.what());
+            processException(response, 500, e.what());
         }
-        
-        response.out() << Wt::Json::serialize(responseContent);
     }
 
 protected:
-    virtual void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+    virtual void processGetMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
         const Ptr<DatabaseType>& ptr, const std::string& method) const {
         throw InvalidMethodException("");
     }
 
-    virtual void processPostMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+    virtual void processPostMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
         const Ptr<DatabaseType>& ptr, const std::string& method) const {
         throw InvalidMethodException("");
     }
@@ -125,9 +122,10 @@ protected:
     virtual void prepare(Session& session, const Ptr<DatabaseType>& ptr) const {};
 
 private:
-    void processException(Wt::Http::Response& response, Wt::Json::Object& responseContent, int code, const char* error) const {
+    void processException(Wt::Http::Response& response, int code, const char* error) const {
         response.setStatus(code);
-        responseContent.clear();
-        responseContent[Str::error] = error;
+        Wt::Json::Object json;
+        json[Str::error] = error;
+        response.out() << Wt::Json::serialize(json);
     }
 };

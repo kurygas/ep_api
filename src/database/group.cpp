@@ -42,8 +42,18 @@ const List<Semester>& Group::getSemesters() const {
 Group::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::name] = getName();
-    json[Str::userList] = JsonFunctions::getIdArray(getUsers());
-    json[Str::semesterList] = JsonFunctions::getIdArray(getSemesters());
-    json[Str::cfGroupCode] = getCfGroupCode();
+
+    if (!getUsers().empty()) {
+        json[Str::userList] = JsonFunctions::getIdArray(getUsers());
+    }
+
+    if (!getSemesters().empty()) {
+        json[Str::semesterList] = JsonFunctions::getIdArray(getSemesters());
+    }
+
+    if (!getCfGroupCode().empty()) {
+        json[Str::cfGroupCode] = getCfGroupCode();
+    }
+    
     return json;
 }

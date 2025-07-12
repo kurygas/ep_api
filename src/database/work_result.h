@@ -38,8 +38,7 @@ public:
     int getMark() const;
     const Ptr<Work>& getWork() const;
     const Ptr<Problem>& getProblem() const;
-    const Ptr<SemesterResult>& getSemesterResult() const;
-    std::string getSolutionPath() const;    
+    const Ptr<SemesterResult>& getSemesterResult() const;  
 
 private:
     Wt::WString filename_;

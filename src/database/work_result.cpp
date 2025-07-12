@@ -12,8 +12,12 @@
 WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::workId] = getWork().id();
-    json[Str::mark] = getMark();
     json[Str::semesterResultId] = getSemesterResult().id();
+
+    if (getMark() >= 0) { 
+        json[Str::mark] = getMark();
+    }
+
     return json;
 }
 
@@ -30,7 +34,7 @@ WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semeste
         throw BadRequestException("Already ended");
     }
 
-    if (work->getSubject() != semesterResult->getSemester()->getSubject()) {
+    if (work->getSemester() != semesterResult->getSemester()) {
         throw BadRequestException("Invalid SemesterResult for Work");
     }
 
@@ -65,20 +69,6 @@ void WorkResult::setMark(const int mark) {
 
 const Wt::WString& WorkResult::getFilename() const {
     return filename_;
-}
-
-std::string WorkResult::getSolutionPath() const {
-    if (filename_.empty()) {
-        throw NotFoundException("No solution in work result");
-    }
-
-    auto path = Str::solutionsPath;
-    path += std::to_string(getSemesterResult()->getUser()->getTgId()) + '/';
-    path += std::to_string(static_cast<int>(work_->getSubject())) + '/';
-    path += std::to_string(getSemesterResult()->getSemester()->getSemesterNumber()) + '/';
-    path += getWork()->getName().toUTF8() + '/';
-    path += filename_.toUTF8();
-    return path;
 }
 
 int WorkResult::getMark() const {

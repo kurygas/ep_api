@@ -44,11 +44,9 @@ void Session::checkAdmin(const Wt::WString& name) {
     }
 }
 
-Ptr<Work> Session::getWork(const Subject::Type subject, const int semesterNumber, const Ptr<Group>& group, const Wt::WString& name) {
+Ptr<Work> Session::getWork(const Ptr<Semester>& semester, const Wt::WString& name) {
     return getPtr(find<Work>()
-        .where("subject = ?").bind(subject)
-        .where("semester_number = ?").bind(semesterNumber)
-        .where("group_id = ?").bind(group.id())
+        .where("semester_id = ?").bind(semester.id())
         .where("name = ?").bind(name));
 }
 

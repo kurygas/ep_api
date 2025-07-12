@@ -53,7 +53,6 @@ namespace Str {
     const std::string cfMaxPoint = "cf_max_point";
     const std::string cfGroupCode = "cf_group_code";
 
-    const std::string solutionsPath = "/home/kuryga/projects/ep_api/solutions";
-
+    inline std::string solutionsPath = "";
     inline std::string botToken = "";
 }

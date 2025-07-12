@@ -11,33 +11,17 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
         else if (key == Str::end) {
             work.modify()->setEnd(Wt::WDateTime::fromString(value));
         }
-        else if (key == Str::subject) {
-            const auto subject = JsonFunctions::parse<Subject::Type>(value);
+        else if (key == Str::semesterId) {
+            const auto semester = session.load<Semester>(value);
 
-            if (session.exist(&Session::getWork, subject, work->getSemesterNumber(), work->getGroup(), work->getName())) {
+            if (session.exist(&Session::getWork, semester, work->getName())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            work.modify()->setSubject(subject);
-        }
-        else if (key == Str::semesterNumber) {
-            if (session.exist(&Session::getWork, work->getSubject(), value, work->getGroup(), work->getName())) {
-                throw UnprocessableEntityException("Already exists");
-            }
-
-            work.modify()->setSemesterNumber(value);
-        }
-        else if (key == Str::groupId) {
-            const auto group = session.load<Group>(value);
-
-            if (session.exist(&Session::getWork, work->getSubject(), work->getSemesterNumber(), group, work->getName())) {
-                throw UnprocessableEntityException("Already exists");
-            }
-
-            work.modify()->setGroup(group);
+            work.modify()->setSemester(semester);
         }
         else if (key == Str::name) {
-            if (session.exist(&Session::getWork, work->getSubject(), work->getSemesterNumber(), work->getGroup(), value)) {
+            if (session.exist(&Session::getWork, work->getSemester(), value)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
@@ -68,11 +52,11 @@ void WorkResource::deleteRequirements(const HttpRequest& request, Session& sessi
     RootRequirements::requireTeacherRoots(request, session);
 }
 
-void WorkResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
-    const Ptr<Work>& work, const std::string& method) const {
+void WorkResource::processGetMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, const Ptr<Work>& work, 
+    const std::string& method) const {
     if (method == Str::problemList) {
         RootRequirements::requireTeacherRoots(request, session);
-        response[Str::problemList] = JsonFunctions::getIdArray(work->getProblems());
+        response.out() << Wt::Json::serialize(JsonFunctions::getIdArray(work->getProblems()));
     }
     else {
         throw NotFoundException("Unknown method");

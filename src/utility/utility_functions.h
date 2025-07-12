@@ -8,4 +8,5 @@ namespace Utility {
     std::string joinParams(const std::vector<std::pair<std::string, std::string>>& params);
     int getId(const std::vector<std::string>& path);
     const std::string& getMethod(const std::vector<std::string>& path);
+    std::string getFilepath(int workResultId);
 }

@@ -3,9 +3,9 @@
 
 #include <ctime>
 
-void UserResource::processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+void UserResource::processPostMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
     const Ptr<User>& user, const std::string& method) const {
-    if (method == Str::token) {
+    if (method == "auth") {
         if (time(nullptr) - static_cast<int64_t>(request.body().at("auth_date")) >= 3600) {
             throw ForbiddenException("Too old data");
         }
@@ -17,7 +17,9 @@ void UserResource::processGetMethod(const HttpRequest& request, Wt::Json::Object
         }
 
         checkString.pop_back();
-        response[Str::token] = user->getToken(checkString, Str::botToken);
+        Wt::Json::Object json;
+        json[Str::token] = user->getToken(checkString, Str::botToken);
+        response.out() << Wt::Json::serialize(json);
     }
     else {
         throw NotFoundException("");

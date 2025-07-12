@@ -15,7 +15,7 @@ void GetSolutionResource::handleRequest(const Wt::Http::Request& request, Wt::Ht
             Session session;
             const Wt::Dbo::Transaction tr(session);
             const auto workResult = session.load<WorkResult>(Utility::getId(path));
-            std::ifstream file(workResult->getSolutionPath(), std::ios::binary);
+            std::ifstream file(Utility::getFilepath(workResult.id()), std::ios::binary);
 
             if (!file.is_open()) {
                 throw NotFoundException("");

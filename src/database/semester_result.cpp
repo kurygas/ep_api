@@ -14,8 +14,15 @@ SemesterResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::semesterId] = getSemester().id();
     json[Str::userId] = getSemester().id();
-    json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
-    json[Str::pointList] = JsonFunctions::getIdArray(getPoints());
+
+    if (!getWorkResults().empty()) {
+        json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
+    }
+
+    if (!getPoints().empty()) {
+        json[Str::pointList] = JsonFunctions::getIdArray(getPoints());
+    }
+    
     return json;
 }
 

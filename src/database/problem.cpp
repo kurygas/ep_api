@@ -70,7 +70,14 @@ Problem::operator Wt::Json::Object() const {
     json[Str::statement] = getStatement();
     json[Str::subject] = static_cast<int>(getSubject());
     json[Str::semesterNumber] = getSemesterNumber();
-    json[Str::workList] = JsonFunctions::getIdArray(getWorks());
-    json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
+
+    if (!getWorks().empty()) {
+        json[Str::workList] = JsonFunctions::getIdArray(getWorks());
+    }
+
+    if (!getWorkResults().empty()) {
+        json[Str::workResultList] = JsonFunctions::getIdArray(getWorkResults());
+    }
+    
     return json;
 }

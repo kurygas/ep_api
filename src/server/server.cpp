@@ -39,6 +39,7 @@ void Server::pullConfig() {
     boost::property_tree::ptree pt;
     boost::property_tree::read_ini("/home/kuryga/projects/ep_api/config.ini", pt);
     Str::botToken = pt.get<std::string>("tokens.bot");
+    Str::solutionsPath = pt.get<std::string>("path.solutions");
     CfService::key = pt.get<std::string>("cf.key");
     CfService::secret = pt.get<std::string>("cf.secret");
 }

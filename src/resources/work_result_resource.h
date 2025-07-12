@@ -6,7 +6,7 @@
 class WorkResultResource : public Resource<WorkResult> {
 protected:
     void processPatch(const HttpRequest& request, Session& session, const Ptr<WorkResult>& workResult) const override;
-    void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, 
+    void processGetMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
         const Ptr<WorkResult>& workResult, const std::string& method) const override;
 
     void getRequirements(const HttpRequest& request, Session& session) const override;

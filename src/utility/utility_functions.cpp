@@ -1,4 +1,5 @@
 #include "utility_functions.h"
+#include "str.h"
 
 #include <format>
 
@@ -40,4 +41,8 @@ int Utility::getId(const std::vector<std::string>& path) {
 
 const std::string& Utility::getMethod(const std::vector<std::string>& path) {
     return path[1];
+}
+
+std::string Utility::getFilepath(const int workResultId) {
+    return std::format("{}/{}", Str::solutionsPath, std::to_string(workResultId));
 }

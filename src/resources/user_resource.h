@@ -5,8 +5,8 @@
 
 class UserResource : public Resource<User> {
 protected:
-    void processGetMethod(const HttpRequest& request, Wt::Json::Object& response, Session& session, const Ptr<User>& user, 
-        const std::string& method) const override;
+    void processPostMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
+        const Ptr<User>& user, const std::string& method) const override;
     void processPatch(const HttpRequest& request, Session& session, const Ptr<User>& user) const override;
 
     void getRequirements(const HttpRequest& request, Session& session) const override;
