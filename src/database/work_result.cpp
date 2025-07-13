@@ -13,11 +13,6 @@ WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::workId] = getWork().id();
     json[Str::semesterResultId] = getSemesterResult().id();
-
-    if (getMark() >= 0) { 
-        json[Str::mark] = getMark();
-    }
-
     return json;
 }
 

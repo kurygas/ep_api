@@ -158,8 +158,6 @@ components:
       properties:
         work_id:
           type: integer
-        mark:
-          type: integer
         semester_result_id:
           type: integer
       required:
@@ -1020,7 +1018,473 @@ paths:
       summary: Returns Semester's properties
       security:
         - BearerAuth: []
-        
-      
-
+      responses:
+        '200':
+          description: Semester's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Semester'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes Semester
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Deleted Semester's properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Semester'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Changes Semester's properties
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                semester_number:
+                  type: integer
+                subject:
+                  type: integer
+                start:
+                  type: integer
+                end:
+                  type: integer
+                group_id:
+                  type: integer
+                cf_max_point:
+                  type: integer
+                atc_ratio:
+                  type: integer
+      responses:
+        '200':
+          description: Changed Semester's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Semester'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work:
+    get:
+      summary: Returns a list of all Work's id
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Creates Work
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                start:
+                  type: integer
+                end:
+                  type: integer
+                semester_id:
+                  type: integer
+                is_exam:
+                  type: integer
+              required:
+                - name
+                - start
+                - end
+                - semester_id
+                - is_exam
+      responses:
+        '201':
+          description: Created' Work properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Work'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns Work's properties
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Work's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Work'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes Work
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Deleted Work's properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Work'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Changes Work's properties
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: integer
+                end:
+                  type: integer
+                name:
+                  type: string
+                semester_id:
+                  type: integer
+                problem_list:
+                  type: array
+                  items:
+                    type: integer
+                is_exam:
+                  type: integer
+      responses:
+        '200':
+          description: Changed Work's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Work'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work/{id}/problem_list:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns array of Work's problems id
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Work's problems id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work_result:
+    get:
+      summary: Returns a list of all WorkResult's id
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Creates WorkResult
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                work_id:
+                  type: integer
+                semester_result_id:
+                  type: integer
+              required:
+                - work_id
+                - semester_result_id
+      responses:
+        '201':
+          description: Created WorkResult's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/WorkResult'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work_result/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns WorkResult's properties
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: WorkResult's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/WorkResult'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Deletes WorkResult
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Deleted WorkResult's properties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Changes WorkResult's properties
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                mark:
+                  type: integer
+                work_id:
+                  type: integer
+                problem_id:
+                  type: integer
+                semester_result_id:
+                  type: integer
+      responses:
+        '200':
+          description: Changed WorkResult's properties
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/WorkResult'
+                  - $ref: '#/components/schemas/IdObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work_result/{id}/problem_id:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns Problem's id
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Problem's id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  problem_id:
+                    type: integer
+                required:
+                  - problem_id
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work_result/{id}/statement:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns Problem's statement
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Problem's statement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statement:
+                    type: string
+                required:
+                  - statement
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /work_result/{id}/mark:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Return WorkResult's mark
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: WorkResult's mark
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mark:
+                    type: integer
+                required:
+                  - mark
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+# ToDo: require pinned file and add get_solution resource
       
