@@ -1386,6 +1386,15 @@ paths:
                   type: integer
                 semester_result_id:
                   type: integer
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
       responses:
         '200':
           description: Changed WorkResult's properties
@@ -1486,5 +1495,26 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/ServerError'
-# ToDo: require pinned file and add get_solution resource
-      
+  /solution/{id}:
+    parameters:
+      - $ref: '#/components/parameters/PathId'
+    get:
+      summary: Returns file with solution which pinned to WorkResult with *id*
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Solution file
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
