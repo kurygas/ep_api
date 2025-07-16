@@ -3,10 +3,10 @@
 #include <Wt/Dbo/Dbo.h>
 #include <Wt/Dbo/WtSqlTraits.h>
 
-#include "subject_type.h"
 #include "json.h"
 #include "str.h"
 #include "types.h"
+#include "subject_type.h"
 
 class Semester;
 class User;
@@ -23,13 +23,13 @@ public:
         Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne, "semester_result");
     }
 
-    SemesterResult() = default;
-    SemesterResult(const Ptr<Semester>& semester, const Ptr<User>& user);
-
     operator Wt::Json::Object() const;
 
-    void setSemester(const Ptr<Semester>& semester);
-    void setUser(const Ptr<User>& user);
+    SemesterResult() = default;
+    SemesterResult(Ptr<Semester> semester, Ptr<User> user);
+
+    void setSemester(Ptr<Semester> semester);
+    void setUser(Ptr<User> user);
 
     const Ptr<Semester>& getSemester() const;
     const Ptr<User>& getUser() const;

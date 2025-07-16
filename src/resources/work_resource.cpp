@@ -12,20 +12,22 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
             work.modify()->setEnd(Wt::WDateTime::fromString(value));
         }
         else if (key == Str::semesterId) {
-            const auto semester = session.load<Semester>(value);
+            auto semester = session.load<Semester>(value);
 
             if (session.exist(&Session::getWork, semester, work->getName())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            work.modify()->setSemester(semester);
+            work.modify()->setSemester(std::move(semester));
         }
         else if (key == Str::name) {
-            if (session.exist(&Session::getWork, work->getSemester(), value)) {
+            auto name = static_cast<std::string>(value);
+
+            if (session.exist(&Session::getWork, work->getSemester(), name)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            work.modify()->setName(value);
+            work.modify()->setName(std::move(name));
         }
         else if (key == Str::problemList) {
             work.modify()->setProblems(session.getByArray<Problem>(value));

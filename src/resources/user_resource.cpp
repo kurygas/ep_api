@@ -18,7 +18,7 @@ void UserResource::processPostMethod(const HttpRequest& request, Wt::Http::Respo
 
         checkString.pop_back();
         Wt::Json::Object json;
-        json[Str::token] = user->getToken(checkString, Str::botToken);
+        json[Str::token] = user->getToken(checkString, Str::botToken).c_str();
         response.out() << Wt::Json::serialize(json);
     }
     else {
@@ -30,15 +30,15 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
     for (const auto& [key, value] : request.body()) {
         if (key == Str::name) {
             RootRequirements::requireAuthId(request, session, user);
-            user.modify()->setName(value);
+            user.modify()->setName(static_cast<std::string>(value));
         }
         else if (key == Str::surname) {
             RootRequirements::requireAuthId(request, session, user);
-            user.modify()->setSurname(value);
+            user.modify()->setSurname(static_cast<std::string>(value));
         }
         else if (key == Str::tgUsername) {
             RootRequirements::requireAuthId(request, session, user);
-            user.modify()->setTgUsername(value);
+            user.modify()->setTgUsername(static_cast<std::string>(value));
         }
         else if (key == Str::userType) {
             RootRequirements::requireTeacherRoots(request, session);
@@ -54,10 +54,10 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
             user.modify()->setGroup(session.load<Group>(value));
         }
         else if(key == Str::cfName) {
-            user.modify()->setCfName(value);
+            user.modify()->setCfName(static_cast<std::string>(value));
         }
         else if (key == Str::atcName) {
-            user.modify()->setAtcName(value);
+            user.modify()->setAtcName(static_cast<std::string>(value));
         }
     }
 }

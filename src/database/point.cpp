@@ -1,27 +1,29 @@
 #include "point.h"
-#include "http_exceptions.h"
-#include "validator.h"
 
 Point::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::reason] = getReason();
+    json[Str::reason] = getReason().c_str();
     json[Str::amount] = getAmount();
     json[Str::semesterResultId] = getSemesterResult().id();
     return json;
 }
 
-Point::Point(const Wt::WString& reason, const int amount, const Ptr<SemesterResult>& semesterResult) {
-    setReason(reason);
+Point::Point(std::string reason, int amount, Ptr<SemesterResult> semesterResult) {
+    setReason(std::move(reason));
     setAmount(amount);
-    setSemesterResult(semesterResult);
+    setSemesterResult(std::move(semesterResult));
 }
 
-void Point::setReason(const Wt::WString& reason) {
+void Point::setReason(std::string reason) {
     if (reason.empty()) {
         throw BadRequestException("Invalid reason for Point");
     }
 
-    reason_ = reason;
+    reason_ = std::move(reason);
+}
+
+void Point::setSemesterResult(Ptr<SemesterResult> semesterResult) {
+    semesterResult_ = std::move(semesterResult);
 }
 
 void Point::setAmount(const int amount) {
@@ -32,11 +34,7 @@ void Point::setAmount(const int amount) {
     amount_ = amount;
 }
 
-void Point::setSemesterResult(const Ptr<SemesterResult>& semesterResult) {
-    semesterResult_ = semesterResult;
-}
-
-const Wt::WString& Point::getReason() const {
+const std::string& Point::getReason() const {
     return reason_;
 }
 

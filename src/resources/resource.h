@@ -44,7 +44,7 @@ public:
                 }
             }
             else {
-                const auto id = Utility::getId(path);
+                const auto id = std::stoi(path[0]);
                 ptr = session.load<DatabaseType>(id);
                 prepare(session, ptr);
 
@@ -67,7 +67,7 @@ public:
                     }
                 }
                 else {
-                    const auto& pathMethod = Utility::getMethod(path);
+                    const auto& pathMethod = path[1];
 
                     if (method == "GET") {
                         processGetMethod(requestContent, response, session, ptr, pathMethod);

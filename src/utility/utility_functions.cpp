@@ -18,7 +18,7 @@ std::vector<std::string> Utility::split(const std::string& str) {
     }
 
     if (!buf.empty()) {
-        result.emplace_back(buf);
+        result.emplace_back(std::move(buf));
     }
 
     return result;
@@ -33,14 +33,6 @@ std::string Utility::joinParams(const std::vector<std::pair<std::string, std::st
 
     result.pop_back();
     return result;
-}
-
-int Utility::getId(const std::vector<std::string>& path) {
-    return std::stoi(path[0]);
-}
-
-const std::string& Utility::getMethod(const std::vector<std::string>& path) {
-    return path[1];
 }
 
 std::string Utility::getFilepath(const int workResultId) {

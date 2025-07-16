@@ -7,6 +7,13 @@
 #include "str.h"
 #include "types.h"
 #include "subject_type.h"
+#include "http_exceptions.h"
+#include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
+#include "user.h"
+#include "semester_result.h"
 
 class User;
 class SemesterResult;
@@ -23,18 +30,18 @@ public:
     operator Wt::Json::Object() const;
 
     Point() = default;
-    Point(const Wt::WString& reason, int amount, const Ptr<SemesterResult>& semesterResult);
+    Point(std::string reason, int amount, Ptr<SemesterResult> semesterResult);
 
-    void setReason(const Wt::WString& reason);
+    void setReason(std::string reason);
+    void setSemesterResult(Ptr<SemesterResult> semesterResult);
     void setAmount(int amount);
-    void setSemesterResult(const Ptr<SemesterResult>& semesterResult);
 
-    const Wt::WString& getReason() const;
+    const std::string& getReason() const;
     int getAmount() const;
     const Ptr<SemesterResult>& getSemesterResult() const;
 
 private:
-    Wt::WString reason_;
+    std::string reason_;
     int amount_;
 
     Ptr<SemesterResult> semesterResult_;

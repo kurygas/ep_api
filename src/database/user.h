@@ -8,6 +8,7 @@
 #include "json.h"
 #include "str.h"
 #include "types.h"
+#include "subject_type.h"
 
 class Group;
 class SemesterResult;
@@ -39,33 +40,34 @@ public:
         Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "user");
     }
 
-    static std::unique_ptr<User> createAdmin(const Wt::WString& name);
     operator Wt::Json::Object() const;
 
-    User() = default;
-    User(int64_t tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname);
+    static std::unique_ptr<User> createAdmin(std::string name);
 
-    void setName(const Wt::WString& name);
-    void setSurname(const Wt::WString& surname);
-    void setTgUsername(const Wt::WString& tgUsername);
+    User() = default;
+    User(int64_t tgId, std::string tgUsername, std::string name, std::string surname);
+
+    void setName(std::string name);
+    void setSurname(std::string surname);
+    void setTgUsername(std::string tgUsername);
+    void setGroup(Ptr<Group> group);
+    void setToken(std::string token);
+    void setCfName(std::string cfName);
+    void setAtcName(std::string atcName);
     void setUserType(UserType userType);
-    void setGroup(const Ptr<Group>& group);
-    void setToken(const Wt::WString& token);
-    void setCfName(const Wt::WString& cfName);
-    void setAtcName(const Wt::WString& atcName);
     void setCfUpdated();
     void setAtcUpdated();
 
-    const Wt::WString& getToken(const Wt::WString& checkString, const Wt::WString& hash) const;
+    const std::string& getToken(const std::string& checkString, const std::string& hash) const;
     UserType getUserType() const;
-    const Wt::WString& getName() const;
-    const Wt::WString& getSurname() const;
-    const Wt::WString& getTgUsername() const;
+    const std::string& getName() const;
+    const std::string& getSurname() const;
+    const std::string& getTgUsername() const;
     int64_t getTgId() const;
     const Ptr<Group>& getGroup() const;
     const Wt::WDateTime& getTokenTimeLimit() const;
-    const Wt::WString& getCfName() const;
-    const Wt::WString& getAtcName() const;
+    const std::string& getCfName() const;
+    const std::string& getAtcName() const;
     const List<SemesterResult> getSemesterResults() const;
     const Wt::WDateTime& getLastCfUpdate() const;
     const Wt::WDateTime& getLastAtcUpdate() const;
@@ -74,15 +76,15 @@ private:
     void setTgId(int64_t tgId);
 
     UserType userType_;
-    Wt::WString name_;
-    Wt::WString surname_;
+    std::string name_;
+    std::string surname_;
     int64_t tgId_;
-    Wt::WString tgUsername_;
-    Wt::WString token_;
+    std::string tgUsername_;
+    std::string token_;
     Wt::WDateTime tokenTimeLimit_;
-    Wt::WString cfName_;
+    std::string cfName_;
     Wt::WDateTime lastCfUpdate_;
-    Wt::WString atcName_;
+    std::string atcName_;
     Wt::WDateTime lastAtcUpdate_;
 
     Ptr<Group> group_;

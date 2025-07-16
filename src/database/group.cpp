@@ -1,33 +1,34 @@
 #include "group.h"
-#include "user.h"
-#include "work.h"
-#include "str.h"
 #include "http_exceptions.h"
-#include "types.h"
-#include "semester.h"
 #include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
+#include "user.h"
+#include "semester.h"
 
-Group::Group(const Wt::WString& name) {
-    setName(name);
+Group::Group(std::string name) {
+    setName(std::move(name));
 }
 
-void Group::setName(const Wt::WString& name) {
+void Group::setName(std::string name)
+{
     if (name.empty()) {
         throw BadRequestException("Invalid name for Group");
     }
 
-    name_ = name;
+    name_ = std::move(name);
 }
 
-void Group::setCfGroupCode(const Wt::WString& cfGroupCode) {
-    cfGroupCode_ = cfGroupCode;
+void Group::setCfGroupCode(std::string cfGroupCode) {
+    cfGroupCode_ = std::move(cfGroupCode);
 }
 
-const Wt::WString& Group::getName() const {
+const std::string& Group::getName() const {
     return name_;
 }
 
-const Wt::WString& Group::getCfGroupCode() const {
+const std::string& Group::getCfGroupCode() const {
     return cfGroupCode_;
 }
 
@@ -41,7 +42,7 @@ const List<Semester>& Group::getSemesters() const {
 
 Group::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::name] = getName();
+    json[Str::name] = getName().c_str();
 
     if (!getUsers().empty()) {
         json[Str::userList] = JsonFunctions::getIdArray(getUsers());
@@ -52,8 +53,9 @@ Group::operator Wt::Json::Object() const {
     }
 
     if (!getCfGroupCode().empty()) {
-        json[Str::cfGroupCode] = getCfGroupCode();
+        json[Str::cfGroupCode] = getCfGroupCode().c_str();
     }
     
     return json;
 }
+

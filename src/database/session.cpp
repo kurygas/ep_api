@@ -27,8 +27,8 @@ void Session::configureDatabase() {
     session.checkAdmin("tg_bot");
 }
 
-Wt::WString Session::generateToken() {
-    Wt::WString token;
+std::string Session::generateToken() {
+    std::string token;
 
     do {
         token = Random::generateRandomString(16);
@@ -38,13 +38,13 @@ Wt::WString Session::generateToken() {
     return token;
 }
 
-void Session::checkAdmin(const Wt::WString& name) {
+void Session::checkAdmin(const std::string& name) {
     if (!exist(&Session::getByTgUsername<User>, "ADMIN:" + name)) {
         add(User::createAdmin("ADMIN:" + name)).modify()->setToken(generateToken());
     }
 }
 
-Ptr<Work> Session::getWork(const Ptr<Semester>& semester, const Wt::WString& name) {
+Ptr<Work> Session::getWork(const Ptr<Semester>& semester, const std::string& name) {
     return getPtr(find<Work>()
         .where("semester_id = ?").bind(semester.id())
         .where("name = ?").bind(name));
@@ -71,7 +71,7 @@ Ptr<SemesterResult> Session::getSemesterResult(const Ptr<Semester>& semester, co
     );
 }
 
-Ptr<Point> Session::getPoint(const Ptr<SemesterResult>& semesterResult, const Wt::WString& reason) {
+Ptr<Point> Session::getPoint(const Ptr<SemesterResult>& semesterResult, const std::string& reason) {
     return getPtr(find<Point>()
         .where("semester_result_id = ?").bind(semesterResult.id())
         .where("reason = ?").bind(reason)

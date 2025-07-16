@@ -23,14 +23,16 @@ void ProblemResource::processPatch(const HttpRequest& request, Session& session,
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::name) {
-            if (session.exist(&Session::getByName<Problem>, value)) {
+            auto name = static_cast<std::string>(value);
+
+            if (session.exist(&Session::getByName<Problem>, name)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            problem.modify()->setName(value);
+            problem.modify()->setName(name);
         }
         else if (key == Str::statement) {
-            problem.modify()->setStatement(value);
+            problem.modify()->setStatement(static_cast<std::string>(value));
         }
         else if (key == Str::subject) {
             problem.modify()->setSubject(JsonFunctions::parse<Subject::Type>(value));

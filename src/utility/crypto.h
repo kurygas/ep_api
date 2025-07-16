@@ -6,7 +6,7 @@
 
 namespace Crypto {
     template<unsigned long HashSize>
-    std::string joinHash(std::array<uint8_t, HashSize> hash) {
+    std::string joinHash(const std::array<uint8_t, HashSize>& hash) {
         std::string result;
 
         for (const auto& i : hash) {

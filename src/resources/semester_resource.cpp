@@ -6,11 +6,13 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::semesterNumber) {
-            if (session.exist(&Session::getSemester, semester->getSubject(), value, semester->getGroup())) {
+            auto semesterNumber = static_cast<int>(value);
+
+            if (session.exist(&Session::getSemester, semester->getSubject(), semesterNumber, semester->getGroup())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            semester.modify()->setSemesterNumber(value);
+            semester.modify()->setSemesterNumber(semesterNumber);
         }
         else if (key == Str::subject) {
             const auto subject = JsonFunctions::parse<Subject::Type>(value);
@@ -28,13 +30,13 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
             semester.modify()->setEnd(Wt::WDateTime::fromTime_t(value));
         }
         else if (key == Str::groupId) {
-            const auto group = session.load<Group>(value);
+            auto group = session.load<Group>(value);
 
             if (session.exist(&Session::getSemester, semester->getSubject(), semester->getSemesterNumber(), group)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            semester.modify()->setGroup(group);
+            semester.modify()->setGroup(std::move(group));
         }
         else if (key == Str::cfMaxPoint) {
             semester.modify()->setCfMaxPoint(value);

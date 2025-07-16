@@ -11,7 +11,7 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
                 throw BadRequestException("No solution file");
             }
 
-            workResult.modify()->setFilename(value);
+            workResult.modify()->setFilename(static_cast<std::string>(value));
             std::rename(solution->spoolFileName().c_str(), Utility::getFilepath(workResult.id()).c_str());
         }
         else if (key == Str::mark) {
@@ -20,13 +20,13 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
         }
         else if (key == Str::workId) {
             RootRequirements::requireTeacherRoots(request, session);
-            const auto work = session.load<Work>(value);
+            auto work = session.load<Work>(value);
 
             if (session.exist(&Session::getWorkResult, work, workResult->getSemesterResult())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            workResult.modify()->setWork(work);
+            workResult.modify()->setWork(std::move(work));
         }
         else if (key == Str::problemId) {
             RootRequirements::requireTeacherRoots(request, session);
@@ -34,13 +34,13 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
         }
         else if (key == Str::semesterResultId) {
             RootRequirements::requireTeacherRoots(request, session);
-            const auto semesterResult = session.load<SemesterResult>(value);
+            auto semesterResult = session.load<SemesterResult>(value);
 
             if (session.exist(&Session::getWorkResult, workResult->getWork(), semesterResult)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            workResult.modify()->setSemesterResult(semesterResult);
+            workResult.modify()->setSemesterResult(std::move(semesterResult));
         }
     }
 }
@@ -78,7 +78,7 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Http::
             throw ForbiddenException("");
         }
 
-        json[Str::statement] = workResult->getProblem()->getStatement();
+        json[Str::statement] = workResult->getProblem()->getStatement().c_str();
     }
     else if (method == Str::mark) {
         const auto caller = session.getByToken<User>(request.token());

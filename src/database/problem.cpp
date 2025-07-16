@@ -1,35 +1,38 @@
 #include "problem.h"
+#include "http_exceptions.h"
 #include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
 #include "work.h"
 #include "work_result.h"
-#include "http_exceptions.h"
-#include "str.h"
 
-Problem::Problem(const Wt::WString& name, const Wt::WString& statement, Subject::Type subject, const int semesterNumber) {
-    setName(name);
-    setStatement(statement);
+void Problem::setSubject(const Subject::Type subject) {
+    subject_ = subject;
+}
+
+Problem::Problem(std::string name, std::string statement, Subject::Type subject, int semesterNumber) {
+    setName(std::move(name));
+    setStatement(std::move(statement));
     setSubject(subject);
     setSemesterNumber(semesterNumber);
 }
 
-void Problem::setName(const Wt::WString& name) {
+void Problem::setName(std::string name)
+{
     if (name.empty()) {
         throw BadRequestException("Invalid name for Problem");
     }
 
-    name_ = name;
+    name_ = std::move(name);
 }
 
-void Problem::setStatement(const Wt::WString& statement) {
+void Problem::setStatement(std::string statement) {
     if (statement.empty()) {
         throw BadRequestException("Invalid statement for Problem");
     }
 
-    statement_ = statement;
-}
-
-void Problem::setSubject(const Subject::Type subject) {
-    subject_ = subject;
+    statement_ = std::move(statement);
 }
 
 void Problem::setSemesterNumber(const int semesterNumber) {
@@ -40,11 +43,11 @@ void Problem::setSemesterNumber(const int semesterNumber) {
     semesterNumber_ = semesterNumber;
 }
 
-const Wt::WString& Problem::getName() const {
+const std::string& Problem::getName() const {
     return name_;
 }
 
-const Wt::WString& Problem::getStatement() const {
+const std::string& Problem::getStatement() const {
     return statement_;
 }
 
@@ -66,8 +69,8 @@ const List<WorkResult>& Problem::getWorkResults() const {
 
 Problem::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::name] = getName();
-    json[Str::statement] = getStatement();
+    json[Str::name] = getName().c_str();
+    json[Str::statement] = getStatement().c_str();
     json[Str::subject] = static_cast<int>(getSubject());
     json[Str::semesterNumber] = getSemesterNumber();
 

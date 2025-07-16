@@ -1,15 +1,16 @@
 #include "work.h"
-#include "validator.h"
-#include "problem.h"
-#include "semester.h"
-#include "work_result.h"
 #include "http_exceptions.h"
-#include "str.h"
+#include "validator.h"
+#include "random_functions.h"
 #include "utility_functions.h"
+#include "crypto.h"
+#include "problem.h"
+#include "work_result.h"
+#include "semester.h"
 
 Work::operator Wt::Json::Object() const {
     Wt::Json::Object json;
-    json[Str::name] = getName();
+    json[Str::name] = getName().c_str();
     json[Str::start] = getStart().toTime_t();
     json[Str::end] = getEnd().toTime_t();
     json[Str::semesterId] = getSemester().id();
@@ -18,20 +19,27 @@ Work::operator Wt::Json::Object() const {
     return json;
 }
 
-Work::Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Ptr<Semester>& semester, 
-    const bool isExam) {
-    setName(name);
+Work::Work(std::string name, const Wt::WDateTime &start, const Wt::WDateTime &end, Ptr<Semester> semester, bool isExam) {
+    setName(std::move(name));
     setTime(start, end);
-    setSemester(semester);
+    setSemester(std::move(semester));
     setIsExam(isExam);
 }
 
-void Work::setName(const Wt::WString& name) {
+void Work::setName(std::string name) {
     if (name.empty()) {
         throw BadRequestException("Invalid name for Work");
     }
 
-    name_ = name;
+    name_ = std::move(name);
+}
+
+void Work::setSemester(Ptr<Semester> semester) {
+    if (!semester) {
+        throw BadRequestException("Invalid semester for Work");
+    }
+
+    semester_ = std::move(semester);
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
@@ -59,15 +67,7 @@ void Work::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
     end_ = end;
 }
 
-void Work::setSemester(const Ptr<Semester>& semester) {
-    if (!semester) {
-        throw BadRequestException("Invalid semester for Work");
-    }
-
-    semester_ = semester;
-}
-
-void Work::setProblems(const List<Problem>& problems) {
+void Work::setProblems(List<Problem> problems) {
     for (const auto& problem : problems) {
         if (problems_.count(problem) == 0 && problem->getSubject() != semester_->getSubject()) {
             throw BadRequestException("Invalid problems for work");
@@ -84,14 +84,14 @@ void Work::setProblems(const List<Problem>& problems) {
         }
     }
 
-    problems_ = problems;
+    problems_ = std::move(problems);
 }
 
 void Work::setIsExam(const bool isExam) {
     isExam_ = isExam;
 }
 
-const Wt::WString& Work::getName() const {
+const std::string& Work::getName() const {
     return name_;
 }
 

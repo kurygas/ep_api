@@ -23,14 +23,16 @@ void GroupResource::processPatch(const HttpRequest& request, Session& session, c
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::name) {
-            if (session.exist(&Session::getByName<Group>, value)) {
+            auto name = static_cast<std::string>(value);
+
+            if (session.exist(&Session::getByName<Group>, name)) {
                 throw UnprocessableEntityException("Name already exists");
             }
 
-            group.modify()->setName(value);
+            group.modify()->setName(name);
         }
         else if (key == Str::cfGroupCode) {
-            group.modify()->setCfGroupCode(value);
+            group.modify()->setCfGroupCode(static_cast<std::string>(value));
         }
     }
 }

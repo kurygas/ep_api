@@ -6,6 +6,7 @@
 #include "json.h"
 #include "str.h"
 #include "types.h"
+#include "subject_type.h"
 
 class User;
 class Semester;
@@ -23,19 +24,19 @@ public:
     operator Wt::Json::Object() const;
 
     Group() = default;
-    explicit Group(const Wt::WString& name);
+    explicit Group(std::string name);
 
-    void setName(const Wt::WString& name);
-    void setCfGroupCode(const Wt::WString& cfGroupCode);
+    void setName(std::string name);
+    void setCfGroupCode(std::string cfGroupCode);
 
-    const Wt::WString& getName() const;
-    const Wt::WString& getCfGroupCode() const;
+    const std::string& getName() const;
+    const std::string& getCfGroupCode() const;
     const List<User>& getUsers() const;
     const List<Semester>& getSemesters() const;
 
 private:
-    Wt::WString name_;
-    Wt::WString cfGroupCode_;
+    std::string name_;
+    std::string cfGroupCode_;
 
     List<User> users_;
     List<Semester> semesters_;

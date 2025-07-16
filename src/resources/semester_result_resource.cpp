@@ -8,22 +8,22 @@ void SemesterResultResource::processPatch(const HttpRequest &request, Session& s
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::semesterId) {
-            const auto semester = session.load<Semester>(value);
+            auto semester = session.load<Semester>(value);
 
             if (session.exist(&Session::getSemesterResult, semester, semesterResult->getUser())) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            semesterResult.modify()->setSemester(semester);
+            semesterResult.modify()->setSemester(std::move(semester));
         }
         else if (key == Str::userId) {
-            const auto user = session.load<User>(value);
+            auto user = session.load<User>(value);
 
             if (session.exist(&Session::getSemesterResult, semesterResult->getSemester(), user)) {
                 throw UnprocessableEntityException("Already exists");
             }
 
-            semesterResult.modify()->setUser(user);
+            semesterResult.modify()->setUser(std::move(user));
         }
     }
 }

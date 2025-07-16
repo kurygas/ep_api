@@ -22,7 +22,7 @@ public:
     Session();
     static void configureDatabase();
 
-    Wt::WString generateToken();
+    std::string generateToken();
 
     template<typename T>
     Ptr<T> create(const Wt::Json::Object& json);
@@ -44,25 +44,25 @@ public:
     }
 
     template<typename T>
-    Ptr<T> getByTgUsername(const Wt::WString& tgUsername) {
+    Ptr<T> getByTgUsername(const std::string& tgUsername) {
         return getPtr(find<T>().where("tg_username = ?").bind(tgUsername));
     }
 
     template<typename T>
-    Ptr<T> getByToken(const Wt::WString& token) {
+    Ptr<T> getByToken(const std::string& token) {
         return getPtr(find<T>().where("token = ?").bind(token));
     }
 
     template<typename T>
-    Ptr<T> getByName(const Wt::WString& name) {
+    Ptr<T> getByName(const std::string& name) {
         return getPtr(find<T>().where("name = ?").bind(name));
     }
 
-    Ptr<Work> getWork(const Ptr<Semester>& semester, const Wt::WString& name);
+    Ptr<Work> getWork(const Ptr<Semester>& semester, const std::string& name);
     Ptr<WorkResult> getWorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult);
     Ptr<Semester> getSemester(Subject::Type subject, int semesterNumber, const Ptr<Group>& group);
     Ptr<SemesterResult> getSemesterResult(const Ptr<Semester>& semester, const Ptr<User>& user);
-    Ptr<Point> getPoint(const Ptr<SemesterResult>& SemesterResult, const Wt::WString& reason);
+    Ptr<Point> getPoint(const Ptr<SemesterResult>& SemesterResult, const std::string& reason);
 
     template<typename F, typename... Args>
     bool exist(F method, Args&&... args) {
@@ -99,106 +99,106 @@ private:
         return ptr;
     }
 
-    void checkAdmin(const Wt::WString& name);
+    void checkAdmin(const std::string& name);
 };
 
 template<>
 inline Ptr<WorkResult> Session::create<WorkResult>(const Wt::Json::Object& json) {
-    const auto work = load<Work>(json.at(Str::workId));
-    const auto semesterResult = load<SemesterResult>(json.at(Str::semesterResultId));
+    auto work = load<Work>(json.at(Str::workId));
+    auto semesterResult = load<SemesterResult>(json.at(Str::semesterResultId));
 
     if (exist(&Session::getWorkResult, work, semesterResult)) {
         throw UnprocessableEntityException("WorkResult result already exists");
     }
 
-    return add(std::make_unique<WorkResult>(work, semesterResult));
+    return add(std::make_unique<WorkResult>(std::move(work), std::move(semesterResult)));
 }
 
 template<>
 inline Ptr<User> Session::create<User>(const Wt::Json::Object& json) {
-    const auto tgId = json.at(Str::tgId);
-    const auto tgUsername = json.at(Str::tgUsername);
-    const auto name = json.at(Str::name);
-    const auto surname = json.at(Str::surname);
+    const auto tgId = static_cast<int>(json.at(Str::tgId));
+    auto tgUsername = static_cast<std::string>(json.at(Str::tgUsername));
+    auto name = static_cast<std::string>(json.at(Str::name));
+    auto surname = static_cast<std::string>(json.at(Str::surname));
 
     if (exist(&Session::getByTgId<User>, tgId)) {
         throw UnprocessableEntityException("User already exists");
     }
 
-    return add(std::make_unique<User>(tgId, tgUsername, name, surname));
+    return add(std::make_unique<User>(tgId, std::move(tgUsername), std::move(name), std::move(surname)));
 }
 
 template<>
 inline Ptr<Problem> Session::create<Problem>(const Wt::Json::Object& json) {
-    const auto name = json.at(Str::name);
-    const auto statement = json.at(Str::statement);
+    auto name = static_cast<std::string>(json.at(Str::name));
+    auto statement = static_cast<std::string>(json.at(Str::statement));
     const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
-    const auto semesterNumber = json.at(Str::semesterNumber);
+    const auto semesterNumber = static_cast<int>(json.at(Str::semesterNumber));
 
     if (exist(&Session::getByName<Problem>, name)) {
         throw UnprocessableEntityException("Problem already exists");
     }
 
-    return add(std::make_unique<Problem>(name, statement, subject, semesterNumber));
+    return add(std::make_unique<Problem>(std::move(name), std::move(statement), subject, semesterNumber));
 }
 
 template<>
 inline Ptr<Work> Session::create<Work>(const Wt::Json::Object& json) {
-    const auto name = json.at(Str::name);
+    auto name = static_cast<std::string>(json.at(Str::name));
     const auto start = Wt::WDateTime::fromTime_t(json.at(Str::start));
     const auto end = Wt::WDateTime::fromTime_t(json.at(Str::end));
-    const auto semester = load<Semester>(json.at(Str::semesterId));
-    const auto isExam = json.at(Str::isExam);
+    auto semester = load<Semester>(json.at(Str::semesterId));
+    const auto isExam = static_cast<bool>(json.at(Str::isExam));
     
     if (exist(&Session::getWork, semester, name)) {
         throw UnprocessableEntityException("Work already exists");
     }
 
-    return add(std::make_unique<Work>(name, start, end, semester, isExam));
+    return add(std::make_unique<Work>(std::move(name), start, end, std::move(semester), isExam));
 }
 
 template<>
 inline Ptr<Group> Session::create<Group>(const Wt::Json::Object& json) {
-    const auto name = json.at(Str::name);
+    auto name = static_cast<std::string>(json.at(Str::name));
 
     if (exist(&Session::getByName<Group>, name)) {
         throw UnprocessableEntityException("Group already exists");
     }
 
-    return add(std::make_unique<Group>(name));
+    return add(std::make_unique<Group>(std::move(name)));
 }
 
 template<>
 inline Ptr<Point> Session::create<Point>(const Wt::Json::Object& json) {
-    const auto reason = json.at(Str::reason);
-    const auto amount = json.at(Str::amount);
-    const auto semesterResult = load<SemesterResult>(json.at(Str::semesterResultId));
-    return add(std::make_unique<Point>(reason, amount, semesterResult));
+    auto reason = static_cast<std::string>(json.at(Str::reason));
+    const auto amount = static_cast<int>(json.at(Str::amount));
+    auto semesterResult = load<SemesterResult>(json.at(Str::semesterResultId));
+    return add(std::make_unique<Point>(std::move(reason), amount, std::move(semesterResult)));
 }
 
 template<>
 inline Ptr<Semester> Session::create<Semester>(const Wt::Json::Object& json) {
-    const auto semesterNumber = json.at(Str::semesterNumber);
+    const auto semesterNumber = static_cast<int>(json.at(Str::semesterNumber));
     const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
     const auto start = Wt::WDateTime::fromTime_t(json.at(Str::start));
     const auto end = Wt::WDateTime::fromTime_t(json.at(Str::end));
-    const auto group = load<Group>(json.at(Str::groupId));
+    auto group = load<Group>(json.at(Str::groupId));
 
     if (exist(&Session::getSemester, subject, semesterNumber, group)) {
         throw UnprocessableEntityException("Semester already exists");
     }
 
-    return add(std::make_unique<Semester>(semesterNumber, subject, start, end, group));
+    return add(std::make_unique<Semester>(semesterNumber, subject, start, end, std::move(group)));
 }
 
 template<>
 inline Ptr<SemesterResult> Session::create<SemesterResult>(const Wt::Json::Object& json) {
-    const auto semester = load<Semester>(json.at(Str::semesterId));
-    const auto user = load<User>(json.at(Str::userId));
+    auto semester = load<Semester>(json.at(Str::semesterId));
+    auto user = load<User>(json.at(Str::userId));
 
     if (exist(&Session::getSemesterResult, semester, user)) {
         throw UnprocessableEntityException("SemesterResult already exists");
     }
 
-    return add(std::make_unique<SemesterResult>(semester, user));
+    return add(std::make_unique<SemesterResult>(std::move(semester), std::move(user)));
 }

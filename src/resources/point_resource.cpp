@@ -22,7 +22,7 @@ void PointResource::processPatch(const HttpRequest& request, Session& session, c
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::reason) {
-            point.modify()->setReason(value);
+            point.modify()->setReason(static_cast<std::string>(value));
         }
         else if (key == Str::amount) {
             point.modify()->setAmount(value);

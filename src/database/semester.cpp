@@ -1,7 +1,10 @@
 #include "semester.h"
-#include "group.h"
-#include "validator.h"
 #include "http_exceptions.h"
+#include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
+#include "group.h"
 #include "semester_result.h"
 
 Semester::operator Wt::Json::Object() const {
@@ -27,12 +30,20 @@ Semester::operator Wt::Json::Object() const {
     return json;
 }
 
-Semester::Semester(const int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, 
-    const Ptr<Group>& group) {
+Semester::Semester(const int semesterNumber, const Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, 
+    Ptr<Group> group) {
     setSemesterNumber(semesterNumber);
     setSubject(subject);
     setTime(start, end);
-    setGroup(group);
+    setGroup(std::move(group));
+}
+
+void Semester::setGroup(Ptr<Group> group) {
+    if (!group) {
+        throw BadRequestException("Invalid Group for Semester");
+    }
+    
+    group_ = std::move(group);
 }
 
 void Semester::setSemesterNumber(const int semesterNumber) {
@@ -70,14 +81,6 @@ void Semester::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
 
     start_ = start;
     end_ = end;
-}
-
-void Semester::setGroup(const Ptr<Group>& group) {
-    if (!group) {
-        throw BadRequestException("Invalid Group for Semester");
-    }
-    
-    group_ = group;
 }
 
 int Semester::getSemesterNumber() const {

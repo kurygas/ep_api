@@ -1,27 +1,21 @@
 #include "user.h"
-#include "session.h"
+#include "http_exceptions.h"
 #include "validator.h"
-#include "group.h"
-#include "work_result.h"
 #include "random_functions.h"
-#include "str.h"
+#include "utility_functions.h"
 #include "crypto.h"
+#include "group.h"
+#include "semester_result.h"
 #include "point.h"
-
-std::unique_ptr<User> User::createAdmin(const Wt::WString& name) {
-    auto user = std::make_unique<User>();
-    user->tgUsername_ = name;
-    user->userType_ = UserType::Admin;
-    return std::move(user);
-}
+#include "work_result.h"
 
 User::operator Wt::Json::Object() const {
     Wt::Json::Object json;
     json[Str::userType] = static_cast<int>(getUserType());
-    json[Str::name] = getName();
-    json[Str::surname] = getSurname();
+    json[Str::name] = getName().c_str();
+    json[Str::surname] = getSurname().c_str();
     json[Str::tgId] = getTgId();
-    json[Str::tgUsername] = getTgUsername();
+    json[Str::tgUsername] = getTgUsername().c_str();
 
     if (!getGroup()) {
         json[Str::groupId] = getGroup().id();
@@ -32,51 +26,79 @@ User::operator Wt::Json::Object() const {
     }
 
     if (!getCfName().empty()) {
-        json[Str::cfName] = getCfName();
+        json[Str::cfName] = getCfName().c_str();
     }
 
     if (!getAtcName().empty()) {
-        json[Str::atcName] = getAtcName();
+        json[Str::atcName] = getAtcName().c_str();
     }
     
     return json;
 }
 
-User::User(const int64_t tgId, const Wt::WString& tgUsername, const Wt::WString& name, const Wt::WString& surname)
+std::unique_ptr<User> User::createAdmin(std::string name) {
+    auto user = std::make_unique<User>();
+    user->tgUsername_ = std::move(name);
+    user->userType_ = UserType::Admin;
+    return std::move(user);
+}
+
+User::User(const int64_t tgId, std::string tgUsername, std::string name, std::string surname)
 : userType_(UserType::Student)
 , tokenTimeLimit_(Wt::WDateTime::currentDateTime()) {
     setTgId(tgId);
-    setTgUsername(tgUsername);
-    setName(name);
-    setSurname(surname);
+    setTgUsername(std::move(tgUsername));
+    setName(std::move(name));
+    setSurname(std::move(surname));
 }
 
-void User::setName(const Wt::WString& firstName) {
-    if (firstName.empty() || !Validator::isRussianString(firstName)) {
+void User::setName(std::string name) {
+    if (name.empty() || !Validator::isRussianString(name)) {
         throw BadRequestException("Invalid name for User");
     }
 
-    name_ = firstName;
+    name_ = std::move(name);
 }
 
-void User::setSurname(const Wt::WString& secondName) {
-    if (secondName.empty() || !Validator::isRussianString(secondName)) {
+void User::setSurname(std::string surname) {
+    if (surname.empty() || !Validator::isRussianString(surname)) {
         throw BadRequestException("Invalid surname for User");
     }
 
-    surname_ = secondName;
+    surname_ = std::move(surname);
 }
 
-void User::setTgId(const int64_t tgId) {
-    tgId_ = tgId;
-}
-
-void User::setTgUsername(const Wt::WString& tgUsername) {
+void User::setTgUsername(std::string tgUsername) {
     if (tgUsername.empty()) {
         throw BadRequestException("Invalid tg username for User");
     }
 
-    tgUsername_ = tgUsername;
+    tgUsername_ = std::move(tgUsername);
+}
+
+void User::setGroup(Ptr<Group> group) {
+    group_ = std::move(group);
+}
+
+void User::setToken(std::string token) {
+    if (token.size() != 16) {
+        throw ServerException("Invalid token");
+    }
+    
+    tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
+    token_ = std::move(token);
+}
+
+void User::setCfName(std::string cfName) {
+    if (cfName.empty()) {
+        throw BadRequestException("Invalid cf name");
+    }
+
+    cfName_ = std::move(cfName);
+}
+
+void User::setTgId(const int64_t tgId) {
+    tgId_ = tgId;
 }
 
 void User::setUserType(const UserType userType) {
@@ -86,33 +108,12 @@ void User::setUserType(const UserType userType) {
     userType_ = userType;
 }
 
-void User::setGroup(const Ptr<Group>& group) {
-    group_ = group;
-}
-
-void User::setToken(const Wt::WString& token) {
-    if (token.toUTF8().size() != 16) {
-        throw ServerException("Invalid token");
-    }
-    
-    tokenTimeLimit_ = Wt::WDateTime::currentDateTime().addDays(14);
-    token_ = token;
-}
-
-void User::setCfName(const Wt::WString& cfName) {
-    if (cfName.empty()) {
-        throw BadRequestException("Invalid cf name");
-    }
-
-    cfName_ = cfName;
-}
-
-void User::setAtcName(const Wt::WString& atcName) {
+void User::setAtcName(std::string atcName) {
     if (atcName.empty()) {
         throw BadRequestException("Invalid atc name");
     }
 
-    atcName_ = atcName;
+    atcName_ = std::move(atcName);
 }
 
 void User::setCfUpdated() {
@@ -123,8 +124,8 @@ void User::setAtcUpdated() {
     lastAtcUpdate_ = Wt::WDateTime::currentDateTime();
 }
 
-const Wt::WString& User::getToken(const Wt::WString& checkString, const Wt::WString& hash) const {
-    if (Crypto::hmacSha256(checkString.toUTF8(), Crypto::sha256(Str::botToken)) != hash.toUTF8()) {
+const std::string& User::getToken(const std::string& checkString, const std::string& hash) const {
+    if (Crypto::hmacSha256(checkString, Crypto::sha256(Str::botToken)) != hash) {
         throw ForbiddenException("Incorrect auth data");
     }
 
@@ -135,15 +136,15 @@ UserType User::getUserType() const {
     return userType_;
 }
 
-const Wt::WString& User::getName() const {
+const std::string& User::getName() const {
     return name_;
 }
 
-const Wt::WString& User::getSurname() const {
+const std::string& User::getSurname() const {
     return surname_;
 }
 
-const Wt::WString& User::getTgUsername() const {
+const std::string& User::getTgUsername() const {
     return tgUsername_;
 }
 
@@ -159,11 +160,11 @@ const Wt::WDateTime& User::getTokenTimeLimit() const {
     return tokenTimeLimit_;
 }
 
-const Wt::WString& User::getCfName() const {
+const std::string& User::getCfName() const {
     return cfName_;
 }
 
-const Wt::WString& User::getAtcName() const {
+const std::string& User::getAtcName() const {
     return atcName_;
 }
 

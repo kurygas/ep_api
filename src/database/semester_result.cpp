@@ -1,14 +1,13 @@
 #include "semester_result.h"
+#include "http_exceptions.h"
+#include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
 #include "semester.h"
 #include "user.h"
 #include "work_result.h"
 #include "point.h"
-#include "http_exceptions.h"
-
-SemesterResult::SemesterResult(const Ptr<Semester>& semester, const Ptr<User>& user) {
-    setSemester(semester);
-    setUser(user);
-}
 
 SemesterResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
@@ -26,20 +25,25 @@ SemesterResult::operator Wt::Json::Object() const {
     return json;
 }
 
-void SemesterResult::setSemester(const Ptr<Semester>& semester) {
+SemesterResult::SemesterResult(Ptr<Semester> semester, Ptr<User> user) {
+    setSemester(std::move(semester));
+    setUser(std::move(user));
+}
+
+void SemesterResult::setSemester(Ptr<Semester> semester) {
     if (!semester || user_ && semester->getGroup() != user_->getGroup()) {
         throw BadRequestException("Invalid Semester for SemesterResult");
     }
 
-    semester_ = semester;
+    semester_ = std::move(semester);
 }
 
-void SemesterResult::setUser(const Ptr<User>& user) {
+void SemesterResult::setUser(Ptr<User> user) {
     if (!user || semester_ && semester_->getGroup() != user->getGroup()) {
         throw BadRequestException("Invalid User for SemesterResult");
     }
 
-    user_ = user;
+    user_ = std::move(user);
 }
 
 const Ptr<Semester>& SemesterResult::getSemester() const {

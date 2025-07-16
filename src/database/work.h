@@ -3,9 +3,10 @@
 #include <Wt/Dbo/Dbo.h>
 #include <Wt/Dbo/WtSqlTraits.h>
 
-#include "subject_type.h"
+#include "json.h"
 #include "str.h"
 #include "types.h"
+#include "subject_type.h"
 
 class Problem;
 class WorkResult;
@@ -27,17 +28,17 @@ public:
     operator Wt::Json::Object() const;
 
     Work() = default;
-    Work(const Wt::WString& name, const Wt::WDateTime& start, const Wt::WDateTime& end, const Ptr<Semester>& semester, bool isExam);
+    Work(std::string name, const Wt::WDateTime& start, const Wt::WDateTime& end, Ptr<Semester> semester, bool isExam);
 
-    void setName(const Wt::WString& name);
+    void setName(std::string name);
+    void setSemester(Ptr<Semester> semester);
     void setStart(const Wt::WDateTime& start);
     void setEnd(const Wt::WDateTime& end);
     void setTime(const Wt::WDateTime& start, const Wt::WDateTime& end);
-    void setSemester(const Ptr<Semester>& semester);
-    void setProblems(const List<Problem>& problems);
+    void setProblems(List<Problem> problems);
     void setIsExam(bool isExam);
 
-    const Wt::WString& getName() const;
+    const std::string& getName() const;
     const Wt::WDateTime& getStart() const;
     const Wt::WDateTime& getEnd() const;
     bool isExam() const;
@@ -46,7 +47,7 @@ public:
     const List<WorkResult>& getWorkResults() const;
 
 private:
-    Wt::WString name_;
+    std::string name_;
     Wt::WDateTime start_;
     Wt::WDateTime end_;
     bool isExam_;

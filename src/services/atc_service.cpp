@@ -14,7 +14,7 @@ void AtcService::pullPoints(Session& session, const Ptr<SemesterResult>& semeste
 
     try {
         const auto r = cpr::Get(
-            cpr::Url{std::format("https://atcoder.jp/users/{}/history/json", semesterResult->getUser()->getAtcName().toUTF8())},
+            cpr::Url{std::format("https://atcoder.jp/users/{}/history/json", semesterResult->getUser()->getAtcName())},
             cpr::Timeout{100000}
         );
 

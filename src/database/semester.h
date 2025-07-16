@@ -9,7 +9,6 @@
 #include "subject_type.h"
 
 class Group;
-class HomeContest;
 class SemesterResult;
 
 class Semester {
@@ -29,14 +28,14 @@ public:
     operator Wt::Json::Object() const;
 
     Semester() = default;
-    Semester(int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, const Ptr<Group>& group);
+    Semester(int semesterNumber, Subject::Type subject, const Wt::WDateTime& start, const Wt::WDateTime& end, Ptr<Group> group);
 
+    void setGroup(Ptr<Group> group);
     void setSemesterNumber(int semesterNumber);
     void setSubject(Subject::Type subject);
     void setStart(const Wt::WDateTime& start);
     void setEnd(const Wt::WDateTime& end);
     void setTime(const Wt::WDateTime& start, const Wt::WDateTime& end);
-    void setGroup(const Ptr<Group>& group);
     void setCfMaxPoint(int cfMaxPoint);
     void setAtcRatio(int atcRatio);
 

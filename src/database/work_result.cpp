@@ -1,13 +1,12 @@
 #include "work_result.h"
-#include "user.h"
+#include "http_exceptions.h"
+#include "validator.h"
+#include "random_functions.h"
+#include "utility_functions.h"
+#include "crypto.h"
+#include "semester_result.h"
 #include "problem.h"
 #include "work.h"
-#include "http_exceptions.h"
-#include "str.h"
-#include "random_functions.h"
-#include "point.h"
-#include "semester_result.h"
-#include "semester.h"
 
 WorkResult::operator Wt::Json::Object() const {
     Wt::Json::Object json;
@@ -16,29 +15,14 @@ WorkResult::operator Wt::Json::Object() const {
     return json;
 }
 
-WorkResult::WorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult) {
-    if (work->getProblems().empty()) {
-        throw BadRequestException("No tasks in work");
-    }
-
-    if (work->getStart() > Wt::WDateTime::currentDateTime()) {
-        throw BadRequestException("Not begin yet");
-    }
-
-    if (work->getEnd() < Wt::WDateTime::currentDateTime()) {
-        throw BadRequestException("Already ended");
-    }
-
-    if (work->getSemester() != semesterResult->getSemester()) {
-        throw BadRequestException("Invalid SemesterResult for Work");
-    }
-
-    setWork(work);
-    setProblem(Random::pickRandom(work->getProblems()));
-    setSemesterResult(semesterResult);
+WorkResult::WorkResult(Ptr<Work> work, Ptr<SemesterResult> semesterResult) {
+    auto problem = Random::pickRandom(work->getProblems());
+    setWork(std::move(work));
+    setProblem(std::move(problem));
+    setSemesterResult(std::move(semesterResult));
 }
 
-void WorkResult::setFilename(const Wt::WString& filename) {
+void WorkResult::setFilename(std::string filename) {
     if (filename.empty()) {
         throw BadRequestException("Invalid filename for WorkResult");
     }
@@ -51,7 +35,43 @@ void WorkResult::setFilename(const Wt::WString& filename) {
         throw BadRequestException("Time is up");
     }
 
-    filename_ = filename;
+    filename_ = std::move(filename);
+}
+
+void WorkResult::setWork(Ptr<Work> work) {
+    if (!work || semesterResult_ && work->getSemester() != semesterResult_->getSemester()) {
+        throw BadRequestException("Invalid Work for WorkResult");
+    }
+
+    if (work->getProblems().empty()) {
+        throw BadRequestException("No tasks in work");
+    }
+
+    if (work->getStart() > Wt::WDateTime::currentDateTime()) {
+        throw BadRequestException("Not begin yet");
+    }
+
+    if (work->getEnd() < Wt::WDateTime::currentDateTime()) {
+        throw BadRequestException("Already ended");
+    }
+
+    work_ = std::move(work);
+}
+
+void WorkResult::setProblem(Ptr<Problem> problem) {
+    if (!problem || problem->getWorks().count(work_) == 0) {
+        throw BadRequestException("Invalid Problem for WorkResult");
+    }
+
+    problem_ = std::move(problem);
+}
+
+void WorkResult::setSemesterResult(Ptr<SemesterResult> semesterResult) {
+    if (!semesterResult || work_ && work_->getSemester() != semesterResult->getSemester()) {
+        throw BadRequestException("Invalid SemesterResult for WorkResult");
+    }
+
+    semesterResult_ = std::move(semesterResult);
 }
 
 void WorkResult::setMark(const int mark) {
@@ -62,7 +82,7 @@ void WorkResult::setMark(const int mark) {
     mark_ = mark;
 }
 
-const Wt::WString& WorkResult::getFilename() const {
+const std::string& WorkResult::getFilename() const {
     return filename_;
 }
 
@@ -80,28 +100,4 @@ const Ptr<Problem>& WorkResult::getProblem() const {
 
 const Ptr<SemesterResult>& WorkResult::getSemesterResult() const {
     return semesterResult_;
-}
-
-void WorkResult::setWork(const Ptr<Work>& work) {
-    if (!work) {
-        throw BadRequestException("Invalid Work for WorkResult");
-    }
-
-    work_ = work;
-}
-
-void WorkResult::setProblem(const Ptr<Problem>& problem) {
-    if (!problem || problem->getWorks().count(work_) == 0) {
-        throw BadRequestException("Invalid Problem for WorkResult");
-    }
-
-    problem_ = problem;
-}
-
-void WorkResult::setSemesterResult(const Ptr<SemesterResult>& semesterResult) {
-    if (!semesterResult) {
-        throw BadRequestException("Invalid SemesterResult for WorkResult");
-    }
-
-    semesterResult_ = semesterResult;
 }

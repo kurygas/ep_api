@@ -7,6 +7,7 @@
 #include "json.h"
 #include "str.h"
 #include "types.h"
+#include "subject_type.h"
 
 class SemesterResult;
 class Problem;
@@ -26,22 +27,22 @@ public:
     operator Wt::Json::Object() const;
 
     WorkResult() = default;
-    WorkResult(const Ptr<Work>& work, const Ptr<SemesterResult>& semesterResult);
+    WorkResult(Ptr<Work> work, Ptr<SemesterResult> semesterResult);
 
-    void setFilename(const Wt::WString& filename);
+    void setFilename(std::string filename);
+    void setWork(Ptr<Work> work);
+    void setProblem(Ptr<Problem> problem);
+    void setSemesterResult(Ptr<SemesterResult> semesterResult);
     void setMark(int mark);
-    void setWork(const Ptr<Work>& work);
-    void setProblem(const Ptr<Problem>& problem);
-    void setSemesterResult(const Ptr<SemesterResult>& semesterResult);
 
-    const Wt::WString& getFilename() const;
+    const std::string& getFilename() const;
     int getMark() const;
     const Ptr<Work>& getWork() const;
     const Ptr<Problem>& getProblem() const;
     const Ptr<SemesterResult>& getSemesterResult() const;  
 
 private:
-    Wt::WString filename_;
+    std::string filename_;
     int mark_ = -1;
 
     Ptr<Work> work_;
