@@ -1,0 +1,12 @@
+services:
+  api:
+    build: api/
+    command: build/ep_api 
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
