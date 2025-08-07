@@ -3,38 +3,63 @@
 #include "session.h"
 #include "user.h"
 
-#include <jwt-cpp/jwt.h>
+RootRequirements::AuthData RootRequirements::verify(const HttpRequest& request) {
+    const auto decodedToken = jwt::decode(request.token());
+    const auto tokenPayload = decodedToken.get_payload_json();
+    AuthData authData;
 
-int64_t RootRequirements::verify(const HttpRequest& request) {
-    const auto decode = jwt::decode(request.token());
-    const auto verifier = jwt::verify()
-        .with_issuer("ep_api")
+    if (tokenPayload.contains("tg_id")) {
+        authData.dataType = "tg_id";
+    }
+    else if (tokenPayload.contains("admin_name")) {
+        authData.dataType = "admin_name";
+    }
+    else {
+        throw AuthException("Invalid token");
+    }
+
+    authData.data = tokenPayload.at(authData.dataType).to_str();
+    
+    jwt::verify()
+        .with_issuer("auth_service")
         .with_type("access")
-        .allow_algorithm(jwt::algorithm::hs256{Str::authSecret});
-    verifier.verify(decode);
-    return std::stoi(decode.get_payload_json().at("tg_id").to_str());
+        .with_claim(authData.dataType, jwt::claim(authData.data))
+        .allow_algorithm(jwt::algorithm::hs256{Str::authSecret})
+        .verify(decodedToken);
+
+    return authData;
 }
 
-void RootRequirements::requireAuth(const HttpRequest& request, Session& session) {
-    if (!session.exist(&Session::getByTgId<User>, verify(request))) {
-        throw AuthException("Not authorized");
-    }
+void RootRequirements::requireAuth(const HttpRequest& request) {
+    verify(request);
 }
 
 void RootRequirements::requireTeacherRoots(const HttpRequest& request, Session& session) {
-    if (session.getByTgId<User>(verify(request))->getUserType() == UserType::Student) {
+    const auto authData = verify(request);
+
+    if (authData.dataType == "admin_name") {
+        return;
+    }
+
+    if (session.getByTgId<User>(std::stoll(authData.data))->getUserType() == UserType::Student) {
         throw ForbiddenException("Not teacher");
     }
 }
 
-void RootRequirements::requireAdminRoots(const HttpRequest& request, Session& session) {
-    if (session.getByTgId<User>(verify(request))->getUserType() != UserType::Admin) {
+void RootRequirements::requireAdminRoots(const HttpRequest& request) {
+    if (verify(request).dataType == "tg_id") {
         throw ForbiddenException("Not admin");
     }
 }
 
 void RootRequirements::requireAuthId(const HttpRequest& request, Session& session, const Ptr<User>& user) {
-    const auto caller = session.getByTgId<User>(verify(request));
+    const auto authData = verify(request);
+
+    if (authData.dataType == "admin_name") {
+        return;
+    }
+
+    const auto caller = session.getByTgId<User>(std::stoll(verify(request).data));
 
     if (caller != user && caller->getUserType() == UserType::Student) {
         throw ForbiddenException("Don't have access to this user");

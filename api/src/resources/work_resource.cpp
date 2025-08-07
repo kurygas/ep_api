@@ -39,7 +39,7 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
 }
 
 void WorkResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void WorkResource::postRequirements(const HttpRequest& request, Session& session) const {
@@ -47,7 +47,7 @@ void WorkResource::postRequirements(const HttpRequest& request, Session& session
 }
 
 void WorkResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Work>& work) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void WorkResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Work>& work) const {

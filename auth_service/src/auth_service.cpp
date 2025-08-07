@@ -3,13 +3,17 @@
 
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <jwt-cpp/jwt.h>
 
 using namespace std::chrono_literals;
 
+RedisConnectionOptions::RedisConnectionOptions() {
+    host = "redis";
+    port = 6379;
+}
+
 AuthService::AuthService()
-: redis_("tcp://127.0.0.1:6379")
-, verifier_(jwt::verify()) {
-    verifier_.with_issuer("auth_service").with_type("refresh").allow_algorithm(jwt::algorithm::hs256{authSecret_});
+: redis_(RedisConnectionOptions()) {
     pullConfig();
 
     CROW_ROUTE(app_, "/auth/refresh_token").methods("POST"_method)([this](const crow::request& req){
@@ -27,7 +31,7 @@ void AuthService::run() {
 
 void AuthService::pullConfig() {
     boost::property_tree::ptree pt;
-    boost::property_tree::read_ini("../config/config.ini", pt);
+    boost::property_tree::read_ini("config.ini", pt);
     authSecret_ = pt.get<std::string>("auth.secret");
     passwords_["tg_bot"] = pt.get<std::string>("tg_bot.password");
     tgBotToken_ = pt.get<std::string>("tg_bot.token");
@@ -35,39 +39,44 @@ void AuthService::pullConfig() {
 
 crow::response AuthService::getRefreshToken(const crow::json::rvalue& req) {
     crow::json::wvalue response;
-    std::string redisKey;
 
     try {
         if (!req) {
             throw std::runtime_error("Invalid payload");
         }
 
+        std::string authDataType;
+        std::string authData;
+
         if (req.count("id") != 0) {
             tgAuth(req);
-            redisKey = req["id"].s();
+            authDataType = "tg_id";
+            authData = req["id"].s();
         }
         else if (req.count("name") != 0 && req.count("password") != 0) {
             passwordAuth(req);
-            redisKey = req["name"].s();
+            authDataType = "admin_name";
+            authData = req["name"].s();
         }
         else {
             throw std::runtime_error("Invalid authorization method");
         }
+
+        const auto refreshToken = jwt::create()
+            .set_issuer("auth_service")
+            .set_type("refresh")
+            .set_payload_claim(authDataType, jwt::claim(authData))
+            .sign(jwt::algorithm::hs256{authSecret_});
+
+        redis_.setex(authData, 300h, refreshToken);
+        response["refresh_token"] = refreshToken;
+        return {200, response};
     }
     catch (const std::exception& e) {
+        response.clear();
         response["error"] = e.what();
         return {400, response};
     }
-    
-    auto token = jwt::create()
-        .set_issuer("auth_service")
-        .set_type("refresh")
-        .set_payload_claim("key", jwt::claim(redisKey))
-        .sign(jwt::algorithm::hs256{authSecret_});
-
-    redis_.setex(redisKey, 300h, token);
-    response["refresh_token"] = std::move(token);
-    return {200, response};
 }
 
 void AuthService::tgAuth(const crow::json::rvalue& req) {
@@ -99,7 +108,6 @@ void AuthService::passwordAuth(const crow::json::rvalue& req) {
 
 crow::response AuthService::getAccessToken(const crow::json::rvalue& req) {
     crow::json::wvalue response;
-    std::string key;
 
     try {
         if (!req || req.count("refresh_token") == 0) {
@@ -108,30 +116,44 @@ crow::response AuthService::getAccessToken(const crow::json::rvalue& req) {
 
         const auto refreshToken = req["refresh_token"].s();
         const auto decodedToken = jwt::decode(refreshToken);
-        verifier_.verify(decodedToken);
         const auto tokenPayload = decodedToken.get_payload_json();
-        
-        if (!tokenPayload.contains("key")) {
+        std::string authDataType;
+
+        if (tokenPayload.contains("tg_id")) {
+            authDataType = "tg_id";
+        }
+        else if (tokenPayload.contains("admin_name")) {
+            authDataType = "admin_name";
+        }
+        else {
             throw std::runtime_error("Invalid refresh token");
         }
 
-        key = tokenPayload.at("key").to_str();
+        auto authData = tokenPayload.at(authDataType).to_str();
 
-        if (!redis_.exists(key) || redis_.get(key) != refreshToken) {
+        jwt::verify()
+            .with_issuer("auth_service")
+            .with_type("refresh")
+            .with_claim(authDataType, jwt::claim(authData))
+            .allow_algorithm(jwt::algorithm::hs256{authSecret_})
+            .verify(decodedToken);
+
+        if (!redis_.exists(authData) || redis_.get(authData) != refreshToken) {
             throw std::runtime_error("Wrong refresh token");
         }
+
+        response["access_token"] = jwt::create()
+            .set_issuer("auth_service")
+            .set_type("access")
+            .set_payload_claim(authDataType, jwt::claim(std::move(authData)))
+            .set_expires_at(std::chrono::system_clock::now() + 15min)
+            .sign(jwt::algorithm::hs256{authSecret_});
+    
+        return {200, response};
     }
     catch (const std::exception& e) {
+        response.clear();
         response["error"] = e.what();
         return {400, response};
     }
-
-    response["access_token"] = jwt::create()
-        .set_issuer("auth_service")
-        .set_type("access")
-        .set_payload_claim("key", jwt::claim(std::move(key)))
-        .set_expires_at(std::chrono::system_clock::now() + 15min)
-        .sign(jwt::algorithm::hs256(authSecret_));
-    
-    return {200, response};
 }

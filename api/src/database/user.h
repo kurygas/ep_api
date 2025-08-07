@@ -18,7 +18,6 @@ class WorkResult;
 enum class UserType {
     Student = 0,
     Teacher,
-    Admin
 };
 
 class User {
@@ -30,8 +29,6 @@ public:
         Wt::Dbo::field(a, surname_, Str::surname);
         Wt::Dbo::field(a, tgId_, Str::tgId);
         Wt::Dbo::field(a, tgUsername_, Str::tgUsername);
-        Wt::Dbo::field(a, token_, Str::token);
-        Wt::Dbo::field(a, tokenTimeLimit_, "token_time_limit");
         Wt::Dbo::field(a, cfName_, Str::cfName);
         Wt::Dbo::field(a, atcName_, Str::atcName);
         Wt::Dbo::field(a, lastCfUpdate_, "last_cf_update");
@@ -41,8 +38,6 @@ public:
     }
 
     operator Wt::Json::Object() const;
-
-    static std::unique_ptr<User> createAdmin(std::string name);
 
     User() = default;
     User(int64_t tgId, std::string tgUsername, std::string name, std::string surname);
@@ -56,10 +51,7 @@ public:
     void setUserType(UserType userType);
     void setCfUpdated();
     void setAtcUpdated();
-    void updateRefreshToken(const std::string& tgCheckString, const std::string& hash);
 
-    const std::string& getAccessToken() const;
-    const std::string& getRefreshToken() const;
     UserType getUserType() const;
     const std::string& getName() const;
     const std::string& getSurname() const;
@@ -81,7 +73,6 @@ private:
     std::string surname_;
     int64_t tgId_;
     std::string tgUsername_;
-    std::string refreshToken_;
     std::string cfName_;
     Wt::WDateTime lastCfUpdate_;
     std::string atcName_;

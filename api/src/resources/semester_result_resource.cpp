@@ -29,7 +29,7 @@ void SemesterResultResource::processPatch(const HttpRequest &request, Session& s
 }
 
 void SemesterResultResource::getRequirements(const HttpRequest &request, Session &session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void SemesterResultResource::postRequirements(const HttpRequest& request, Session& session) const {

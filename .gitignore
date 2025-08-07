@@ -2,3 +2,6 @@
 /.vscode
 *.ini
 api/solutions
+tests/__pycache__
+redis.conf
+.pytest_cache

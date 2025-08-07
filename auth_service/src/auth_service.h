@@ -3,16 +3,15 @@
 #define CROW_JSON_USE_MAP
 
 #include <crow.h>
-#include <jwt-cpp/jwt.h>
 #include <sw/redis++/redis++.h>
+
+class RedisConnectionOptions : public sw::redis::ConnectionOptions {
+public:
+    RedisConnectionOptions();
+};
 
 class AuthService {
 public:
-    enum class TokenType {
-        Access,
-        Refresh
-    };
-
     AuthService();
     void run();
 
@@ -29,6 +28,5 @@ private:
     std::string authSecret_;
     std::unordered_map<std::string, std::string> passwords_;
     std::string tgBotToken_;
-    decltype(jwt::verify()) verifier_;
     sw::redis::Redis redis_;
 };

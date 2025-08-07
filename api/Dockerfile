@@ -8,7 +8,8 @@ RUN apt-get update && \
     libssl-dev \
     curl \
     libcurl4-openssl-dev \
-    pkg-config
+    pkg-config && \
+    apt-get clean
 RUN git clone https://github.com/emweb/wt.git && \
     cd wt && \
     mkdir build && \
@@ -16,7 +17,9 @@ RUN git clone https://github.com/emweb/wt.git && \
     cmake .. && \
     cmake --build . -j$(nproc) && \
     cmake --install . && \
-    cd ../..
+    cd ../.. && \
+    rm -rf wt
+# Delete this after creating needed services
 RUN git clone https://github.com/libcpr/cpr.git && \
     cd cpr && \
     mkdir build && \
@@ -24,15 +27,17 @@ RUN git clone https://github.com/libcpr/cpr.git && \
     cmake .. -DCPR_USE_SYSTEM_CURL=ON && \
     cmake --build . -j$(nproc) && \
     cmake --install . && \
-    cd ../..
+    cd ../.. && \
+    rm -rf cpr
 RUN git clone https://github.com/Thalhammer/jwt-cpp.git && \
     cd jwt-cpp && \
     mkdir build && \
     cd build && \
-    cmake .. && \
+    cmake .. -DJWT_BUILD_EXAMPLES=OFF && \
     cmake --build . -j$(nproc) && \
     cmake --install . && \
-    cd ../..
+    cd ../.. && \
+    rm -rf jwt-cpp
 RUN mkdir -p /etc/wt && \
     echo '<?xml version="1.0" encoding="UTF-8"?>' > /etc/wt/wt_config.xml && \
     echo '<wt-config>' >> /etc/wt/wt_config.xml && \

@@ -40,13 +40,6 @@ User::operator Wt::Json::Object() const {
     return json;
 }
 
-std::unique_ptr<User> User::createAdmin(std::string name) {
-    auto user = std::make_unique<User>();
-    user->tgUsername_ = std::move(name);
-    user->userType_ = UserType::Admin;
-    return std::move(user);
-}
-
 User::User(const int64_t tgId, std::string tgUsername, std::string name, std::string surname)
 : userType_(UserType::Student) {
     setTgId(tgId);
@@ -96,9 +89,6 @@ void User::setTgId(const int64_t tgId) {
 }
 
 void User::setUserType(const UserType userType) {
-    if (userType == UserType::Admin) {
-        throw BadRequestException("Invalid user type for User");
-    }
     userType_ = userType;
 }
 
@@ -116,33 +106,6 @@ void User::setCfUpdated() {
 
 void User::setAtcUpdated() {
     lastAtcUpdate_ = Wt::WDateTime::currentDateTime();
-}
-
-
-void User::updateRefreshToken(const std::string& tgCheckString, const std::string& hash) {
-    if (Crypto::hmacSha256(tgCheckString, Crypto::sha256(Str::botToken)) != hash) {
-        throw ForbiddenException("Incorrect auth data");
-    }
-
-    refreshToken_ = jwt::create()
-        .set_issuer("ep_api")
-        .set_type("refresh")
-        .set_payload_claim("tg_id", jwt::claim(std::to_string(tgId_)))
-        .set_expires_at(std::chrono::system_clock::now() + 300h)
-        .sign(jwt::algorithm::hs256{Str::authSecret});
-}
-
-const std::string& User::getAccessToken() const {
-    return jwt::create()
-        .set_issuer("ep_api")
-        .set_type("access")
-        .set_payload_claim("tg_id", jwt::claim(std::to_string(tgId_)))
-        .set_expires_at(std::chrono::system_clock::now() + 15min)
-        .sign(Str::authSecret);
-}
-
-const std::string& User::getRefreshToken() const {
-    return refreshToken_;
 }
 
 UserType User::getUserType() const {

@@ -13,7 +13,6 @@ Session::Session() {
     mapClass<Point>("points");
     mapClass<Semester>("semesters");
     mapClass<SemesterResult>("semester_results");
-    mapClass<Admin>("admins");
 }
 
 void Session::configureDatabase() {
@@ -24,26 +23,6 @@ void Session::configureDatabase() {
     }
     catch (const std::exception& e) {
         Wt::log("db") << e.what();
-    }
-
-    const Wt::Dbo::Transaction tr(session);
-    session.checkAdmin("tg_bot");
-}
-
-std::string Session::generateToken() {
-    std::string token;
-
-    do {
-        token = Random::generateRandomString(16);
-    }
-    while (exist(&Session::getByToken<User>, token));
-
-    return token;
-}
-
-void Session::checkAdmin(const std::string& name) {
-    if (!exist(&Session::getByTgUsername<User>, "ADMIN:" + name)) {
-        add(User::createAdmin("ADMIN:" + name)).modify()->setToken(generateToken());
     }
 }
 

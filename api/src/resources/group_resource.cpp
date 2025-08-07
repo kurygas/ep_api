@@ -3,15 +3,15 @@
 #include "cf_service.h"
 
 void GroupResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void GroupResource::postRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void GroupResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Group>& group) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void GroupResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Group>& group) const {

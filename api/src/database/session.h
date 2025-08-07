@@ -16,7 +16,6 @@
 #include "types.h"
 #include "semester.h"
 #include "semester_result.h"
-#include "admin.h"
 
 class Session : public Wt::Dbo::Session {
 public:
@@ -83,8 +82,6 @@ private:
 
         return ptr;
     }
-
-    void checkAdmin(const std::string& name);
 };
 
 template<>

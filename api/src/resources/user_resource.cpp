@@ -3,29 +3,6 @@
 
 #include <ctime>
 
-void UserResource::processPostMethod(const HttpRequest& request, Wt::Http::Response& response, Session& session, 
-    const Ptr<User>& user, const std::string& method) const {
-    if (method == "auth") {
-        if (time(nullptr) - static_cast<int64_t>(request.body().at("auth_date")) >= 3600) {
-            throw ForbiddenException("Too old data");
-        }
-
-        std::string checkString;
-
-        for (const auto& [key, value] : request.body()) {
-            checkString += std::format("{}={}'\n", key, static_cast<std::string>(value));
-        }
-
-        checkString.pop_back();
-        Wt::Json::Object json;
-        json[Str::token] = user->getToken(checkString, Str::botToken).c_str();
-        response.out() << Wt::Json::serialize(json);
-    }
-    else {
-        throw NotFoundException("");
-    }
-}
-
 void UserResource::processPatch(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
     for (const auto& [key, value] : request.body()) {
         if (key == Str::name) {
@@ -63,11 +40,11 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
 }
 
 void UserResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void UserResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void UserResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
