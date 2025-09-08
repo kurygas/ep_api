@@ -31,8 +31,6 @@ public:
         Wt::Dbo::field(a, tgUsername_, Str::tgUsername);
         Wt::Dbo::field(a, cfName_, Str::cfName);
         Wt::Dbo::field(a, atcName_, Str::atcName);
-        Wt::Dbo::field(a, lastCfUpdate_, "last_cf_update");
-        Wt::Dbo::field(a, lastAtcUpdate_, "last_atc_update");
         Wt::Dbo::belongsTo(a, group_, "group");
         Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "user");
     }
@@ -49,8 +47,6 @@ public:
     void setCfName(std::string cfName);
     void setAtcName(std::string atcName);
     void setUserType(UserType userType);
-    void setCfUpdated();
-    void setAtcUpdated();
 
     UserType getUserType() const;
     const std::string& getName() const;
@@ -58,12 +54,9 @@ public:
     const std::string& getTgUsername() const;
     int64_t getTgId() const;
     const Ptr<Group>& getGroup() const;
-    const Wt::WDateTime& getTokenTimeLimit() const;
     const std::string& getCfName() const;
     const std::string& getAtcName() const;
     const List<SemesterResult> getSemesterResults() const;
-    const Wt::WDateTime& getLastCfUpdate() const;
-    const Wt::WDateTime& getLastAtcUpdate() const;
 
 private:
     void setTgId(int64_t tgId);
@@ -74,9 +67,7 @@ private:
     int64_t tgId_;
     std::string tgUsername_;
     std::string cfName_;
-    Wt::WDateTime lastCfUpdate_;
     std::string atcName_;
-    Wt::WDateTime lastAtcUpdate_;
 
     Ptr<Group> group_;
     List<SemesterResult> semesterResults_;

@@ -38,6 +38,15 @@ RUN git clone https://github.com/Thalhammer/jwt-cpp.git && \
     cmake --install . && \
     cd ../.. && \
     rm -rf jwt-cpp
+RUN git clone https://github.com/CopernicaMarketingSoftware/AMQP-CPP.git && \
+    cd AMQP-CPP && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DAMQP-CPP_LINUX_TCP=ON && \
+    cmake --build . -j$(nproc) && \
+    cmake --install . && \
+    cd ../.. && \
+    rm -rf AMQP-CPP
 RUN mkdir -p /etc/wt && \
     echo '<?xml version="1.0" encoding="UTF-8"?>' > /etc/wt/wt_config.xml && \
     echo '<wt-config>' >> /etc/wt/wt_config.xml && \

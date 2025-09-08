@@ -6,7 +6,8 @@ find_package(Wt REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(cpr REQUIRED)
 find_package(Boost REQUIRED)
-find_package(jwt-cpp REQUIRED jwt-cpp)
+find_package(jwt-cpp REQUIRED)
+find_package(amqpcpp REQUIRED)
 add_subdirectory(src)
 add_executable(ep_api src/main.cpp)
 target_link_libraries(
@@ -16,6 +17,7 @@ target_link_libraries(
     Services
     Database
     Utility
+    amqpcpp
     jwt-cpp::jwt-cpp
     cpr::cpr
     Wt::Wt

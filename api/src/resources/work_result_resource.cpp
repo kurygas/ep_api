@@ -48,7 +48,7 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
 }
 
 void WorkResultResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void WorkResultResource::postRequirements(const HttpRequest& request, Session& session) const {
@@ -57,7 +57,7 @@ void WorkResultResource::postRequirements(const HttpRequest& request, Session& s
 
 void WorkResultResource::getIdRequirements(const HttpRequest& request, Session& session, 
     const Ptr<WorkResult>& workResult) const {
-    RootRequirements::requireAuth(request, session);
+    RootRequirements::requireAuth(request);
 }
 
 void WorkResultResource::deleteRequirements(const HttpRequest& request, Session& session, 
@@ -74,21 +74,11 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Http::
         json[Str::problemId] = workResult->getProblem().id();
     }
     else if (method == Str::statement) {
-        const auto caller = session.getByToken<User>(request.token());
-
-        if (caller->getUserType() == UserType::Student && caller != workResult->getSemesterResult()->getUser()) {
-            throw ForbiddenException("");
-        }
-
+        RootRequirements::requireAuthId(request, session, workResult->getSemesterResult()->getUser());
         json[Str::statement] = workResult->getProblem()->getStatement().c_str();
     }
     else if (method == Str::mark) {
-        const auto caller = session.getByToken<User>(request.token());
-
-        if (caller->getUserType() == UserType::Student && caller != workResult->getSemesterResult()->getUser()) {
-            throw ForbiddenException("");
-        }
-
+        RootRequirements::requireAuthId(request, session, workResult->getSemesterResult()->getUser());
         json[Str::mark] = workResult->getMark();
     }
     else {

@@ -15,6 +15,9 @@
 #include <sstream>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <Wt/WIOService.h>
+#include <amqpcpp.h>
+#include <amqpcpp/libboostasio.h>
 
 Server::Server(const std::string& applicationPath)
 : Wt::WServer(applicationPath) {

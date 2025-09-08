@@ -100,14 +100,6 @@ void User::setAtcName(std::string atcName) {
     atcName_ = std::move(atcName);
 }
 
-void User::setCfUpdated() {
-    lastCfUpdate_ = Wt::WDateTime::currentDateTime();
-}
-
-void User::setAtcUpdated() {
-    lastAtcUpdate_ = Wt::WDateTime::currentDateTime();
-}
-
 UserType User::getUserType() const {
     return userType_;
 }
@@ -142,12 +134,4 @@ const std::string& User::getAtcName() const {
 
 const List<SemesterResult> User::getSemesterResults() const {
     return semesterResults_;
-}
-
-const Wt::WDateTime& User::getLastCfUpdate() const {
-    return lastCfUpdate_;
-}
-
-const Wt::WDateTime& User::getLastAtcUpdate() const {
-    return lastAtcUpdate_;
 }
