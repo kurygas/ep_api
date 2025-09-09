@@ -87,3 +87,14 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Http::
 
     response.out() << Wt::Json::serialize(json);
 }
+
+Ptr<WorkResult> createObject(const Wt::Json::Object& json, Session& session) {
+    auto work = session.load<Work>(json.at(Str::workId));
+    auto semesterResult = session.load<SemesterResult>(json.at(Str::semesterResultId));
+
+    if (session.exist(&Session::getWorkResult, work, semesterResult)) {
+        throw UnprocessableEntityException("WorkResult result already exists");
+    }
+
+    return session.add(std::make_unique<WorkResult>(std::move(work), std::move(semesterResult)));    
+}

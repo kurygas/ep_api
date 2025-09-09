@@ -42,3 +42,16 @@ void ProblemResource::processPatch(const HttpRequest& request, Session& session,
         }
     }
 }
+
+Ptr<Problem> ProblemResource::createObject(const Wt::Json::Object& json, Session& session) const {
+    auto name = static_cast<std::string>(json.at(Str::name));
+    auto statement = static_cast<std::string>(json.at(Str::statement));
+    const auto subject = JsonFunctions::parse<Subject::Type>(json.at(Str::subject));
+    const auto semesterNumber = static_cast<int>(json.at(Str::semesterNumber));
+
+    if (session.exist(&Session::getByName<Problem>, name)) {
+        throw UnprocessableEntityException("Problem already exists");
+    }
+
+    return session.add(std::make_unique<Problem>(std::move(name), std::move(statement), subject, semesterNumber));
+}

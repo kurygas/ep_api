@@ -32,3 +32,10 @@ void PointResource::processPatch(const HttpRequest& request, Session& session, c
         }
     }
 }
+
+Ptr<Point> PointResource::createObject(const Wt::Json::Object& json, Session& session) const {
+    auto reason = static_cast<std::string>(json.at(Str::reason));
+    const auto amount = static_cast<int>(json.at(Str::amount));
+    auto semesterResult = session.load<SemesterResult>(json.at(Str::semesterResultId));
+    return session.add(std::make_unique<Point>(std::move(reason), amount, std::move(semesterResult)));
+}

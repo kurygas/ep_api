@@ -13,4 +13,5 @@ protected:
     void postRequirements(const HttpRequest& request, Session& session) const override;
     void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<WorkResult>& workResult) const override;
     void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<WorkResult>& workResult) const override;
+    virtual Ptr<WorkResultResource> createObject(const Wt::Json::Object& json, Session& session) const override;
 };

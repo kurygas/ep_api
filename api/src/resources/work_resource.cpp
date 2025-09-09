@@ -64,3 +64,17 @@ void WorkResource::processGetMethod(const HttpRequest& request, Wt::Http::Respon
         throw NotFoundException("Unknown method");
     }
 }
+
+Ptr<Work> WorkResource::createObject(const Wt::Json::Object& json, Session& session) const {
+    auto name = static_cast<std::string>(json.at(Str::name));
+    const auto start = Wt::WDateTime::fromTime_t(json.at(Str::start));
+    const auto end = Wt::WDateTime::fromTime_t(json.at(Str::end));
+    auto semester = session.load<Semester>(json.at(Str::semesterId));
+    const auto isExam = static_cast<bool>(json.at(Str::isExam));
+    
+    if (session.exist(&Session::getWork, semester, name)) {
+        throw UnprocessableEntityException("Work already exists");
+    }
+
+    return session.add(std::make_unique<Work>(std::move(name), start, end, std::move(semester), isExam));
+}

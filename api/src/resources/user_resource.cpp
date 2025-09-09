@@ -1,5 +1,6 @@
 #include "user_resource.h"
 #include "root_requirements.h"
+#include "message_queue.h"
 
 #include <ctime>
 
@@ -49,4 +50,30 @@ void UserResource::getIdRequirements(const HttpRequest& request, Session& sessio
 
 void UserResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
     RootRequirements::requireTeacherRoots(request, session);
+}
+
+Ptr<User> UserResource::createObject(const Wt::Json::Object& json, Session& session) const {
+    const auto tgId = static_cast<int>(json.at(Str::tgId));
+    auto tgUsername = static_cast<std::string>(json.at(Str::tgUsername));
+    auto name = static_cast<std::string>(json.at(Str::name));
+    auto surname = static_cast<std::string>(json.at(Str::surname));
+
+    if (session.exist(&Session::getByTgId<User>, tgId)) {
+        throw UnprocessableEntityException("User already exists");
+    }
+
+    return session.add(std::make_unique<User>(tgId, std::move(tgUsername), std::move(name), std::move(surname)));
+}
+
+void UserResource::sendUpdatedInfo(const Ptr<User>& user) const {
+    auto message = static_cast<Wt::Json::Object>(*user);
+    message[Str::userId] = user.id();
+    MessageQueue::getInstance()->publish("algo_data", message);
+}
+
+void UserResource::sendDeletedInfo(const Ptr<User>& user) const {
+    Wt::Json::Object message;
+    message[Str::userId] = user.id();
+    message["deleted"] = true;
+    MessageQueue::getInstance()->publish("algo_data", message);
 }

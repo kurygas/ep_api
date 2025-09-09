@@ -1,6 +1,5 @@
 #include "message_queue.h"
 #include "session.h"
-#include "json.h"
 
 #include <Wt/WIOService.h>
 
@@ -24,29 +23,6 @@ Wt::Json::Object MessageQueue::parseMessage(const AMQP::Message& data) {
     Wt::Json::Object message;
     Wt::Json::parse({data.body(), data.bodySize()}, message);
     return message;
-}
-
-Wt::Json::Object MessageQueue::getUserData(const Ptr<User>& user) {
-    Wt::Json::Object userData;
-    userData[Str::userId] = user.id();
-
-    if (!user->getCfName().empty()) {
-        userData[Str::cfName] = user->getCfName().c_str();
-    }
-
-    if (!user->getAtcName().empty()) {
-        userData[Str::atcName] = user->getAtcName().c_str();
-    }
-
-    return userData;
-}
-
-Wt::Json::Object MessageQueue::getSemesterData(const Ptr<Semester>& semester) {
-    Wt::Json::Object semesterData;
-    semesterData[Str::semesterId] = semester.id();
-    semesterData[Str::start] = semester->getStart().toTime_t();
-    semesterData[Str::end] = semester->getEnd().toTime_t();
-    return semesterData;
 }
 
 MessageQueue::MessageQueue(Wt::WServer& server)
@@ -79,34 +55,47 @@ void MessageQueue::configureAlgoResultQueue() {
 void MessageQueue::processAlgoRequest() {
     Session session;
     const Wt::Dbo::Transaction tr(session);
+    Wt::Json::Object message;
     Wt::Json::Array groups;
+    Wt::Json::Array users;
+    Wt::Json::Array semesters;
 
     for (const auto& group : session.getAll<Group>()) {
-        Wt::Json::Object groupData;
-        Wt::Json::Array users;
-        Wt::Json::Array semesters;
-        groupData[Str::cfGroupCode] = group->getCfGroupCode().c_str();
+        groups.emplace_back(static_cast<Wt::Json::Object>(*group));
 
         for (const auto& user : group->getUsers()) {
-            users.emplace_back(getUserData(user));
+            users.emplace_back(*user);
         }
 
         for (const auto& semester : group->getSemesters()) {
-            if (semester->getSubject() != Subject::Type::Algo) {
-                continue;
-            }
-
-            semesters.emplace_back(getSemesterData(semester));
+            semesters.emplace_back(*semester);
         }
-
-        groupData["users"] = std::move(users);
-        groupData["semesters"] = std::move(semesters);
-        groups.emplace_back(std::move(groupData));
     }
 
-    channel_.publish("", "algo_data", Wt::Json::serialize(groups));
+    message[Str::groupList] = std::move(groups);
+    message[Str::userList] = std::move(users);
+    message[Str::semesterList] = std::move(semesters);
+    publish("algo_data", message);
 }
 
 void MessageQueue::processAlgoResult(const Wt::Json::Object& message) {
-
+    Session session;
+    const Wt::Dbo::Transaction tr(session);
+    const auto semesters = static_cast<Wt::Json::Array>(message.at("data"));
+    for (const Wt::Json::Object& semesterData : semesters) {
+        const auto semester = session.load<Semester>(semesterData.at(Str::semesterId));
+        const auto users = static_cast<Wt::Json::Array>(semesterData.at(Str::userList));
+        
+        for (const Wt::Json::Object& userData : users) {
+            const auto user = session.load<User>(userData.at(Str::userId));
+            const auto cfPoint = static_cast<int>(userData.at("cf_point"));
+            const auto atcPoint = static_cast<int>(userData.at("atc_point"));
+            const auto semesterResult = session.getSemesterResult(semester, user);
+            //ToDo: create semester_result, cf_point, atc_point after creating semester
+            const auto cfPointObject = session.getPoint(semesterResult, "cf_point");
+            const auto atcPointObject = session.getPoint(semesterResult, "atc_point");
+            cfPointObject.modify()->setAmount(cfPoint);
+            atcPointObject.modify()->setAmount(atcPoint);
+        }
+    }
 }

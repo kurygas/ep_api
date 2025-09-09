@@ -5,6 +5,7 @@
 #include <amqpcpp/libboostasio.h>
 
 #include "types.h"
+#include "json.h"
 
 class User;
 class Semester;
@@ -15,8 +16,11 @@ public:
     static const std::unique_ptr<MessageQueue>& getInstance();
 
     static Wt::Json::Object parseMessage(const AMQP::Message& data);
-    static Wt::Json::Object getUserData(const Ptr<User>& user);
-    static Wt::Json::Object getSemesterData(const Ptr<Semester>& semester);
+    
+    template<typename T>
+    void publish(const std::string routingKey, const T& message) {
+        channel_.publish("", routingKey, Wt::Json::serialize(message));
+    }
 
     MessageQueue() = delete;
     MessageQueue(const MessageQueue&) = delete;

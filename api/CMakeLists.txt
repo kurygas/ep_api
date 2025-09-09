@@ -14,7 +14,7 @@ target_link_libraries(
     ep_api PUBLIC
     Server
     Resources
-    Services
+    MessageQueue
     Database
     Utility
     amqpcpp

@@ -10,14 +10,12 @@
 #include "cf_service.h"
 #include "semester_resource.h"
 #include "semester_result_resource.h"
+#include "message_queue.h"
 
 #include <fstream>
 #include <sstream>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <Wt/WIOService.h>
-#include <amqpcpp.h>
-#include <amqpcpp/libboostasio.h>
 
 Server::Server(const std::string& applicationPath)
 : Wt::WServer(applicationPath) {
@@ -36,6 +34,7 @@ Server::Server(const std::string& applicationPath)
     addResource<SemesterResultResource>("/api/semester_result");
 
     pullConfig();
+    MessageQueue::createInstance(*this);
 }
 
 void Server::pullConfig() {

@@ -45,3 +45,14 @@ void SemesterResultResource::deleteRequirements(const HttpRequest& request, Sess
     const Ptr<SemesterResult>& semesterResult) const {
         RootRequirements::requireTeacherRoots(request, session);
 }
+
+Ptr<SemesterResult> SemesterResultResource::createObject(const Wt::Json::Object& json, Session& session) const {
+    auto semester = session.load<Semester>(json.at(Str::semesterId));
+    auto user = session.load<User>(json.at(Str::userId));
+
+    if (session.exist(&Session::getSemesterResult, semester, user)) {
+        throw UnprocessableEntityException("SemesterResult already exists");
+    }
+
+    return session.add(std::make_unique<SemesterResult>(std::move(semester), std::move(user)));
+}

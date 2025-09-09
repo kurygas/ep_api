@@ -50,6 +50,9 @@ protected:
     virtual void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
     virtual void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
     virtual void postRequirements(const HttpRequest& request, Session& session) const {}
+    virtual Ptr<DatabaseType> createObject(const Wt::Json::Object& json, Session& session) const = 0;
+    virtual void sendUpdatedInfo(const Ptr<DatabaseType>& ptr) const {};
+    virtual void sendDeletedInfo(const Ptr<DatabaseType>& ptr) const {};
 
 private:
     static void processException(Wt::Http::Response& response, int code, const char* error) {
@@ -93,6 +96,7 @@ private:
             tr.commit();
             json[Str::id] = ptr.id();
             response.out() << Wt::Json::serialize(json);
+            sendUpdatedInfo(ptr);
         }
     }
 
@@ -104,7 +108,7 @@ private:
         }
         else if (method == "POST") {
             postRequirements(requestContent, session);
-            ptr = session.create<DatabaseType>(requestContent.body());
+            ptr = create(requestContent.body(), session);
             response.setStatus(201);
         }
         else {
@@ -123,6 +127,7 @@ private:
         else if (method == "DELETE") {
             deleteRequirements(requestContent, session, ptr);
             response.out() << Wt::Json::serialize(static_cast<Wt::Json::Object>(*ptr));
+            sendDeletedInfo(ptr);
             ptr.remove();
             ptr = nullptr;
             response.setStatus(204);
