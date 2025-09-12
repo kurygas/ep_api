@@ -28,6 +28,13 @@ services:
     networks:
       - app-network
     command: ["build/ep_api"]
+  algo_service:
+    build: algo_service
+    ports:
+      - 8082:8082
+    networks:
+      - app-network
+    command: ["build/algo_service"]
 
 networks:
   app-network:

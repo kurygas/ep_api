@@ -42,6 +42,4 @@ void Server::pullConfig() {
     boost::property_tree::read_ini("config.ini", pt);
     Str::botToken = pt.get<std::string>("tokens.bot");
     Str::authSecret = pt.get<std::string>("auth.secret");
-    CfService::key = pt.get<std::string>("cf.key");
-    CfService::secret = pt.get<std::string>("cf.secret");
 }

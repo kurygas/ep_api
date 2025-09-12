@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package(Wt REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(cpr REQUIRED)
 find_package(Boost REQUIRED)
 find_package(jwt-cpp REQUIRED)
 find_package(amqpcpp REQUIRED)
@@ -19,7 +18,6 @@ target_link_libraries(
     Utility
     amqpcpp
     jwt-cpp::jwt-cpp
-    cpr::cpr
     Wt::Wt
     Wt::HTTP
     Wt::Dbo

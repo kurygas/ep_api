@@ -10,24 +10,6 @@ RUN apt-get update && \
     libcurl4-openssl-dev \
     pkg-config && \
     apt-get clean
-RUN git clone https://github.com/emweb/wt.git && \
-    cd wt && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    cmake --build . -j$(nproc) && \
-    cmake --install . && \
-    cd ../.. && \
-    rm -rf wt
-RUN git clone https://github.com/Thalhammer/jwt-cpp.git && \
-    cd jwt-cpp && \
-    mkdir build && \
-    cd build && \
-    cmake .. -DJWT_BUILD_EXAMPLES=OFF && \
-    cmake --build . -j$(nproc) && \
-    cmake --install . && \
-    cd ../.. && \
-    rm -rf jwt-cpp
 RUN git clone https://github.com/CopernicaMarketingSoftware/AMQP-CPP.git && \
     cd AMQP-CPP && \
     mkdir build && \
@@ -37,15 +19,28 @@ RUN git clone https://github.com/CopernicaMarketingSoftware/AMQP-CPP.git && \
     cmake --install . && \
     cd ../.. && \
     rm -rf AMQP-CPP
-RUN mkdir -p /etc/wt && \
-    echo '<?xml version="1.0" encoding="UTF-8"?>' > /etc/wt/wt_config.xml && \
-    echo '<wt-config>' >> /etc/wt/wt_config.xml && \
-    echo '  <debug-level>all</debug-level>' >> /etc/wt/wt_config.xml && \
-    echo '</wt-config>' >> /etc/wt/wt_config.xml
+RUN git clone https://github.com/libcpr/cpr.git && \
+    cd cpr && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCPR_USE_SYSTEM_CURL=ON && \
+    cmake --build . -j$(nproc) && \
+    cmake --install . && \
+    cd ../.. && \
+    rm -rf cpr
+RUN git clone https://github.com/nlohmann/json.git && \
+    cd json && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    cmake --build . -j$(nproc) && \
+    cmake --install . && \
+    cd ../.. && \
+    rm -rf json
 WORKDIR /app
 COPY . .
 RUN mkdir build && \
     cd build && \
     cmake .. && \
     cmake --build . -j$(nproc)
-EXPOSE 8080
+EXPOSE 8082

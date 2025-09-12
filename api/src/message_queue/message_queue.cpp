@@ -91,7 +91,6 @@ void MessageQueue::processAlgoResult(const Wt::Json::Object& message) {
             const auto cfPoint = static_cast<int>(userData.at("cf_point"));
             const auto atcPoint = static_cast<int>(userData.at("atc_point"));
             const auto semesterResult = session.getSemesterResult(semester, user);
-            //ToDo: create semester_result, cf_point, atc_point after creating semester
             const auto cfPointObject = session.getPoint(semesterResult, "cf_point");
             const auto atcPointObject = session.getPoint(semesterResult, "atc_point");
             cfPointObject.modify()->setAmount(cfPoint);
