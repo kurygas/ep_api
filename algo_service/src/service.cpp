@@ -1,7 +1,8 @@
 #include "service.h"
 
 Service::Service()
-: timer_(ioContext_, boost::asio::chrono::minutes(5)) {
+: timer_(ioService_, boost::asio::chrono::minutes(5))
+, messageQueue(ioService_) {
     timer_.async_wait([](const boost::system::error_code& code) {
         if (!code) {
             1;
@@ -10,5 +11,5 @@ Service::Service()
 }
 
 void Service::run() {
-    ioContext_.run();
+    ioService_.run();
 }

@@ -10,7 +10,7 @@ public:
     void run();
 
 private:
-    boost::asio::io_service ioContext_;
+    boost::asio::io_service ioService_;
     boost::asio::steady_timer timer_;
     MessageQueue messageQueue;
 };

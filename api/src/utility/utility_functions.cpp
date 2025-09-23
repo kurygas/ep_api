@@ -23,14 +23,3 @@ std::vector<std::string> Utility::split(const std::string& str, const char split
 
     return result;
 }
-
-std::string Utility::joinParams(const std::vector<std::pair<std::string, std::string>>& params) {
-    std::string result;
-
-    for (const auto& [param, value] : params) {
-        result += std::format("{}={}&", param, value);
-    }
-
-    result.pop_back();
-    return result;
-}

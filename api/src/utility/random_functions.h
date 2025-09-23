@@ -4,7 +4,7 @@
 #include <string>
 #include <Wt/Dbo/collection.h>
 
-const std::string alphanumCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";\
+const std::string alphanumCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 constexpr std::string numCharacters = "0123456789";
 
 namespace Random {
