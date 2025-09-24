@@ -13,7 +13,6 @@
 using json = nlohmann::json;
 
 namespace CfPuller {
-    // ToDo: get this from config
     inline std::string key;
     inline std::string secret;
     
@@ -29,5 +28,6 @@ namespace CfPuller {
     cpr::Url getContestTaskCountUrl(int contestId);
     int getContestTaskCount(cpr::Response r);
 
+    int getFinalPoint(int officialPoints, int unofficialPoints, int sumPoints, int cfMaxPoint);
     Task pullPoints(const User& user, const Semester& semester, const Group& group);
 }

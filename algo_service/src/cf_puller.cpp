@@ -87,6 +87,16 @@ int CfPuller::getContestTaskCount(cpr::Response r) {
     }
 }
 
+int CfPuller::getFinalPoint(const int officialPoints, int unofficialPoints, const int sumPoints, const int cfMaxPoint) {
+    if (sumPoints == 0) {
+        return 0;
+    }
+
+    unofficialPoints -= officialPoints;
+    unofficialPoints /= 2;
+    return cfMaxPoint * (officialPoints + unofficialPoints) / sumPoints;
+}
+
 Task CfPuller::pullPoints(const User& user, const Semester& semester, const Group& group) {
     if (group.cfGroupCode.empty() ||
         user.cfName.empty()) {
@@ -97,29 +107,28 @@ Task CfPuller::pullPoints(const User& user, const Semester& semester, const Grou
     int unofficialPoints = 0;
     int sumPoints = 0;
 
-    for (const auto& contest : getContestList(co_await GetAsync(getContestListUrl(group.cfGroupCode)))) {
-        try {
-            const int64_t start = contest.at("startTimeSeconds");
-            const int64_t duration = contest.at("durationSeconds");
-            const int64_t end = start + duration;
-            const auto contestId = contest.at("id");
+    try {
+        for (const auto& contest : getContestList(co_await GetAsync(getContestListUrl(group.cfGroupCode)))) {
+            try {
+                const int64_t start = contest.at("startTimeSeconds");
+                const int64_t duration = contest.at("durationSeconds");
+                const int64_t end = start + duration;
+                const auto contestId = contest.at("id");
 
-            if (start < semester.start || end > semester.finish) {
-                continue;
+                if (start < semester.start || end > semester.finish) {
+                    continue;
+                }
+
+                officialPoints += getContestPoints(co_await GetAsync(getContestPointsUrl(contestId, user.cfName, true)));
+                unofficialPoints += getContestPoints(co_await GetAsync(getContestPointsUrl(contestId, user.cfName, false)));
+                sumPoints += getContestTaskCount(co_await GetAsync(getContestTaskCountUrl(contestId)));
             }
-
-            officialPoints += getContestPoints(co_await GetAsync(getContestPointsUrl(contestId, user.cfName, true)));
-            unofficialPoints += getContestPoints(co_await GetAsync(getContestPointsUrl(contestId, user.cfName, false)));
-            sumPoints += getContestTaskCount(co_await GetAsync(getContestTaskCountUrl(contestId)));
+            catch (...) {}
         }
-        catch (...) {}
     }
-
-    if (sumPoints == 0) {
+    catch (...) {
         co_return 0;
     }
 
-    unofficialPoints -= officialPoints;
-    unofficialPoints /= 2;
-    co_return semester.cfMaxPoint * (officialPoints + unofficialPoints) / sumPoints;
+    co_return getFinalPoint(officialPoints, unofficialPoints, sumPoints, semester.cfMaxPoint);
 }

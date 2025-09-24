@@ -1,5 +1,7 @@
 #include "coroutine_task.h"
 
+#include <exception>
+
 Task::Task(const std::coroutine_handle<Promise>& handle)
 : std::coroutine_handle<Promise>(handle) {}
 

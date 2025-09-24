@@ -7,7 +7,6 @@
 #include "session.h"
 #include "get_solution_resource.h"
 #include "point_resource.h"
-#include "cf_service.h"
 #include "semester_resource.h"
 #include "semester_result_resource.h"
 #include "message_queue.h"

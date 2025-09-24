@@ -8,6 +8,11 @@ class Service {
 public:
     Service();
     void run();
+    
+    void pullConfig() const;
+    void spawnPullers() const;
+    void runTimer();
+    
 
 private:
     boost::asio::io_service ioService_;
