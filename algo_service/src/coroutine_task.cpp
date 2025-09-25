@@ -18,11 +18,35 @@ std::suspend_always Promise::final_suspend() const {
 }
 
 void Promise::return_value(const int value) {
-    value_ = value;
-}
-
-int Promise::get_value() const {
-    return value_;
+    point_ = value;
 }
 
 void Promise::unhandled_exception() const {}
+
+int Promise::getPoint() const {
+    return point_;
+}
+
+int Promise::getUserId() const {
+    return userId_;
+}
+
+int Promise::getSemesterId() const {
+    return semesterId_;
+}
+
+TaskType Promise::getType() const {
+    return type_;
+}
+
+void Promise::setUserId(const int userId) {
+    userId_ = userId;
+}
+
+void Promise::setSemesterId(const int semesterId) {
+    semesterId_ = semesterId;
+}
+
+void Promise::setType(const TaskType type) {
+    type_ = type;
+}

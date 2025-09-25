@@ -11,12 +11,12 @@ void MessageQueue::createInstance(Wt::WServer& server) {
     instance_ = std::make_unique<MessageQueue>(server);
 }
 
-const std::unique_ptr<MessageQueue>& MessageQueue::getInstance() {
+MessageQueue& MessageQueue::getInstance() {
     if (!instance_) {
         throw std::runtime_error("Not created yet");
     }
 
-    return instance_;
+    return *instance_;
 }
 
 Wt::Json::Object MessageQueue::parseMessage(const AMQP::Message& data) {
@@ -47,7 +47,7 @@ void MessageQueue::configureAlgoResultQueue() {
             processAlgoRequest();
         }
         else if (type == "result") {
-            processAlgoResult(message);
+            processAlgoResult(message.at("data"));
         }
     });
 }
@@ -55,46 +55,42 @@ void MessageQueue::configureAlgoResultQueue() {
 void MessageQueue::processAlgoRequest() {
     Session session;
     const Wt::Dbo::Transaction tr(session);
-    Wt::Json::Object message;
-    Wt::Json::Array groups;
-    Wt::Json::Array users;
-    Wt::Json::Array semesters;
 
     for (const auto& group : session.getAll<Group>()) {
-        groups.emplace_back(static_cast<Wt::Json::Object>(*group));
+        auto message = static_cast<Wt::Json::Object>(*group);
+        message[Str::groupId] = group.id();
+        publish("algo_data", message);
 
         for (const auto& user : group->getUsers()) {
-            users.emplace_back(*user);
+            message = static_cast<Wt::Json::Object>(*user);
+            message[Str::userId] = user.id();
+            publish("algo_data", message);
         }
 
         for (const auto& semester : group->getSemesters()) {
-            semesters.emplace_back(*semester);
+            message = static_cast<Wt::Json::Object>(*semester);
+            message[Str::semesterId] = semester.id();
+            publish("algo_data", message);
         }
     }
-
-    message[Str::groupList] = std::move(groups);
-    message[Str::userList] = std::move(users);
-    message[Str::semesterList] = std::move(semesters);
-    publish("algo_data", message);
 }
 
-void MessageQueue::processAlgoResult(const Wt::Json::Object& message) {
+void MessageQueue::processAlgoResult(const Wt::Json::Array& data) {
     Session session;
     const Wt::Dbo::Transaction tr(session);
-    const auto semesters = static_cast<Wt::Json::Array>(message.at("data"));
-    for (const Wt::Json::Object& semesterData : semesters) {
-        const auto semester = session.load<Semester>(semesterData.at(Str::semesterId));
-        const auto users = static_cast<Wt::Json::Array>(semesterData.at(Str::userList));
-        
-        for (const Wt::Json::Object& userData : users) {
-            const auto user = session.load<User>(userData.at(Str::userId));
-            const auto cfPoint = static_cast<int>(userData.at("cf_point"));
-            const auto atcPoint = static_cast<int>(userData.at("atc_point"));
-            const auto semesterResult = session.getSemesterResult(semester, user);
+
+    for (const Wt::Json::Object& result : data) {
+        const auto semester = session.load<Semester>(result.at(Str::semesterId));
+        const auto user = session.load<User>(result.at(Str::userId));
+        const auto semesterResult = session.getSemesterResult(semester, user);
+
+        if (result.contains("cf_point")) {
             const auto cfPointObject = session.getPoint(semesterResult, "cf_point");
+            cfPointObject.modify()->setAmount(result.at("cf_point"));
+        }
+        else if (result.contains("atc_point")) {
             const auto atcPointObject = session.getPoint(semesterResult, "atc_point");
-            cfPointObject.modify()->setAmount(cfPoint);
-            atcPointObject.modify()->setAmount(atcPoint);
+            atcPointObject.modify()->setAmount(result.at("atc_point"));
         }
     }
 }

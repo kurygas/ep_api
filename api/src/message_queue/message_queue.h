@@ -13,16 +13,15 @@ class Semester;
 class MessageQueue {
 public:
     static void createInstance(Wt::WServer& server);
-    static const std::unique_ptr<MessageQueue>& getInstance();
+    static MessageQueue& getInstance();
 
     static Wt::Json::Object parseMessage(const AMQP::Message& data);
     
     template<typename T>
-    void publish(const std::string routingKey, const T& message) {
+    void publish(const std::string& routingKey, const T& message) {
         channel_.publish("", routingKey, Wt::Json::serialize(message));
     }
 
-    MessageQueue() = delete;
     MessageQueue(const MessageQueue&) = delete;
     MessageQueue(MessageQueue&&) = delete;
     MessageQueue& operator=(const MessageQueue&) = delete;
@@ -35,7 +34,7 @@ private:
     void configureAlgoDataQueue();
     void configureAlgoResultQueue();
     void processAlgoRequest();
-    void processAlgoResult(const Wt::Json::Object& message);
+    void processAlgoResult(const Wt::Json::Array& data);
 
     AMQP::LibBoostAsioHandler handler_;
     AMQP::TcpConnection connection_;

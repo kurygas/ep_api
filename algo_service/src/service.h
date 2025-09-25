@@ -10,12 +10,11 @@ public:
     void run();
     
     void pullConfig() const;
-    void spawnPullers() const;
+    void spawnPullers();
     void runTimer();
-    
 
 private:
     boost::asio::io_service ioService_;
     boost::asio::steady_timer timer_;
-    MessageQueue messageQueue;
+    MessageQueue messageQueue_;
 };

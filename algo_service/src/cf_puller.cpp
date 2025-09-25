@@ -1,10 +1,6 @@
 #include "cf_puller.h"
 #include "utility_functions.h"
 #include "async_request.h"
-#include "storage.h"
-#include "user.h"
-#include "semester.h"
-#include "group.h"
 
 #include <format>
 #include <unordered_map>
@@ -115,7 +111,7 @@ Task CfPuller::pullPoints(const User& user, const Semester& semester, const Grou
                 const int64_t end = start + duration;
                 const auto contestId = contest.at("id");
 
-                if (start < semester.start || end > semester.finish) {
+                if (start < semester.start || end > semester.end) {
                     continue;
                 }
 

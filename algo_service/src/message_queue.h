@@ -11,13 +11,21 @@ class MessageQueue {
 public:
     MessageQueue(boost::asio::io_service& ioService);
 
-    static json parseMessage(const AMQP::Message& data);
-    void publish(const std::string routingKey, const json& message);
+    void publish(const std::string& routingKey, const json& message);
 
+private:
     void configureAlgoDataQueue();
     void configureAlgoResultQueue();
 
-private:
+    void updateUser(const json& message) const;
+    void deleteUser(const json& message) const;
+
+    void updateSemester(const json& message) const;
+    void deleteSemester(const json& message) const;
+
+    void updateGroup(const json& message) const;
+    void deleteGroup(const json& message) const;
+
     AMQP::LibBoostAsioHandler handler_;
     AMQP::TcpConnection connection_;
     AMQP::TcpChannel channel_;

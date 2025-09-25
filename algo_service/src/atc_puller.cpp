@@ -50,7 +50,7 @@ Task AtcPuller::pullPoints(const User& user, const Semester& semester) {
                 const bool isRated = contest.at("IsRated");
                 const int64_t endTime = parseDate(contest.at("EndTime"));
 
-                if (!isRated || endTime < semester.start || endTime > semester.finish) {
+                if (!isRated || endTime < semester.start || endTime > semester.end) {
                     continue;
                 }
 
