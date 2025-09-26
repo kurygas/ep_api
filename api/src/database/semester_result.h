@@ -17,10 +17,10 @@ class SemesterResult {
 public:
     template<typename Action>
     void persist(Action& a) {
-        Wt::Dbo::belongsTo(a, semester_, "semester");
-        Wt::Dbo::belongsTo(a, user_, "user");
-        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "semester_result");
-        Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne, "semester_result");
+        Wt::Dbo::belongsTo(a, semester_);
+        Wt::Dbo::belongsTo(a, user_);
+        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne);
+        Wt::Dbo::hasMany(a, points_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

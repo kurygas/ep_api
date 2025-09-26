@@ -17,8 +17,7 @@ Problem::Problem(std::string name, std::string statement, Subject::Type subject,
     setSemesterNumber(semesterNumber);
 }
 
-void Problem::setName(std::string name)
-{
+void Problem::setName(std::string name) {
     if (name.empty()) {
         throw BadRequestException("Invalid name for Problem");
     }

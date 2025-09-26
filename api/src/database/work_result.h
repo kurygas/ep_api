@@ -19,9 +19,9 @@ public:
     void persist(Action& a) {
         Wt::Dbo::field(a, filename_, Str::filename);
         Wt::Dbo::field(a, mark_, Str::mark);
-        Wt::Dbo::belongsTo(a, work_, "work");
-        Wt::Dbo::belongsTo(a, problem_, "problem");
-        Wt::Dbo::belongsTo(a, semesterResult_, "semester_result");
+        Wt::Dbo::belongsTo(a, work_);
+        Wt::Dbo::belongsTo(a, problem_);
+        Wt::Dbo::belongsTo(a, semesterResult_);
     }
 
     operator Wt::Json::Object() const;

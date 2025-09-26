@@ -17,8 +17,8 @@ public:
     void persist(Action& a) {
         Wt::Dbo::field(a, name_, Str::name);
         Wt::Dbo::field(a, cfGroupCode_, Str::cfGroupCode);
-        Wt::Dbo::hasMany(a, users_, Wt::Dbo::ManyToOne, "group");
-        Wt::Dbo::hasMany(a, semesters_, Wt::Dbo::ManyToOne, "group");
+        Wt::Dbo::hasMany(a, users_, Wt::Dbo::ManyToOne);
+        Wt::Dbo::hasMany(a, semesters_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

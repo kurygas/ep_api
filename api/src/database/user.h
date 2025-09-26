@@ -31,8 +31,8 @@ public:
         Wt::Dbo::field(a, tgUsername_, Str::tgUsername);
         Wt::Dbo::field(a, cfName_, Str::cfName);
         Wt::Dbo::field(a, atcName_, Str::atcName);
-        Wt::Dbo::belongsTo(a, group_, "group");
-        Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "user");
+        Wt::Dbo::belongsTo(a, group_);
+        Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

@@ -23,7 +23,7 @@ public:
     void persist(Action& a) {
         Wt::Dbo::field(a, reason_, Str::reason);
         Wt::Dbo::field(a, amount_, Str::amount);
-        Wt::Dbo::belongsTo(a, semesterResult_, "semester_result");
+        Wt::Dbo::belongsTo(a, semesterResult_);
     }
 
     operator Wt::Json::Object() const;

@@ -10,6 +10,7 @@ components:
     BearerAuth:
       scheme: bearer
       type: http
+      bearerFormat: JWT
   schemas:
     ErrorObject:
       type: object
@@ -217,18 +218,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorObject'
-    ServerError:
-      description: Error on the server's side
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorObject'
+security:
+  - BearerAuth: []
 paths:
   /user:
     get:
       summary: Returns a list of all User's id.
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -240,8 +235,6 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates User
       requestBody:
@@ -277,15 +270,11 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /user/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     patch:
       summary: Changes User's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -322,12 +311,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     get:
       summary: Returns User's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: User's properties
@@ -341,12 +326,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes User
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted User's properties
@@ -360,15 +341,11 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /user/{id}/auth:
     parameters:
       - $ref: '#/components/parameters/PathId'
     post:
       summary: Provides authorization
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -416,13 +393,9 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /group:
     get:
       summary: Returns a list of all Group's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -434,12 +407,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates Group
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -468,15 +437,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /group/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Get Group's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Group's properties
@@ -490,12 +455,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes Group's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -524,12 +485,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes Group
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted Group's properties
@@ -543,13 +500,9 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /point:
     get:
       summary: Returns a list of all Point's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -561,12 +514,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates Point
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -601,15 +550,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /point/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Point's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Point's properties
@@ -625,12 +570,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes Point
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted Point's properties
@@ -644,12 +585,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes Point's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -680,13 +617,9 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /problem:
     get:
       summary: Returns a list of all Problem's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -698,12 +631,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates Problem
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -735,15 +664,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /problem/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Problem's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Problem's properties
@@ -759,12 +684,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes Problem
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted Problem's properties
@@ -778,12 +699,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes Problem's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -816,13 +733,9 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /semester_result:
     get:
       summary: Returns a list of all SemesterResult's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -834,12 +747,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates SemesterResult
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -871,15 +780,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /semester_result/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns SemesterResult's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: SemesterResult's properties
@@ -895,12 +800,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes SemesterResult
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted SemesterResult's properties
@@ -914,12 +815,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes SemesterResult's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -948,13 +845,9 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /semester:
     get:
       summary: Returns a list of all Semester's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -966,12 +859,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates Semester
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1009,15 +898,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /semester/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Semester's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Semester's properties
@@ -1031,12 +916,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes Semester
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted Semester's properties
@@ -1050,12 +931,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes Semester's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1094,13 +971,9 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work:
     get:
       summary: Returns a list of all Work's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -1112,12 +985,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates Work
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1158,15 +1027,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Work's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Work's properties
@@ -1180,12 +1045,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes Work
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted Work's properties
@@ -1199,12 +1060,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes Work's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1243,15 +1100,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work/{id}/problem_list:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns array of Work's problems id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Work's problems id
@@ -1267,13 +1120,9 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work_result:
     get:
       summary: Returns a list of all WorkResult's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: List of id
@@ -1285,12 +1134,8 @@ paths:
                   type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     post:
       summary: Creates WorkResult
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1322,15 +1167,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work_result/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns WorkResult's properties
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: WorkResult's properties
@@ -1344,12 +1185,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
     delete:
       summary: Deletes WorkResult
-      security:
-        - BearerAuth: []
       responses:
         '204':
           description: Deleted WorkResult's properties
@@ -1363,12 +1200,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
     patch:
       summary: Changes WorkResult's properties
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1412,15 +1245,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work_result/{id}/problem_id:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Problem's id
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Problem's id
@@ -1439,15 +1268,11 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work_result/{id}/statement:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns Problem's statement
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Problem's statement
@@ -1466,15 +1291,11 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /work_result/{id}/mark:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Return WorkResult's mark
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: WorkResult's mark
@@ -1493,15 +1314,11 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'
   /solution/{id}:
     parameters:
       - $ref: '#/components/parameters/PathId'
     get:
       summary: Returns file with solution which pinned to WorkResult with *id*
-      security:
-        - BearerAuth: []
       responses:
         '200':
           description: Solution file
@@ -1516,5 +1333,3 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/ServerError'

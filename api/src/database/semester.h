@@ -21,8 +21,8 @@ public:
         Wt::Dbo::field(a, subject_, Str::subject);
         Wt::Dbo::field(a, cfMaxPoint_, Str::cfMaxPoint);
         Wt::Dbo::field(a, atcRatio_, Str::atcRatio);
-        Wt::Dbo::belongsTo(a, group_, "group");
-        Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne, "semester");
+        Wt::Dbo::belongsTo(a, group_);
+        Wt::Dbo::hasMany(a, semesterResults_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

@@ -23,6 +23,10 @@ void Point::setReason(std::string reason) {
 }
 
 void Point::setSemesterResult(Ptr<SemesterResult> semesterResult) {
+    if (!semesterResult) {
+        throw BadRequestException("Invalid semester_result for Point");
+    }
+
     semesterResult_ = std::move(semesterResult);
 }
 

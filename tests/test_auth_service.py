@@ -8,7 +8,7 @@ def test_admin_valid():
     tg_bot_password = config.get("tg_bot", "password")
     response = requests.post("http://127.0.0.1:8081/auth/refresh_token", json={"name": "tg_bot", "password": tg_bot_password})
     assert response.status_code == 200
-    json = response.json()
+    json: dict[str, str] = response.json()
     assert "refresh_token" in json
     refresh_token = json["refresh_token"]
     response = requests.post("http://127.0.0.1:8081/auth/access_token", json={"refresh_token": refresh_token})

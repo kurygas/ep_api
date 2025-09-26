@@ -2,7 +2,7 @@ import random
 import string
 
 
-def random_string(symbols, size):
+def random_string(symbols: str, size: int):
     return ''.join([random.choice(symbols) for _ in range(size)])
 
 def random_eng_string(size = 10):

@@ -17,5 +17,3 @@ void GetAsync::await_suspend(std::coroutine_handle<> handle) {
 cpr::Response GetAsync::await_resume() {
     return std::move(response_);
 }
-
-

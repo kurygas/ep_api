@@ -20,9 +20,9 @@ public:
         Wt::Dbo::field(a, start_, Str::start);
         Wt::Dbo::field(a, end_, Str::end);
         Wt::Dbo::field(a, isExam_, Str::isExam);
-        Wt::Dbo::belongsTo(a, semester_, "semester");
-        Wt::Dbo::hasMany(a, problems_, Wt::Dbo::ManyToMany, "work_problems");
-        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "work");
+        Wt::Dbo::belongsTo(a, semester_);
+        Wt::Dbo::hasMany(a, problems_, Wt::Dbo::ManyToMany, "work_problem");
+        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

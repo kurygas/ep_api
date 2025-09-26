@@ -20,7 +20,7 @@ User::operator Wt::Json::Object() const {
     json[Str::tgId] = getTgId();
     json[Str::tgUsername] = getTgUsername().c_str();
 
-    if (!getGroup()) {
+    if (getGroup()) {
         json[Str::groupId] = getGroup().id();
     }
 
@@ -39,12 +39,12 @@ User::operator Wt::Json::Object() const {
     return json;
 }
 
-User::User(const int64_t tgId, std::string tgUsername, std::string name, std::string surname)
-: userType_(UserType::Student) {
+User::User(const int64_t tgId, std::string tgUsername, std::string name, std::string surname) {
     setTgId(tgId);
     setTgUsername(std::move(tgUsername));
     setName(std::move(name));
     setSurname(std::move(surname));
+    setUserType(UserType::Student);
 }
 
 void User::setName(std::string name) {

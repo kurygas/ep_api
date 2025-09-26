@@ -19,8 +19,8 @@ public:
         Wt::Dbo::field(a, statement_, Str::statement);
         Wt::Dbo::field(a, subject_, Str::subject);
         Wt::Dbo::field(a, semesterNumber_, Str::semesterNumber);
-        Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToMany, "work_problems");
-        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne, "problem");
+        Wt::Dbo::hasMany(a, works_, Wt::Dbo::ManyToMany, "work_problem");
+        Wt::Dbo::hasMany(a, workResults_, Wt::Dbo::ManyToOne);
     }
 
     operator Wt::Json::Object() const;

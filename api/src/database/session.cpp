@@ -5,14 +5,14 @@
 
 Session::Session() {
     setConnection(std::make_unique<Wt::Dbo::backend::Sqlite3>("database.db"));
-    mapClass<User>("users");
-    mapClass<Group>("groups");
-    mapClass<Problem>("problems");
-    mapClass<WorkResult>("work_results");
-    mapClass<Work>("works");
-    mapClass<Point>("points");
-    mapClass<Semester>("semesters");
-    mapClass<SemesterResult>("semester_results");
+    mapClass<User>("user");
+    mapClass<Group>("group");
+    mapClass<Problem>("problem");
+    mapClass<WorkResult>("work_result");
+    mapClass<Work>("work");
+    mapClass<Point>("point");
+    mapClass<Semester>("semester");
+    mapClass<SemesterResult>("semester_result");
 }
 
 void Session::configureDatabase() {

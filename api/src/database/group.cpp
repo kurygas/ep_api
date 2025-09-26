@@ -56,4 +56,3 @@ Group::operator Wt::Json::Object() const {
     
     return json;
 }
-
