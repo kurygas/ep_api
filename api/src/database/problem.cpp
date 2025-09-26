@@ -3,7 +3,6 @@
 #include "validator.h"
 #include "random_functions.h"
 #include "utility_functions.h"
-#include "crypto.h"
 #include "work.h"
 #include "work_result.h"
 

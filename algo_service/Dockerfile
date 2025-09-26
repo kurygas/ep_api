@@ -43,4 +43,3 @@ RUN mkdir build && \
     cd build && \
     cmake .. && \
     cmake --build . -j$(nproc)
-EXPOSE 8082

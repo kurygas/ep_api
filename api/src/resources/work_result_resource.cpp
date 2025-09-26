@@ -47,17 +47,8 @@ void WorkResultResource::processPatch(const HttpRequest& request, Session& sessi
     }
 }
 
-void WorkResultResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
 void WorkResultResource::postRequirements(const HttpRequest& request, Session& session) const {
     RootRequirements::requireAuthId(request, session, session.load<User>(request.body().at(Str::userId)));
-}
-
-void WorkResultResource::getIdRequirements(const HttpRequest& request, Session& session, 
-    const Ptr<WorkResult>& workResult) const {
-    RootRequirements::requireAuth(request);
 }
 
 void WorkResultResource::deleteRequirements(const HttpRequest& request, Session& session, 
@@ -88,7 +79,7 @@ void WorkResultResource::processGetMethod(const HttpRequest& request, Wt::Http::
     response.out() << Wt::Json::serialize(json);
 }
 
-Ptr<WorkResult> createObject(const Wt::Json::Object& json, Session& session) {
+Ptr<WorkResult> WorkResultResource::createObject(const Wt::Json::Object& json, Session& session) const {
     auto work = session.load<Work>(json.at(Str::workId));
     auto semesterResult = session.load<SemesterResult>(json.at(Str::semesterResultId));
 

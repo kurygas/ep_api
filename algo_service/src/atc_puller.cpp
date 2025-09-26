@@ -28,7 +28,7 @@ cpr::Url AtcPuller::getUrl(std::string atcName) {
     return {std::format("https://atcoder.jp/users/{}/history/json", std::move(atcName))};
 }
 
-int AtcPuller::getFinalPoint(const std::vector<int>& perfomanceVector, const int atcRatio) {
+int AtcPuller::getFinalPoint(std::vector<int>& perfomanceVector, const int atcRatio) {
     if (perfomanceVector.size() < 8) {
         return 0;
     }

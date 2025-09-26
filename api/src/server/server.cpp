@@ -18,7 +18,7 @@
 
 Server::Server(const std::string& applicationPath)
 : Wt::WServer(applicationPath) {
-    const std::vector<std::string> args = {applicationPath, "--docroot", ".", "--http-address", "127.0.0.1", "--http-port", "8080"};
+    const std::vector<std::string> args = {applicationPath, "--docroot", ".", "--http-address", "0.0.0.0", "--http-port", "8080"};
     setServerConfiguration(applicationPath, args, WTHTTP_CONFIGURATION);
     Session::configureDatabase();
     

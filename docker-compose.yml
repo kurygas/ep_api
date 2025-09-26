@@ -11,7 +11,7 @@ services:
   auth_service:
     build: auth_service
     volumes:
-      - ./auth_service/:./
+      - ./auth_service/config.ini:/app/config.ini
     ports:
       - 8081:8081
     networks:
@@ -22,7 +22,9 @@ services:
   api:
     build: api
     volumes:
-      - ./api/:./
+      - ./api/database.db:/app/database.db
+      - ./api/solutions:/app/solutions
+      - ./api/config.ini:/app/config.ini
     ports:
       - 8080:8080
     networks:
@@ -30,10 +32,8 @@ services:
     command: ["build/ep_api"]
   algo_service:
     build: algo_service
-    ports:
-      - 8082:8082
-    networks:
-      - app-network
+    volumes:
+      - ./algo_service/config.ini:/app/config.ini
     command: ["build/algo_service"]
 
 networks:

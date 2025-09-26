@@ -1,7 +1,5 @@
 #include "semester_result_resource.h"
 #include "root_requirements.h"
-#include "cf_service.h"
-#include "atc_service.h"
 
 void SemesterResultResource::processPatch(const HttpRequest &request, Session& session, const Ptr<SemesterResult>& semesterResult) const {
     RootRequirements::requireTeacherRoots(request, session);
@@ -26,10 +24,6 @@ void SemesterResultResource::processPatch(const HttpRequest &request, Session& s
             semesterResult.modify()->setUser(std::move(user));
         }
     }
-}
-
-void SemesterResultResource::getRequirements(const HttpRequest &request, Session &session) const {
-    RootRequirements::requireAuth(request);
 }
 
 void SemesterResultResource::postRequirements(const HttpRequest& request, Session& session) const {

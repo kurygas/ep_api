@@ -1,10 +1,6 @@
 #include "point_resource.h"
 #include "root_requirements.h"
 
-void PointResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
 void PointResource::postRequirements(const HttpRequest& request, Session& session) const {
     RootRequirements::requireTeacherRoots(request, session);
 }

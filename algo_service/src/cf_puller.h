@@ -17,7 +17,7 @@ namespace CfPuller {
     inline std::string secret;
     
     std::string getSignature(std::string method, const std::map<std::string, std::string>& params);
-    std::string getUrl(std::string method, const std::map<std::string, std::string>& params);
+    std::string getUrl(std::string method, std::map<std::string, std::string>& params);
     
     cpr::Url getContestPointsUrl(int contestId, std::string handle, bool official);
     int getContestPoints(cpr::Response r);

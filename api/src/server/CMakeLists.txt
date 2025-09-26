@@ -4,3 +4,4 @@ target_include_directories(Server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../database
 target_include_directories(Server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../resources)
 target_include_directories(Server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../utility)
 target_include_directories(Server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../services)
+target_include_directories(Server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../message_queue)

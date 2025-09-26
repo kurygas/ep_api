@@ -9,11 +9,11 @@ Task Promise::get_return_object() {
     return Task(std::coroutine_handle<Promise>::from_promise(*this));
 }
 
-std::suspend_never Promise::initial_suspend() const {
+std::suspend_never Promise::initial_suspend() const noexcept {
     return {};
 }
 
-std::suspend_always Promise::final_suspend() const {
+std::suspend_always Promise::final_suspend() const noexcept {
     return {};
 }
 

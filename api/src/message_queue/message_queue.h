@@ -12,6 +12,8 @@ class Semester;
 
 class MessageQueue {
 public:
+    MessageQueue(Wt::WServer& server);
+
     static void createInstance(Wt::WServer& server);
     static MessageQueue& getInstance();
 
@@ -22,15 +24,7 @@ public:
         channel_.publish("", routingKey, Wt::Json::serialize(message));
     }
 
-    MessageQueue(const MessageQueue&) = delete;
-    MessageQueue(MessageQueue&&) = delete;
-    MessageQueue& operator=(const MessageQueue&) = delete;
-    MessageQueue& operator=(MessageQueue&&) = delete;
-
 private:
-    MessageQueue(Wt::WServer& server);
-    ~MessageQueue() = default;
-
     void configureAlgoDataQueue();
     void configureAlgoResultQueue();
     void processAlgoRequest();

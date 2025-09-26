@@ -1,19 +1,6 @@
 #include "group_resource.h"
 #include "root_requirements.h"
-#include "cf_service.h"
 #include "message_queue.h"
-
-void GroupResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
-void GroupResource::postRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
-void GroupResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Group>& group) const {
-    RootRequirements::requireAuth(request);
-}
 
 void GroupResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Group>& group) const {
     RootRequirements::requireTeacherRoots(request, session);
@@ -51,12 +38,12 @@ Ptr<Group> GroupResource::createObject(const Wt::Json::Object& json, Session& se
 void GroupResource::sendUpdatedInfo(const Ptr<Group>& group) const {
     auto message = static_cast<Wt::Json::Object>(*group);
     message[Str::groupId] = group.id();
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }
 
 void GroupResource::sendDeletedInfo(const Ptr<Group>& group) const {
     Wt::Json::Object message;
     message[Str::groupId] = group.id();
     message["deleted"] = true;
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }

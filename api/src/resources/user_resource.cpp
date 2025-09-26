@@ -40,20 +40,12 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
     }
 }
 
-void UserResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
-void UserResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
-    RootRequirements::requireAuth(request);
-}
-
 void UserResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<User>& user) const {
     RootRequirements::requireTeacherRoots(request, session);
 }
 
 Ptr<User> UserResource::createObject(const Wt::Json::Object& json, Session& session) const {
-    const auto tgId = static_cast<int>(json.at(Str::tgId));
+    const auto tgId = static_cast<int64_t>(json.at(Str::tgId));
     auto tgUsername = static_cast<std::string>(json.at(Str::tgUsername));
     auto name = static_cast<std::string>(json.at(Str::name));
     auto surname = static_cast<std::string>(json.at(Str::surname));
@@ -68,12 +60,12 @@ Ptr<User> UserResource::createObject(const Wt::Json::Object& json, Session& sess
 void UserResource::sendUpdatedInfo(const Ptr<User>& user) const {
     auto message = static_cast<Wt::Json::Object>(*user);
     message[Str::userId] = user.id();
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }
 
 void UserResource::sendDeletedInfo(const Ptr<User>& user) const {
     Wt::Json::Object message;
     message[Str::userId] = user.id();
     message["deleted"] = true;
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }

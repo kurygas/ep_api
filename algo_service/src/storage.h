@@ -5,7 +5,10 @@
 template<typename T>
 class Storage : public std::unordered_map<int, T> {
 public:
-    static Storage& instance();
+    static Storage<T>& instance() {
+        static Storage<T> storage;
+        return storage;
+    }
 
     Storage(const Storage& other) = delete;
     Storage(Storage&& other) = delete;

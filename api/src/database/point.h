@@ -11,7 +11,6 @@
 #include "validator.h"
 #include "random_functions.h"
 #include "utility_functions.h"
-#include "crypto.h"
 #include "user.h"
 #include "semester_result.h"
 

@@ -14,6 +14,7 @@
 #include "str.h"
 #include "http_exceptions.h"
 #include "utility_functions.h"
+#include "root_requirements.h"
 
 template<typename DatabaseType>
 class Resource : public Wt::WResource {
@@ -46,10 +47,22 @@ protected:
 
     virtual void processPatch(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const = 0;
 
-    virtual void getRequirements(const HttpRequest& request, Session& session) const {}
-    virtual void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
-    virtual void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {}
-    virtual void postRequirements(const HttpRequest& request, Session& session) const {}
+    virtual void getRequirements(const HttpRequest& request, Session& session) const {
+        RootRequirements::requireAuth(request);
+    }
+
+    virtual void getIdRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {
+        RootRequirements::requireAuth(request);
+    }
+
+    virtual void deleteRequirements(const HttpRequest& request, Session& session, const Ptr<DatabaseType>& ptr) const {
+        RootRequirements::requireAuth(request);
+    }
+
+    virtual void postRequirements(const HttpRequest& request, Session& session) const {
+        RootRequirements::requireAuth(request);
+    }
+
     virtual Ptr<DatabaseType> createObject(const Wt::Json::Object& json, Session& session) const = 0;
     virtual void sendUpdatedInfo(const Ptr<DatabaseType>& ptr) const {};
     virtual void sendDeletedInfo(const Ptr<DatabaseType>& ptr) const {};
@@ -93,7 +106,6 @@ private:
 
         if (ptr) {
             auto json = static_cast<Wt::Json::Object>(*ptr);
-            tr.commit();
             json[Str::id] = ptr.id();
             response.out() << Wt::Json::serialize(json);
             sendUpdatedInfo(ptr);
@@ -108,7 +120,7 @@ private:
         }
         else if (method == "POST") {
             postRequirements(requestContent, session);
-            ptr = create(requestContent.body(), session);
+            ptr = createObject(requestContent.body(), session);
             response.setStatus(201);
         }
         else {

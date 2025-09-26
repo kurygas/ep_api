@@ -49,16 +49,8 @@ void SemesterResource::processPatch(const HttpRequest& request, Session& session
     }
 }
 
-void SemesterResource::getRequirements(const HttpRequest& request, Session& session) const {
-    RootRequirements::requireAuth(request);
-}
-
 void SemesterResource::postRequirements(const HttpRequest& request, Session& session) const {
     RootRequirements::requireTeacherRoots(request, session);
-}
-
-void SemesterResource::getIdRequirements(const HttpRequest& request, Session& session, const Ptr<Semester>& semester) const {
-    RootRequirements::requireAuth(request);
 }
 
 void SemesterResource::deleteRequirements(const HttpRequest& request, Session& session, const Ptr<Semester>& semester) const {
@@ -93,12 +85,12 @@ Ptr<Semester> SemesterResource::createObject(const Wt::Json::Object& json, Sessi
 void SemesterResource::sendUpdatedInfo(const Ptr<Semester>& semester) const {
     auto message = static_cast<Wt::Json::Object>(*semester);
     message[Str::semesterId] = semester.id();
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }
 
 void SemesterResource::sendDeletedInfo(const Ptr<Semester>& semester) const {
     Wt::Json::Object message;
     message[Str::semesterId] = semester.id();
     message["deleted"] = true;
-    MessageQueue::getInstance()->publish("algo_data", message);
+    MessageQueue::getInstance().publish("algo_data", message);
 }
