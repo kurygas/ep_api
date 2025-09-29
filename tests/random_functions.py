@@ -12,8 +12,3 @@ def random_eng_string(size = 10):
 def random_ru_string(size = 10):
     letters = "йцукенгшщзхъёфывапролджэячсмитьбю"
     return random_string(letters, size)
-
-
-def random_digit_string(size = 10):
-    digits = "1234567890"
-    return random_string(digits, size)
