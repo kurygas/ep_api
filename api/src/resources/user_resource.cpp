@@ -19,13 +19,8 @@ void UserResource::processPatch(const HttpRequest& request, Session& session, co
             user.modify()->setTgUsername(static_cast<std::string>(value));
         }
         else if (key == Str::userType) {
-            RootRequirements::requireTeacherRoots(request, session);
-
-            if (user->getUserType() != UserType::Student || JsonFunctions::parse<UserType>(value) != UserType::Teacher) {
-                throw ForbiddenException("No roots");
-            }
-
-            user.modify()->setUserType(UserType::Teacher);
+            RootRequirements::requireAdminRoots(request);
+            user.modify()->setUserType(JsonFunctions::parse<UserType>(value));
         }
         else if (key == Str::groupId) {
             RootRequirements::requireTeacherRoots(request, session);

@@ -18,6 +18,7 @@ class WorkResult;
 enum class UserType {
     Student = 0,
     Teacher,
+    Admin
 };
 
 class User {

@@ -31,7 +31,7 @@ void Point::setSemesterResult(Ptr<SemesterResult> semesterResult) {
 }
 
 void Point::setAmount(const int amount) {
-    if (amount <= 0) {
+    if (amount < 0) {
         throw BadRequestException("Invalid amount for Point");
     }
 

@@ -6,10 +6,10 @@ void WorkResource::processPatch(const HttpRequest& request, Session& session, co
 
     for (const auto& [key, value] : request.body()) {
         if (key == Str::start) {
-            work.modify()->setStart(Wt::WDateTime::fromString(value));
+            work.modify()->setStart(Wt::WDateTime::fromTime_t(value));
         }
         else if (key == Str::end) {
-            work.modify()->setEnd(Wt::WDateTime::fromString(value));
+            work.modify()->setEnd(Wt::WDateTime::fromTime_t(value));
         }
         else if (key == Str::semesterId) {
             auto semester = session.load<Semester>(value);

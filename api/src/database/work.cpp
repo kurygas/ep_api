@@ -18,7 +18,7 @@ Work::operator Wt::Json::Object() const {
     return json;
 }
 
-Work::Work(std::string name, const Wt::WDateTime &start, const Wt::WDateTime &end, Ptr<Semester> semester, bool isExam) {
+Work::Work(std::string name, const Wt::WDateTime& start, const Wt::WDateTime& end, Ptr<Semester> semester, bool isExam) {
     setName(std::move(name));
     setTime(start, end);
     setSemester(std::move(semester));
@@ -42,7 +42,7 @@ void Work::setSemester(Ptr<Semester> semester) {
 }
 
 void Work::setStart(const Wt::WDateTime& start) {
-    if (Validator::isTimeSegmentValid(start, end_)) {
+    if (!Validator::isTimeSegmentValid(start, end_)) {
         throw BadRequestException("Invalid start for Work");
     }
 
@@ -50,7 +50,7 @@ void Work::setStart(const Wt::WDateTime& start) {
 }
 
 void Work::setEnd(const Wt::WDateTime& end) {
-    if (Validator::isTimeSegmentValid(start_, end)) {
+    if (!Validator::isTimeSegmentValid(start_, end)) {
         throw BadRequestException("Invalid end for Work");
     }
 
@@ -58,7 +58,7 @@ void Work::setEnd(const Wt::WDateTime& end) {
 }
 
 void Work::setTime(const Wt::WDateTime& start, const Wt::WDateTime& end) {
-    if (Validator::isTimeSegmentValid(start, end)) {
+    if (!Validator::isTimeSegmentValid(start, end)) {
         throw BadRequestException("Invalid time segment for Work");
     }
 

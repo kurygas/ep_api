@@ -27,7 +27,7 @@ public:
             processException(response, e.code(), e.what());
         }
         catch (const std::out_of_range& e) {
-            processException(response, BadRequestException("").code(), "Couldn't find necessary fields");
+            processException(response, BadRequestException("").code(), e.what());
         }
         catch (const std::exception& e) {
             processException(response, 500, e.what());
@@ -116,7 +116,9 @@ private:
         Session& session, Ptr<DatabaseType>& ptr) const {
         if (method == "GET") {
             getRequirements(requestContent, session);
-            response.out() << Wt::Json::serialize(JsonFunctions::getIdArray(session.getAll<DatabaseType>()));
+            Wt::Json::Object json;
+            json[Str::list] = JsonFunctions::getIdArray(session.getAll<DatabaseType>());
+            response.out() << Wt::Json::serialize(json);
         }
         else if (method == "POST") {
             postRequirements(requestContent, session);

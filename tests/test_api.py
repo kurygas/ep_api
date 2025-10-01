@@ -14,14 +14,23 @@ class ApiObject:
     def __init__(self):
         self.id = -1
 
-    def assert_request(self, json: dict[str]):
-        for key, value in json.items():
-            if isinstance(value, list[int]):
-                assert sorted(value) == sorted(self.__dict__[key])
-            else:
-                assert value == self.__dict__[key]
-        for key, value in self.__dict__.items():
-            assert key in json or value == -1 or value == "" or value == []
+    def assert_request(self, r: requests.Response, status_code: int):
+        json: dict[str] = r.json()
+        try:
+            assert r.status_code == status_code
+            if self.id == -1:
+                self.id = json["id"]
+            for key, value in json.items():
+                if isinstance(value, list):
+                    for id in self.__dict__[key]:
+                        assert id in value
+                else:
+                    assert value == self.__dict__[key]
+            for key, value in self.__dict__.items():
+                assert key in json or value == -1 or value == "" or value == []
+        except AssertionError:
+            print(json)
+            raise
 
     def route(self):
         return ""
@@ -41,47 +50,58 @@ class ApiObject:
         self.assert_post_id()
     
     def assert_get(self):
-        r = requests.get(url=self.url(), headers=auth.get_auth_headers())
-        assert r.status_code == 200
-        json: list[int] = r.json()
-        if self.id != -1:
-            assert self.id in json
-        return json
+        try:
+            r = requests.get(url=self.url(), headers=auth.get_auth_headers())
+            assert r.status_code == 200
+            json: dict[str] = r.json()
+            if self.id != -1:
+                assert self.id in json["list"]
+        except AssertionError:
+            print(json)
+            raise
     
     def assert_post(self):
         r = requests.post(url=self.url(), headers=auth.get_auth_headers(), json=self.__dict__)
-        assert r.status_code == 201
-        json: dict[str] = r.json()
-        self.id = json["id"]
-        self.assert_request(json)
+        self.assert_request(r, 201)
 
     def assert_get_id(self):
         r = requests.get(url=self.url_id(), headers=auth.get_auth_headers())
-        assert r.status_code == 200
-        self.assert_request(r.json())
+        self.assert_request(r, 200)
 
     def assert_patch_id(self):
         for key in self.__dict__:
-            if not self.set_random_value(key):
+            if key != "filename" and not self.set_random_value(key):
                 continue
-            r = requests.patch(url=self.url_id(), headers=auth.get_auth_headers(), json={key: self.__dict__[key]})
-            assert r.status_code == 200
-            self.assert_request(r.json())
+            if key == "filename":
+                file = open("/home/kuryga/projects/ep_api/tests/test.cpp")
+                r = requests.patch(
+                    url=self.url_id(), 
+                    headers=auth.get_auth_headers(), 
+                    json={key: self.__dict__[key]}, 
+                    files={"test.cpp": file}
+                )
+            else:
+                r = requests.patch(url=self.url_id(), headers=auth.get_auth_headers(), json={key: self.__dict__[key]})
+            self.assert_request(r, 200)
             
 
     def assert_post_id(self):
         pass
 
+
+    def assert_delete(self):
+        pass
+
     
     def get_random_int(key: str):
         int_restrictions = {
-            "user_type": (0, 2),
-            "amount": (1, 10),
-            "subject": (0, 2),
-            "semester_number": (1, 8),
+            "user_type": (0, 1),
+            "amount": (0, 10),
             "start": (cur_time() - 3600, cur_time() + 3600),
             "end": (cur_time() + 23 * 3600, cur_time() + 25 * 3600),
-            "mark": (0, 12)
+            "mark": (0, 12),
+            "cf_max_point": (1, 15),
+            "atc_ratio": (100, 200)
         }
         if key not in int_restrictions:
             return None
@@ -105,13 +125,21 @@ class ApiObject:
         else:
             return False
         return True
-    
-    def patch_arg(self, key: str, value):
-        self.__dict__[key] = value
-        r = requests.patch(url=self.url_id(), headers=auth.get_auth_headers(), json={key: value})
-        assert r.status_code == 200
-        self.assert_request(r.json())
-    
+
+
+class Group(ApiObject):
+    def __init__(self, name: str):
+        super().__init__()
+        self.name = name
+        self.cf_group_code = ""
+        self.user_list: list[int] = []
+
+    def route(self):
+        return "/group"
+
+    def random():
+        return Group(random_functions.random_ru_string())
+
 
 class User(ApiObject):
     def __init__(self, tg_id: int, tg_username: str, name: str, surname: str):
@@ -136,20 +164,12 @@ class User(ApiObject):
             random_functions.random_ru_string(),
             random_functions.random_ru_string()
         )
-
-
-class Group(ApiObject):
-    def __init__(self, name: str):
-        super().__init__()
-        self.name = name
-        self.cf_group_code = ""
-        self.user_list: list[int] = []
-
-    def route(self):
-        return "/group"
-
-    def random():
-        return Group(random_functions.random_ru_string())
+    
+    def set_group(self, group: Group):
+        self.group_id = group.id
+        group.user_list.append(self.id)
+        r = requests.patch(url=self.url_id(), headers=auth.get_auth_headers(), json={"group_id": group.id})
+        self.assert_request(r, 200)
 
 
 class Point(ApiObject):
@@ -194,8 +214,8 @@ class Problem(ApiObject):
         return Problem(
             random_functions.random_ru_string(),
             random_functions.random_ru_string(),
-            ApiObject.get_random_int("subject"),
-            ApiObject.get_random_int("semester_number")
+            0,
+            1
         )
 
 
@@ -206,9 +226,20 @@ class SemesterResult(ApiObject):
         self.user_id = user_id
         self.work_result_list: list[int] = []
         self.point_list: list[int] = []
+        for id in requests.get(url=self.url(), headers=auth.get_auth_headers()).json()["list"]:
+            json: dict[str] = requests.get(url=f"{self.url()}/{id}", headers=auth.get_auth_headers()).json()
+            if json["semester_id"] == self.semester_id and json["user_id"] == self.user_id:
+                self.id = json["id"]
+                break
 
     def route(self):
         return "/semester_result"
+    
+    def assert_object(self):
+        self.assert_get()
+        self.assert_get_id()
+        self.assert_patch_id()
+        self.assert_post_id()
 
 
 class Semester(ApiObject):
@@ -228,8 +259,8 @@ class Semester(ApiObject):
 
     def random(group_id: int):
         return Semester(
-            ApiObject.get_random_int("semester_number"),
-            ApiObject.get_random_int("subject"),
+            1,
+            0,
             ApiObject.get_random_int("start"),
             ApiObject.get_random_int("end"),
             group_id
@@ -273,26 +304,27 @@ class Work(ApiObject):
         )
 
 
-user: User = None
-group: Group = None
-point: Point = None
-problem: Problem = None
-semester_result: SemesterResult = None
-semester: Semester = None
-work_result: WorkResult = None
-work: Work = None
-
-
-def test_user():
-    global user
+def test_api():
     user = User.random()
     user.assert_object()
 
-
-def test_group():
-    global group
     group = Group.random()
     group.assert_object()
-    user.patch_arg("group_id", group.id)
-    group.user_list.append(user.id)
-    group.assert_get_id()
+    
+    user.set_group(group)
+
+    semester = Semester.random(group.id)
+    semester.assert_object()
+
+    semester_result = SemesterResult(semester.id, user.id)
+    semester_result.assert_object()
+
+    work = Work.random(semester.id)
+    work.assert_object()
+
+    problem = Problem.random()
+    problem.assert_object()
+
+    work_result = WorkResult(work.id, semester_result.id)
+    work_result.assert_object()
+

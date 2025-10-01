@@ -4,7 +4,7 @@ import configparser
 
 def test_admin_valid():
     config = configparser.ConfigParser()
-    config.read("../auth_service/config.ini")
+    config.read("/home/kuryga/projects/ep_api/auth_service/config.ini")
     tg_bot_password = config.get("tg_bot", "password")
     response = requests.post("http://127.0.0.1:8081/auth/refresh_token", json={"name": "tg_bot", "password": tg_bot_password})
     assert response.status_code == 200
